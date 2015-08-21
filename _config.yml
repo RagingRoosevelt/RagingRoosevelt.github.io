@@ -1,0 +1,16 @@
+# Site settings
+title: Theodore S. Lindsey
+email: theodore@theodorelindsey.com
+description: > # this means to ignore newlines until "baseurl:"
+  Personal and professional website for Theodore S. Lindsey.
+baseurl: "" # the subpath of your site, e.g. /blog/
+url: "http://theodorelindsey.com" # the base hostname & protocol for your site
+
+# usernames
+twitter_username: RagingRoosevelt
+github_username: RagingRoosevelt
+google_username: theodore.lindsey
+linkedin_username: theodorelindsey
+
+# Build settings
+markdown: kramdown
