@@ -7,10 +7,12 @@ baseurl: "" # the subpath of your site, e.g. /blog/
 url: "http://theodorelindsey.com" # the base hostname & protocol for your site
 
 # usernames
-twitter_username: RagingRoosevelt
-github_username: RagingRoosevelt
-google_username: theodore.lindsey
-linkedin_username: theodorelindsey
+username_twitter: RagingRoosevelt
+username_github: RagingRoosevelt
+username_gplus: +TheodoreSatchLindsey
+username_linkedin: theodorelindsey
+username_steam: RagingRoosevelt
+username_facebook: theodore.lindsey
 
 # Build settings
 markdown: kramdown
