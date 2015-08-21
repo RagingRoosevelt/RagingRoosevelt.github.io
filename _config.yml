@@ -18,3 +18,6 @@ username_facebook: theodore.lindsey
 markdown: kramdown
 
 timezone: America/Chicago
+
+gems:
+  - jekyll-last-modified-at
