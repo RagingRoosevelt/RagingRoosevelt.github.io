@@ -11,4 +11,11 @@ layout: simple
 	
 </div> <!--left container-->
 
-{% include footer.html %}
+
+<div id="footer">
+	<!--#config timefmt="%B %d, %Y" -->
+	Last modified: <{{ page.last_modified_at | date: '%y/%m/%d at %-I:%M:%S %p' }}
+</div>
+
+
+# {% include footer.html %}
