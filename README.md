@@ -1,2 +1,2 @@
-# [http://theodorelindsey.com/](http://theodorelindsey.com/)
+# [theodorelindsey.com](http://theodorelindsey.com/)
 Personal website for Theodore S. Lindsey
