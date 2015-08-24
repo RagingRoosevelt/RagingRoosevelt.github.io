@@ -85,8 +85,8 @@ body {
     /*width:15%;*/
     position: absolute;
     /*float:right;*/
-    /*padding:20px 5px 10px 40px;
-    display:block;*/
+    /*padding:20px 5px 10px 40px;*/
+    display:block;
     background-color:#BBBBBB;
     /*color:#ee3300; */
     /*min-height:100%*//*470px*/;
@@ -95,6 +95,7 @@ body {
 #recent_posts {
     position: absolute;
     background-color:#BBBBBB;
+    display:block;
 }
 
 
