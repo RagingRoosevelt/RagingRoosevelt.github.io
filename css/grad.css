@@ -87,7 +87,7 @@ body {
     float:left;
     /*float:right;*/
     /*padding:20px 5px 10px 40px;*/
-    display:block;
+    display:inline-block;
     background-color:#BBBBBB;
     /*color:#ee3300; */
     /*min-height:100%*//*470px*/;
@@ -97,7 +97,7 @@ body {
     position: absolute;
     float:left;
     background-color:#BBBBBB;
-    display:block;
+    display:inline-block;
 }
 
 
