@@ -71,9 +71,9 @@ body {
 
 #sidebar {
     width:192px;
-        /*width:15%;*/
+    /*width:15%;*/
     float:right;
-    /*padding:20px 5px 10px 40px;*/
+    padding:20px 5px 10px 40px;
     display:inline-block;
     background-color:#BBBBBB;
     /*color:#ee3300; */
