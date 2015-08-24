@@ -4,7 +4,7 @@
 | header                |
 +-----------------------+
 +------------+   +------+ 
-| contents   |   | nav  | 
+| content    |   | nav  | 
 |            |   |      | 
 |            |   +------+ 
 |            |   +------+
@@ -82,22 +82,19 @@ body {
 
 #nav {
     /*width:192px;*/
-    /*width:15%;*/
+    /*width:15%;
     position: absolute;
-    float:left;
+    float:left;*/
     /*float:right;*/
-    /*padding:20px 5px 10px 40px;*/
-    display:inline-block;
+    /*padding:20px 5px 10px 40px;
+    display:inline-block;*/
     background-color:#BBBBBB;
     /*color:#ee3300; */
     /*min-height:100%*//*470px*/;
 }
 
 #recent_posts {
-    position: absolute;
-    float:left;
     background-color:#BBBBBB;
-    display:inline-block;
 }
 
 
