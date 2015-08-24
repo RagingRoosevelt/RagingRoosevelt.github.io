@@ -81,27 +81,27 @@ body {
 }
 
 #nav {
-	width:100%;
+	width:192px;
         /*width:15%;*/
     position: absolute;
 	/*float:right;*/
-	padding:20px 5px 10px 40px;
-        display:inline-block;
-        background-color:#BBBBBB;
-        /*color:#ee3300; */
-        min-height:100%/*470px*/;
+	/*padding:20px 5px 10px 40px;*/
+    display:inline-block;
+    background-color:#BBBBBB;
+    /*color:#ee3300; */
+    min-height:100%/*470px*/;
 }
 
 #recent_posts {
-	width:100%;
+	width:192px;
         /*width:15%;*/
     position: absolute;
 	/*float:right;*/
-	padding:20px 5px 10px 40px;
-        display:inline-block;
-        background-color:#BBBBBB;
-        /*color:#ee3300; */
-        min-height:100%/*470px*/;
+	/*padding:20px 5px 10px 40px;*/
+    display:inline-block;
+    background-color:#BBBBBB;
+    /*color:#ee3300; */
+    min-height:100%/*470px*/;
 }
 
 
