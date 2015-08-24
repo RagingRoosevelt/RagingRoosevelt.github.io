@@ -4,9 +4,13 @@
 | header                |
 +-----------------------+
 +------------+   +------+ 
-| contents   |   | menu | 
+| contents   |   | nav  | 
 |            |   |      | 
-+------------+   +------+ 
+|            |   +------+ 
+|            |   +------+
+|            |   | posts|
+|            |   |      |
++------------+   +------+
 +-----------------------+
 | footer                |
 +-----------------------+
@@ -63,6 +67,17 @@ body {
         display:inline-block;
 	background-color:#EEEEEE;
 	min-height: 480px;
+}
+
+#right_container {
+	width:192px;
+        /*width:15%;*/
+	float:right;
+	padding:20px 5px 10px 40px;
+        display:inline-block;
+        background-color:#BBBBBB;
+        /*color:#ee3300; */
+        min-height:100%/*470px*/;
 }
 
 #right_container {
