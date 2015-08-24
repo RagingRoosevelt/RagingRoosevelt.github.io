@@ -34,7 +34,7 @@ body {
     width:850px;
 }
 
-#masthead {
+#header {
     width:850px;
     display:inline-block;
     height:280px;
@@ -60,7 +60,7 @@ body {
     border:solid 0px red;
 }
 
-#left_container {
+#content {
     width:583px;
         /*width:75%;*/
     padding:10px 5px 10px 20px;
