@@ -31,12 +31,12 @@ body {
 }
 
 #wrapper {
-	width:850px;
+    width:850px;
 }
 
 #masthead {
     width:850px;
-	display:inline-block;
+    display:inline-block;
     height:280px;
     /*padding:0px 10px 0px 0px; */
     background-color:#CCCCCC; 
@@ -47,13 +47,13 @@ body {
 }
 
 #bannerphoto {
-	height:280px;
-	float:left;
+    height:280px;
+    float:left;
 }
 
 #bannertext {
     margin:55px 15px 15px 115px;
-	float:left; 
+    float:left; 
     text-align:left;
     font-size: 100%;
     color:#000000; 
@@ -61,19 +61,19 @@ body {
 }
 
 #left_container {
-	width:583px;
+    width:583px;
         /*width:75%;*/
-	padding:10px 5px 10px 20px;
+    padding:10px 5px 10px 20px;
         display:inline-block;
-	background-color:#EEEEEE;
-	min-height: 480px;
+    background-color:#EEEEEE;
+    min-height: 480px;
 }
 
 #sidebar {
-	width:192px;
+    width:192px;
         /*width:15%;*/
-	float:right;
-	padding:20px 5px 10px 40px;
+    float:right;
+    /*padding:20px 5px 10px 40px;*/
     display:inline-block;
     background-color:#BBBBBB;
     /*color:#ee3300; */
@@ -81,11 +81,11 @@ body {
 }
 
 #nav {
-	width:192px;
+    /*width:192px;*/
         /*width:15%;*/
     position: absolute;
-	/*float:right;*/
-	/*padding:20px 5px 10px 40px;*/
+    /*float:right;*/
+    padding:20px 5px 10px 40px;
     display:block;
     background-color:#BBBBBB;
     /*color:#ee3300; */
@@ -93,11 +93,11 @@ body {
 }
 
 #recent_posts {
-	width:192px;
+    width:192px;
         /*width:15%;*/
     position: absolute;
-	/*float:right;*/
-	/*padding:20px 5px 10px 40px;*/
+    /*float:right;*/
+    padding:20px 5px 10px 40px;
     display:block;
     background-color:#BBBBBB;
     /*color:#ee3300; */
@@ -107,10 +107,10 @@ body {
 
 
 #footer { 
-	padding:1px;
+    padding:1px;
     background-color:#CCCCCC;
     text-align: center;
-    border: solid 0px red; 	
+    border: solid 0px red;     
     color:#000000; 
 }
 
