@@ -73,11 +73,11 @@ body {
 	width:192px;
         /*width:15%;*/
 	float:right;
-	padding:20px 5px 10px 40px;
-        display:inline-block;
-        background-color:#BBBBBB;
-        /*color:#ee3300; */
-        min-height:100%/*470px*/;
+	/*padding:20px 5px 10px 40px;*/
+    display:inline-block;
+    background-color:#BBBBBB;
+    /*color:#ee3300; */
+    min-height:100%/*470px*/;
 }
 
 #nav {
@@ -85,8 +85,8 @@ body {
         /*width:15%;*/
     position: absolute;
 	/*float:right;*/
-	/*padding:20px 5px 10px 40px;*/
-    display:inline-block;
+	padding:20px 5px 10px 40px;
+    display:block;
     background-color:#BBBBBB;
     /*color:#ee3300; */
     /*min-height:100%*//*470px*/;
@@ -98,7 +98,7 @@ body {
     position: absolute;
 	/*float:right;*/
 	/*padding:20px 5px 10px 40px;*/
-    display:inline-block;
+    display:block;
     background-color:#BBBBBB;
     /*color:#ee3300; */
     /*min-height:100%*//*470px*/;
