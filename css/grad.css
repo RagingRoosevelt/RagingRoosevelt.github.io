@@ -52,7 +52,7 @@ body {
 }
 
 #bannertext {
-    margin:55px 15px 15px 115px;
+    margin:55px 15px 15px 95px;
     float:left; 
     text-align:left;
     font-size: 100%;
@@ -100,14 +100,13 @@ body {
 }
 
 #recent_posts {
-    overflow-y: scroll;
+    /*overflow-y: scroll;*/
     max-height:250px;
     padding:0px 10px 0px 10px;
 }
 #recent_posts ul{
-    list-style: square inside;/*none;*/
-    padding-left:0;
-    
+    list-style: square outside;/*none;*/
+    padding-left:20px;
 }
 
 #disabled {
