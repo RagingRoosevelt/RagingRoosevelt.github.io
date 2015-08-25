@@ -1,0 +1,87 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+	<title>Theodore S. Lindsey: EECS 448 Lab - Spring 2015</title>
+	
+	<link rel="stylesheet" href="../grad.css" type="text/css" media="all" />
+
+</head>
+
+<body>
+<!--div id="wrapper" -->
+<br />
+
+<!--#include virtual="../header.html" -->
+<!--#include virtual="../nav.html" -->
+
+<div id="left_container">
+	<h2>EECS 448 Lab (S'15)</h2>
+	<h3>Office Hours</h3>
+	<p>Monday 11-12</br>
+	Friday 10-11</p>
+
+	<h3>Labs</h3>
+	<ul>
+	<li><b>Lab 01</b>  - Matlab intro.<br> 
+	<a href="EECS448_Lab01.pdf">Assignment</a> (due week of 2/2).  <a href="EECS448_Slides01.pdf">Slides</a>.<br><br>
+
+	<li><b>Lab 02</b> - HDR images in Matlab.<br> 
+	<a href="EECS448_Lab02.pdf">Assignment</a> (due week of 2/9), <a href="EECS448_Lab02_images.zip">Files</a>. <a href="EECS448_Slides02.pdf">Slides</a>.<br><br>
+
+	<li><b>Lab 03</b> - More HDR: Photomatix and Matlab.<br>
+	<a href="EECS448_Lab03.pdf">Assignment</a> (due week of 2/23), <a href="EECS448_Lab02_images.zip">Files</a>. <a href="EECS448_Slides03.pdf">Slides</a>.<br><br>
+
+	<li><b>Lab 04</b> - Linux CLI, Bash scripting<br>
+	<a href="EECS448_Lab04.pdf">Assignment</a> (due week of 3/2). <a href="EECS448_Slides04.pdf">Slides</a>.<br><br>
+
+	<li><b>Lab 05</b> - Class Diagrams, Dia Intro<br>
+	<a href="EECS448_Lab05.pdf">Assignment</a> (due week of 3/9). <a href="EECS448_Slides05.pdf">Slides</a>.<br><br>
+
+	<li><b>Lab 06</b> - GIT<br>
+	<a href="EECS448_Lab06.pdf">Assignment</a> (due week of 3/30). <a href="EECS448_Slides06.pdf">Slides</a>.<br><br>
+
+	<li><b>Lab 07</b> - Sequence, Communication, Use Case Diagrams<br>
+	<a href="EECS448_Lab07.pdf">Assignment</a> (due week of 3/30). <!--<a href="EECS448_Slides07.pdf">Slides</a>.--><br><br>
+
+	<li><b>Lab 08</b> - State, Activity Diagrams, Programming from diagrams<br>
+	<a href="EECS448_Lab08.pdf">Assignment</a> (due week of 4/6). <a href="EECS448_Slides08.pdf">Slides</a>.<br><br>
+
+	<li><b>Lab 09</b> - MVC<br>
+	<!--<a href="EECS448_Lab09.pdf">Assignment</a> (due week of 4/13). <a href="EECS448_Slides09.pdf">Slides</a>.<br><br>-->
+
+	<li><b>Lab 10</b> - <br>
+	<!--<a href="EECS448_Lab10.pdf">Assignment</a> (due week of 4/20). <a href="EECS448_Slides10.pdf">Slides</a>.<br><br>-->
+	</ul>
+	<a href="./LaTeX_Source.zip">LaTeX source for labs</a>
+	</p>
+	
+	<h3>Other Resources</h3>
+	<p><a href="https://www.mattcutts.com/blog/a-quick-tutorial-on-screen/">screen (ssh tool) tutorial</a><br>
+	<a href="https://wiki.utdallas.edu/wiki/display/FAQ/X11+Forwarding+using+Xming+and+PuTTY">X-forwarding on windows</a> (with putty and xming)<br>
+  <a href="http://gitref.org/">Git referance</a><br>
+  <a href="http://git-scm.com/downloads/guis">GUI git clients</a>
+	</p>
+	
+	<h3>Late Submissions Policy</h3>
+	<p>I don't accept late homework unless you have a health, family, etc emergency.  Because homework in this class can be submitted via email, if you are unable to make it to class, I still expect that you turn it in on time. Just plan accordingly to make sure you email it before it's due.</p>
+
+	<h3>Grading Policy</h3>
+	<p>Each lab writeup is due at the end of the lab the following week.  Each lab is worth 10 points and there will be a total of 10 labs for a total of 100 points.  Letter grades will be based on the standard 10% grading scale.  Your running total will be visible in the grade center on blackboard as each lab is graded.</p>
+	
+</div> <!--left container-->
+
+
+
+<div id="footer">
+	<!--#config timefmt="%B %d, %Y" -->
+	Last modified: <!--#echo var="LAST_MODIFIED"-->
+</div> <!--footer -->
+
+<!--/div--> <!--wrapper -->
+
+</body>
+
+</html>

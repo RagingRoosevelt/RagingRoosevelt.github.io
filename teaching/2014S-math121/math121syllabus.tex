@@ -1,0 +1,289 @@
+\documentclass[10pt]{amsart}
+
+
+%------------------------------------%
+% packages and formatting  %
+%------------------------------------%
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{anysize}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{mathrsfs}
+\usepackage{wasysym}
+\usepackage{hyperref}
+
+% margin size {left}{right}{top}{bottom}
+\marginsize{.9in}{.9in}{.6in}{.6in}
+
+% paragraph indentation
+\setlength{\parindent}{0in}
+
+
+%-----------------------------%
+%  custom commands  %
+%-----------------------------%
+
+% derivatives, integrals, and sums
+\newcommand{\pd}[3] {\ensuremath{ \frac{\partial^{#3} #1}{\partial #2^{#3}} }}
+	% \pd{function}{variable}{partial #}   ---  partial derivative
+\newcommand{\Int}[4] {\ensuremath{ \int_{#3}^{#4} #1 \ d #2 }}
+	% \Int{integrand}{differential}{lower bound}{upper bound}
+\newcommand{\Sum}[3] {\ensuremath{ \sum_{#2}^{#3} #1 }}
+	% \Sum{summand}{lower bound}{upper bound}
+
+% trigonometric and logarithmic functions
+\newcommand{\Cos}[2] {\ensuremath{ \cos^{#2} \left( #1 \right) }}
+	% \Cos{parameter}  ---  cos with parentheses
+\newcommand{\Sin}[2] {\ensuremath{ \sin^{#2} \left( #1 \right) }}
+	% \Sin{parameter}  ---  sin with parentheses
+\newcommand{\Tan}[2] {\ensuremath{ \tan^{#2} \left( #1 \right) }}
+	% \Tan{parameter}  ---  tan with parentheses
+\newcommand{\Log}[1] {\ensuremath{ \log \left( #1 \right) }}
+	% \Log{parameter}  ---  log with parentheses
+\newcommand{\Ln}[1] {\ensuremath{ \ln \left( #1 \right) }}
+	% \Ln{parameter}  ---  ln with parentheses
+	
+% piecewise functions
+ \newcommand{\pwtwo}[5] {\ensuremath{ #1 = \left\{ \begin{array}{ll} #2, & \ \textrm{if } \ #3 \\ #4, & \ \textrm{if } \ #5 \end{array} \right. }}
+ 	% \pwtwo{function}{value #1}{range #1}{value #2}{range #2}  ---  piecewise function with two parts
+\newcommand{\pwthree}[7] {\ensuremath{ #1 = \left\{ \begin{array}{ll} #2, & \ \textrm{if } \ #3 \\ #4, & \ \textrm{if } \ #5  \\ #6, & \ \textrm{if } \ #7 \end{array} \right. }}
+ 	% \pwthree{function}{value #1}{range #1}{value #2}{range #2}{value #3}{range #3}  ---  piecewise function with two parts
+
+% graphics
+\newcommand{\image}[4] {\begin{figure}[H] \centering \includegraphics[width=#2]{#1} \caption{\tiny{#3}} \label{#4} \end{figure}}
+	% \image{filename}{size cm}{caption}{label}  ---  insert centered image with caption and label
+	
+% limits
+\newcommand{\Lim}[2] {\ensuremath{ \lim_{#1 \rightarrow #2} }}
+	% \limp{variable}  ---  limit as [variable] goes to [number]
+	
+% matrices and determinants
+\newcommand{\matrixtwo}[4] {\ensuremath{ \begin{bmatrix} #1 & #2 \\ #3 & #4 \end{bmatrix} }}
+	% \matrixtwo{11}{12}{21}{22}  ---  two-by-two matrix
+\newcommand{\matrixthree}[9] {\ensuremath{ \begin{bmatrix} #1 & #2 & #3 \\ #4 & #5 & #6 \\ #7 & #8 & #9 \end{bmatrix} }}
+	% \matrixthree{11}{12}{13}{21}{22}{23}{31}{32}{33}  ---  three-by-three matrix
+\newcommand{\dettwo}[4] {\ensuremath{ \left| \begin{array}{cc} #1 & #2 \\ #3 & #4 \end{array} \right| }}
+	% \dettwo{11}{12}{21}{22}  ---  two-by-two determinant
+\newcommand{\detthree}[9] {\ensuremath{ \left| \begin{array}{ccc} #1 & #2 & #3 \\ #4 & #5 & #6 \\ #7 & #8 & #9 \end{array} \right| }}
+	% \detthree{11}{12}{13}{21}{22}{23}{31}{32}{33}  ---  three-by-three determinant
+	
+% number systems
+\newcommand{\reals} {\ensuremath{ \mathbb{R} }}
+\newcommand{\complexes} {\ensuremath{ \mathbb{C} }}
+
+
+%--------------------%
+%  title / header  %
+%--------------------%
+
+\title{Title}
+\author{Author}
+
+
+%--------------------------%
+%  document proper  %
+%--------------------------%
+
+\begin{document}
+
+{\bf Math 121: Calculus} \hfill {\bf Syllabus} \hfill {\bf Spring 2014}
+
+\hrulefill 
+
+\vspace{.5cm}
+
+{\bf Instructor:} Theodore Lindsey 	\hfill  {\bf Coordinator:} Milena Stanislavova \hspace{.15cm} \\
+{\bf Office:} Snow 543	\hfill  {\bf Office:} 525 Snow Hall  \hspace{2.2cm} \\
+{\bf Hours:} MWR 12-1 	\hfill   \\
+{\bf Email:} \href{mailto:tlindsey@math.ku.edu}{tlindsey@math.ku.edu}	\hfill  {\bf Email:} \href{mailto:stanis@math.ku.edu}{stanis@math.ku.edu} \hspace{1.25cm} \\
+
+
+
+\,\
+
+{\bf Course Information:}
+\begin{itemize}
+	\item {\bf Time:} MTWRF 11:00 - 11:50 p.m. 
+	\item {\bf Room:} Snow 306 (may change after a week or so, will be announced in class, via email, and on classroom blackboard)
+	\item {\bf Line \#:} 59424 (lecture) and 59428 (lab)
+	\item {\bf Description:} Differentiation and integration of algebraic and trigonometric functions. Applications to physical sciences and engineering.
+\end{itemize}
+
+\,\,
+
+{\bf Required Materials:}
+\begin{itemize}
+	\item {\bf Text:} WebAssign + eBook access for Stewart's Calculus, ISBN: 9780538738071. 
+	\item {\bf Tech:} graphing calculator or phone/tablet/laptop with access to math software or web-resources. 
+\end{itemize}
+
+\,\,
+
+{\bf Exams:}
+\begin{itemize}
+	\item There will be four exams:
+	\begin{itemize}
+		\item {\bf Exam 1 \& 3}, worth {\bf 10\%} each of the final grade, will be in class (the week of February 17th and the week of April 17th).
+		\item {\bf Midterm Exam}, worth {\bf 20\%} of the final grade, will be a common exam (March 12th, 5:45 to 7:45 pm).
+		\item {\bf Final Exam}, worth {\bf 30\%} of the final grade, will be a common exam (May 12th, 4:30 to 7 pm).
+	\end{itemize}
+	\item {\bf If a student has a preexisting conflict with the original scheduled time for any exam, he/she must make arrangements with the course coordinator in advance.}  If a student misses  an exam due to an emergency, he/she must contact the coordinator immediately following the incident in order to schedule a make up exam.  In either case, justifying documentation will be required.
+	\item A student must bring writing implements and photo identification to each exam.
+\end{itemize}
+
+\,\,
+
+{\bf Evaluation \& Point Distribution:}
+\begin{itemize}
+	\item The course is divided into four units, with an exam marking the conclusion of each.
+	\item A student's accumulation of points throughout all units will be the benchmark for the final grade he/she receives in the course. 
+	\item Points may be earned from homework, quizzes, the Gateway Exam, attendance/participation, and exams according to the following distribution (letter grades will be assigned on 10\% increments):
+\end{itemize}
+
+\,\,
+
+\begin{center}
+\begin{tabular}{| l | r |}
+\hline
+Homework \hspace{1cm} & 100  \\
+Quizzes & 50 \\
+Gateway Exam & 100 \\
+Attendance & 50 \\
+Exam 1 & 100  \\
+Midterm Exam & 200  \\
+Exam 3 & 100  \\
+Final Exam & 300  \\
+\hline
+Total  & 1000 \\
+\hline
+  \end{tabular}
+\end{center}
+
+\,\,
+
+{\bf Homework \& Quizzes:}
+\begin{itemize}
+	\item Homework will be assigned and collected weekly, both online and in class.
+	\item Quizzes may be given occasionally, both online and in class.
+	\item See the course webpage for more details about homework \& quizzes.
+	\item Online homework will always be due at midnight on Saturday of the week it is given.
+	\item Traditional homework will be collected during the first meeting of the week
+\end{itemize}
+
+\,\,
+
+{\bf Attendance \& Participation:}
+\begin{itemize}
+	\item Class attendance and participation are vital components of student success.
+	\item Attendance points comprise a significant percentage of the final grade and should not be overlooked.
+\end{itemize}
+
+\,\,
+
+{\bf Course Structure:}
+\begin{itemize}
+	\item The course will be comprised of a series of ``mini-units" focusing on fundamental Calculus topics.  
+	\item Each mini-unit will involve a motivating exploration of one or more relevant, real-world problems, followed by a sequential development of the mathematical tools needed to solve them.  
+	\item Once this computational and theoretical framework is in place, the original problems will be revisited and related problems will be considered.
+\end{itemize}
+
+\,\,
+
+{\bf Academic Honesty:}
+\begin{itemize}
+	\item There is a zero-tolerance policy for cheating, plagiarism, of any other forms of academic misconduct.  
+\end{itemize}
+
+\,\,
+
+{\bf Office Hours and Help Room:}
+\begin{itemize}
+	\item Students are encouraged to bring questions to the instructor's office hours.
+	\item If a student has unavoidable conflicts with all posted hours, he/she may request an individual appointment.
+	\item The Calculus Resource Center, located in 439 Anschutz Library, is a drop-in help room for Math 121/122 students (the operating hours are MTWRF 10am to 4pm and
+MTWR 7pm to 9 pm. ).
+\end{itemize}
+
+\,\,
+
+{\bf Email Communication:}
+\begin{itemize}
+	\item The instructor will periodically disperse course announcements via email (and, simultaneously, via Blackboard announcements).
+	\item Students are responsible for checking their email daily in order to be aware of all such announcements.
+	\item The email address a student has filed with the Registrar's Office will be used unless he/she makes other arrangements with the instructor.
+\end{itemize}
+
+\,\,
+
+{\bf Prerequisites:}
+\begin{itemize}
+    \item Note: Math 121 is open for only two credits to students with credit in Math 115.
+    \item To encourage success in Math 121, students are expected to have completed one of the following:
+    \begin{itemize}
+    	\item[$\circ$] Math 103 or Math 104,
+    	\item[$\circ$] three years of college preparatory mathematics, including trigonometry, and a score of 28 or more on Enhanced ACT Mathematics,
+    	\item[$\circ$] a qualifying score on the mathematics placement test.
+    \end{itemize}
+\end{itemize}
+
+\,\,
+
+{\bf Add/Change Information:}
+\begin{itemize}
+	\item Students should meet with Lindsey Deaver (\href{mailto:ldeaver@math.ku.edu}{ldeaver@math.ku.edu}), the KU mathematics enrollment advisor, to discuss any add or change of sections after the online period allowed by the university.
+\end{itemize}
+
+\,\,
+
+{\bf Drop Information:}
+\begin{itemize}
+	\item The last day to drop a Spring 2014 full-semester KU course without penalty is Monday, February 10.
+	\item The last day to withdraw from a Spring 2014 full-semester KU course is Monday, April 21.
+\end{itemize}
+
+\,\,
+
+
+{\bf Special Needs:}
+\begin{itemize}
+	\item The staff of \href{http://disability.ku.edu/}{Accessibility Resources} in 22 Strong Hall (785-864-2620) coordinates accommodations for students in all KU courses. 
+	\item Students should bring any special needs to the attention of the instructor within two weeks of the first day of classes.
+\end{itemize}
+
+\,\,
+
+
+
+
+\end{document}
+
+
+
+
+%--------------------------%
+%  optional symbols  %
+%--------------------------%
+
+% cursive fonts
+	% \mathcal{letter}
+	% \mathscr{letter}
+
+% blank space
+	% \hspace{size cm}
+	% \vspace{size cm}
+	% \skip, \bigskip, etc.
+
+% square root symbol with "tail"
+	\comment{ 
+	\let\oldsqrt\sqrt
+		% rename sqrt as oldsqrt
+ 	\def\sqrt{\mathpalette\DHLhksqrt}
+	\def\DHLhksqrt#1#2{
+	\setbox0=\hbox{$#1\oldsqrt{#2\,}$}\dimen0=\ht0
+	\advance\dimen0-0.2\ht0
+	\setbox2=\hbox{\vrule height\ht0 depth -\dimen0}
+	{\box0\lower0.4pt\box2}}
+	}
+

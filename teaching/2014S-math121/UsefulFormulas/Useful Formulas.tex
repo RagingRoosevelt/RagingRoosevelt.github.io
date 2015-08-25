@@ -1,0 +1,221 @@
+\documentclass{report}
+
+\usepackage[fleqn]{amsmath}
+\usepackage{multicol}
+\usepackage{enumitem}
+\usepackage{amsfonts}
+
+\usepackage[top=0.3in, bottom=0.3in, left=0.3in, right=0.3in]{geometry}
+
+\begin{document}
+\setlength{\columnsep}{3cm}
+\begin{multicols}{2}
+\setlength{\columnseprule}{.4pt}
+
+\newcommand{\der}[1]{\displaystyle \frac{d}{dx} \left[ #1 \right]}
+
+\begin{itemize}[leftmargin=.25cm]
+
+\item $ \der{c f(x)} = c f'(x) $
+
+\item $ \der{f(x) \pm g(x)} = f'(x) \pm g'(x) $
+
+\item $ \der{x^n} = n x^{n-1} $
+
+\item $ \der{e^{f(x)}} = f'(x) e^{f(x)} $
+
+\item $ \der{a^{x}} = \left( \ln a \right) a^x $
+
+\item $ \der{ \log_c x } = \frac{1}{x \ln c} $
+
+\item $ \der{ \ln \left( f(x) \right) } = \frac{f'(x)}{f(x)} $
+
+\item $ \der{ \sin x } = \cos x $
+
+\item $ \der{ \cos x } = - \sin x $
+
+\item $ \der{ \tan x } = \sec^2 x $
+
+\item $ \der{ \sin^{-1} x } = \frac{1}{\sqrt{1-x^2}} $
+
+\item $ \der{ \cos^{-1} x } = - \frac{1}{\sqrt{1-x^2}} $
+
+\item $ \der{ \tan^{-1} x } = \frac{1}{1+x^2} $
+
+\item Product rule: $ \der{f(x) g(x)} = f'(x) g(x) + g'(x) f(x) $
+
+\item Quotient rule: $ \der{\frac{f(x)}{g(x)} } = \frac{f'(x) g(x) - g'(x) f(x)}{(g(x))^2} $.
+
+\item Chain rule: $ \der{f(g(x))} = f'(g(x)) g'(x) $ 
+
+\item Marginal cost: $\displaystyle c'(x) $
+
+\item Average cost: $\displaystyle \frac{\Delta c}{\Delta x} = \frac{c(x_2) - c(x_1)}{x_2-x_1} $
+
+\end{itemize}
+
+\vfill
+\end{multicols}
+
+
+
+
+
+\newpage
+
+
+
+
+\setlength{\columnsep}{3cm}
+\begin{multicols}{2}
+\setlength{\columnseprule}{.4pt}
+
+\begin{itemize}[leftmargin=.25cm]
+\item Area between curves (ch 6.1)
+
+(provided that on the interval $[a,b]$, $ f(u) \geq g(u) $
+\begin{align*}
+A = \int_a^b [ f(u) - g(u) ] \ du
+\end{align*}
+Essentially, $ f(u) - g(u) $ needs to be $ \left\{ \textrm{right function} \right\} - \left\{ \textrm{left function} \right\} $ if the functions are in terms of $ y $ and you have $ dy $.
+
+Otherwise, $ f(u) - g(u) $ needs to be $ \left\{ \textrm{upper function} \right\} - \left\{ \textrm{lower function} \right\} $ if the functions are in terms of $ x $ and you have $ dx $.
+
+
+
+
+\item Volume (ch 6.2, 6.3)
+\begin{itemize}[leftmargin=.25cm]
+\item General:
+\begin{align*} 
+V(u) = \int_{u=a}^{u=b} A(u) \ du \hfill \\
+\end{align*}
+
+\item Disk Method
+\begin{align*}
+&\textrm{rotation about x-axis:} \hspace{0.25cm} V(x) = \int_{x=a}^{x=b} \pi \left( f(x) \right)^2 \ dx \hfill \\
+&\textrm{rotation about y-axis:} \hspace{0.25cm} V(y) = \int_{y=a}^{y=b} \pi \left( g(y) \right)^2 \ dy \hfill \\
+\end{align*}
+
+\item Cylindrical shells
+\begin{align*}
+&\textrm{rotation about y-axis:} \hspace{0.25cm} V(x) = \int_{x=a}^{x=b} \left( 2 \pi x \right) \left( f(x) \right) \ dx \\
+&\textrm{rotation about x-axis:} \hspace{0.25cm} V(y) = \int_{y=a}^{y=b} \left( 2 \pi y \right) \left( g(y) \right) \ dy
+\end{align*}
+\end{itemize}
+
+
+
+
+\item Arc Length (ch 6.4)
+\begin{itemize}[leftmargin=.25cm]
+\item If $ x = f(t) $ and $ y = g(t) $
+\begin{align*}
+L = \int_{t=a}^{t=b} \sqrt{ \left( \frac{dx}{dt} \right)^2 + \left( \frac{dy}{dt} \right)^2 } \ dt
+\end{align*}
+
+\item If $ x = x $ and $ y = g(x) $
+\begin{align*}
+L = \int_{x=a}^{x=b} \sqrt{ 1 + \left( \frac{dy}{dx} \right)^2 } \ dx
+\end{align*}
+
+\item If $ x = f(y) $ and $ y = y $
+\begin{align*}
+L = \int_{y=a}^{y=b} \sqrt{ \left( \frac{dx}{dy} \right)^2 + 1 } \ dy
+\end{align*}
+\end{itemize}
+
+
+
+
+\item Average Value (ch 6.5)
+\begin{align*}
+f_{avg} = \frac{1}{b-a} \int_a^b f(x) \ dx
+\end{align*}
+
+
+
+
+\item Work (ch 6.6)
+\begin{align*}
+W = \int_a^b f_{orce} (x) \ dx
+\end{align*}
+
+
+
+
+\item Center of Mass (ch 6.6)
+\begin{itemize}[leftmargin=.25cm]
+\item Moments
+\begin{align*}
+M_y &= \rho \int_a^b x f(x) \ dx \\
+M_x &= \rho \int_a^b \frac{1}{2} \left[ f(x) \right]^2 \ dx
+\end{align*}
+\item Centroid
+\begin{align*}
+\bar{x} &= M_y / \left(\rho \int_a^b f(x) \ dx \right) \\
+&= \frac{1}{A} \int_a^b x f(x) \ dx \\
+\bar{y} &= M_x / \left(\rho \int_a^b f(x) \ dx \right) \\
+&= \frac{1}{A} \int_a^b \frac{1}{2} \left[ f(x) \right]^2 \ dx
+\end{align*}
+\end{itemize}
+
+
+
+
+\item Economic Surplus (ch 6.7)
+\begin{itemize}[leftmargin=.25cm]
+\item Consumer Surplus
+
+Given a ``Production Level'' of $ C $, then $ P = p(C) $ and Consumer Surplus is
+\begin{align*}
+\int_0^C \left[ p(x) - P \right] \ dx
+\end{align*}
+
+
+\item Producer Surplus
+
+Given a ``Production Level'' of $ C $, then $ P = p(C) $ and Producer Surplus is
+\begin{align*}
+\int_0^C \left[ P - p(x) \right] \ dx
+\end{align*}
+\end{itemize}
+
+
+
+
+\item Probability (ch 6.8)
+\begin{itemize}[leftmargin=.25cm]
+\item Probability Density Function
+
+$ f(x) $ is a probability density function if both of the following are true:
+\begin{itemize}[leftmargin=.25cm]
+\item $ f(x) \geq 0 $ for all $ x $
+\item $ 1 = \int_{-\infty}^{\infty} f(x) \ dx $
+
+
+\end{itemize}
+\item Probability of an event
+
+If $ f(x) $ is a probability density function, then
+\begin{align*}
+\mathbb{P} \left( a \leq X \leq b \right) = \int_a^b f(x) \ dx
+\end{align*}
+
+
+\item Average Value (Mean)
+
+if $ f(x) $ is a probability density function, then the mean or average value is given by
+\begin{align*}
+\mu = \int_{-\infty}^{\infty} x f(x) \ dx
+\end{align*}
+\end{itemize}
+
+
+
+
+
+\end{itemize}
+\vfill
+\end{multicols}{2}
+\end{document}
