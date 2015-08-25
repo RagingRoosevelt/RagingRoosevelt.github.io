@@ -63,24 +63,24 @@ body {
 #content {
     width:583px;
         /*width:75%;*/
-    padding:10px 5px 10px 20px;
+    padding:20px 5px 10px 20px;
         display:inline-block;
     background-color:#EEEEEE;
-    min-height: 480px;
+    min-height: 600px;
 }
 #content img{
     width: 98%;
 }
 
 #sidebar {
-    width:192px;
+    width:237px;
     /*width:15%;*/
     float:right;
-    padding:20px 5px 10px 40px;
+    padding:20px 0px 10px 0px;
     display:inline-block;
     background-color:#BBBBBB;
     /*color:#ee3300; */
-    min-height:100%/*470px*/;
+    min-height:600px/*470px*/;
 }
 
 #nav {
@@ -89,18 +89,23 @@ body {
     position: absolute;
     float:left;*/
     /*float:right;*/
-    /*padding:20px 5px 10px 40px;
-    display:inline-block;*/
-    background-color:#BBBBBB;
+    padding:0px 10px 0px 10px;
+    /*display:inline-block;*/
     /*color:#ee3300; */
     /*min-height:100%*//*470px*/;
 }
 
+#links {
+    padding:0px 10px 0px 10px;
+}
+
 #recent_posts {
-    background-color:#BBBBBB;
+    overflow-y: scroll;
+    max-height:250px;
+    padding:0px 10px 0px 10px;
 }
 #recent_posts ul{
-    list-style: square outside;/*none;*/
+    list-style: square inside;/*none;*/
     padding-left:0;
     
 }
