@@ -28,6 +28,8 @@ body {
     font:15px arial,sans-serif;
     /*font-family:Arial,Helvetica,sans-serif;*/ 
     border:solid 0px pink;
+    background-image: url("/images/soda_small.jpg");
+    background-repeat: no-repeat; background-position: top left; background-attachment: fixed; background-size: 100%;
 }
 
 #wrapper {
@@ -39,7 +41,7 @@ body {
     display:inline-block;
     height:150px;
     /*padding:0px 10px 0px 0px; */
-    background-color:#CCCCCC; 
+    background-color:#CCCCCC; /*rgba(80,80,80,0.3);*/
     /*background-color:#000000; */
     /* background-image: url(Dart_panoramic_small.jpg);
     background-position: top center;
@@ -65,7 +67,7 @@ body {
         /*width:75%;*/
     padding:0px 10px 10px 10px;
         display:inline-block;
-    background-color:#EEEEEE;
+    background-color:#EEEEEE;/*rgba(93,93,93,0.3);*/
     min-height: 600px;
 }
 #content img{
@@ -78,7 +80,7 @@ body {
     float:right;
     padding:20px 0px 10px 0px;
     display:inline-block;
-    background-color:#BBBBBB;
+    background-color:#BBBBBB;/*rgba(73,73,73,0.3);*/
     /*color:#ee3300; */
     min-height:600px/*470px*/;
 }
@@ -115,7 +117,7 @@ body {
 
 #footer { 
     padding:1px;
-    background-color:#CCCCCC;
+    background-color:#CCCCCC;/*rgba(80,80,80,0.3);*/
     text-align: center;
     border: solid 0px red;     
     color:#000000; 
