@@ -16,5 +16,11 @@ username_facebook: theodore.lindsey
 
 # Build settings
 markdown: kramdown
+highlighter: rouge
 
 timezone: America/Chicago
+
+# blog post url format
+permalink: /blog/:year/:month/:day/:title.html
+paginate: 3
+paginate_path: "/blog/page:num/"

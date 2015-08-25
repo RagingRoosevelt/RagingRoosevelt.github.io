@@ -68,6 +68,9 @@ body {
     background-color:#EEEEEE;
     min-height: 480px;
 }
+#content img{
+    width: 98%;
+}
 
 #sidebar {
     width:192px;
@@ -97,11 +100,14 @@ body {
     background-color:#BBBBBB;
 }
 #recent_posts ul{
-    list-style: none;
+    list-style: square outside;/*none;*/
     padding-left:0;
     
 }
 
+#disabled {
+    color: 888888;
+}
 
 #footer { 
     padding:1px;

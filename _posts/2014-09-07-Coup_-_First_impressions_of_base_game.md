@@ -3,8 +3,8 @@ layout: blog
 title: Coup – First impressions of base game
 section: Blog
 last_modified_at: 2014-09-07
+baseurl: "/blog/"
 ---
-
 
 I’d played Coup before, so this wasn’t entirely new.  I hadn’t seen the kickstarter edition of Coup 
 or Reformation yet, though.  The kickstarter editions includes alternative art for each of the 
