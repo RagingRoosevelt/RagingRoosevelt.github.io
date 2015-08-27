@@ -63,9 +63,9 @@ body {
 
 #content {
     width:588px;
-        /*width:75%;*/
-    padding:0px 10px 10px 10px;
-        display:inline-block;
+    /*      top  rght bttm left */
+    padding:20px 10px 10px 10px;
+    display:inline-block;
     background-color:#EEEEEE;/*rgba(93,93,93,0.3);*/
     min-height: 600px;
 }
@@ -74,11 +74,19 @@ img.full{
     width: 98%;
     padding:1px;
     border:1px solid #000000;
+    
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 img.half{
     width: 49%;
     padding:1px;
     border:1px solid #000000;
+    
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 #sidebar {
@@ -89,7 +97,8 @@ img.half{
     display:inline-block;
     background-color:#BBBBBB;/*rgba(73,73,73,0.3);*/
     /*color:#ee3300; */
-    min-height:600px/*470px*/;
+    /*height: 400px;*/
+    min-height:600px;
 }
 
 #nav {
@@ -110,7 +119,7 @@ img.half{
 
 #recent_posts {
     /*overflow-y: scroll;*/
-    max-height:250px;
+    /*max-height:200px;*/
     padding:0px 10px 0px 10px;
 }
 #recent_posts ul{
@@ -122,8 +131,10 @@ img.half{
     color: 888888;
 }
 
+#footer_padding {
+    padding: 10px 0px 0px 0px;
+}
 #footer { 
-    padding:1px;
     background-color:#CCCCCC;/*rgba(80,80,80,0.3);*/
     text-align: center;
     border: solid 0px red;     
