@@ -9,21 +9,13 @@ Mariah’s multicolor pen broke.  I didn’t have any prior experience doing 3D 
 
 Here’s the original pen:
 
-<a href="http://i.imgur.com/YRWJ0mx.jpg"><img src="http://i.imgur.com/YRWJ0mx.jpg" style="width: 50%;"/></a> 
+<a href="http://i.imgur.com/YRWJ0mx.jpg"><img class="half" src="http://i.imgur.com/YRWJ0mx.jpg" /></a> 
 
 I’ve modeled all that I can without breaking the pen and that’s landed me here:
 
-<a href="http://i.imgur.com/lZz6KFG.png"><img src="http://i.imgur.com/lZz6KFG.png" /></a>
+<a href="http://i.imgur.com/lZz6KFG.png"><img class="full" src="http://i.imgur.com/lZz6KFG.png" /></a>
 
-<a href="http://i.imgur.com/tEv1Pc0.png"><img src="http://i.imgur.com/tEv1Pc0.png" /></a>
-
- 
-
-
-
- 
-
- 
+<a href="http://i.imgur.com/tEv1Pc0.png"><img class="full" src="http://i.imgur.com/tEv1Pc0.png" /></a>
 
 After talking with some machinist folks, it seems like I’d be best off rounding out the slots that the selectors slide in since it’s hard to get square cuts on either a lathe or mill.  If it were important to maintain a square profile for the slots, I could take a coping saw to square out the circular ends that a mill would leave.  It also sounds like the curving nature of the writing end of the pen will probably cause problems, especially the fact that it curves on the inside.
 

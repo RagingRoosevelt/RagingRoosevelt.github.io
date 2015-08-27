@@ -16,7 +16,6 @@ username_facebook: theodore.lindsey
 
 # Build settings
 markdown: kramdown
-highlighter: rouge
 
 timezone: America/Chicago
 

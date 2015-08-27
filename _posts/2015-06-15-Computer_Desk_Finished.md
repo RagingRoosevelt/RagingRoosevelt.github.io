@@ -13,12 +13,12 @@ I also decided that, in the interest of cable management, I wanted a few holes t
 
 And, here’s the finished product:
 
-<a href="http://i.imgur.com/rmIjdWj.jpg"><img src="http://i.imgur.com/rmIjdWj.jpg" /></a>
+<a href="http://i.imgur.com/rmIjdWj.jpg"><img class="full" src="http://i.imgur.com/rmIjdWj.jpg" /></a>
 
 Due to not including the vertical plywood siding, I actually ended up with an unused sheet of plywood so the final cost (once I return the plywood sheet) came out to only $90!
 
 Here’s what it looks like when I got it in place and the stuff moved on to it:
 
-<a href="http://i.imgur.com/NxyeYZ6.jpg"><img src="http://i.imgur.com/NxyeYZ6.jpg" /></a>
+<a href="http://i.imgur.com/NxyeYZ6.jpg"><img class="full" src="http://i.imgur.com/NxyeYZ6.jpg" /></a>
 
-<a href="http://i.imgur.com/GM05Vwk.jpg"><img src="http://i.imgur.com/GM05Vwk.jpg" /></a>
+<a href="http://i.imgur.com/GM05Vwk.jpg"><img class="full" src="http://i.imgur.com/GM05Vwk.jpg" /></a>

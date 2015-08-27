@@ -9,7 +9,7 @@ last_modified_at: 2015-06-11
 
 [(part 1)]({% post_url 2015-06-06-WIP_Computer_Desk_Beginning %}). Since I last worked on the desk, I realized I had to figure out how to attach the horizontal braces to the legs.  I hadn’t really done much carpentry before so the obvious choice – lap joints – didn’t occur to me and it too my sister suggesting them before I realized it was the obvious choice.  Anyhow, here’s how that looks in CAD:
 
-<a href="http://i.imgur.com/KyaPiEf.png"><img src="http://i.imgur.com/KyaPiEf.png" /></a>
+<a href="http://i.imgur.com/KyaPiEf.png"><img class="full" src="http://i.imgur.com/KyaPiEf.png" /></a>
 
 From measurements I took in CAD, I decided I needed:
 
@@ -24,25 +24,25 @@ I also needed a chisel set but I’m not factoring that into budget.  I ended up
 
 I got right to work putting the desk together.
 
-<a href="http://i.imgur.com/hvDHsjg.jpg"><img src="http://i.imgur.com/hvDHsjg.jpg" /></a>
+<a href="http://i.imgur.com/hvDHsjg.jpg"><img class="half" src="http://i.imgur.com/hvDHsjg.jpg" /></a>
 
 I hadn’t ever done lap joints before so I was quite proud to have performed my first one.
 
-<a href="http://i.imgur.com/63WxlUZ.jpg"><img src="http://i.imgur.com/63WxlUZ.jpg" /></a>
+<a href="http://i.imgur.com/63WxlUZ.jpg"><img class="full" src="http://i.imgur.com/63WxlUZ.jpg" /></a>
 
-<a href="http://i.imgur.com/1dGuWS2.jpg"><img src="http://i.imgur.com/1dGuWS2.jpg" /></a>
+<a href="http://i.imgur.com/1dGuWS2.jpg"><img class="full" src="http://i.imgur.com/1dGuWS2.jpg" /></a>
 
 I quickly realized that I could jump start the lap joints by pre-cutting them on the miter saw and then just finishing them with the chisel.
 
-<a href="http://i.imgur.com/OlCuzac.jpg"><img src="http://i.imgur.com/OlCuzac.jpg" /></a>
+<a href="http://i.imgur.com/OlCuzac.jpg"><img class="half" src="http://i.imgur.com/OlCuzac.jpg" /></a>
 
 And then, once I got all the lap joints cut, it didn’t take long to get the ends done and the main table put together.
 
-<a href="http://i.imgur.com/zOYKd63.jpg"><img src="http://i.imgur.com/zOYKd63.jpg" /></a>
+<a href="http://i.imgur.com/zOYKd63.jpg"><img class="full" src="http://i.imgur.com/zOYKd63.jpg" /></a>
 
-<a href="http://i.imgur.com/b2FhsVb.jpg"><img src="http://i.imgur.com/b2FhsVb.jpg" /></a>
+<a href="http://i.imgur.com/b2FhsVb.jpg"><img class="full" src="http://i.imgur.com/b2FhsVb.jpg" /></a>
 
-<a href="http://i.imgur.com/FxURxEW.jpg"><img src="http://i.imgur.com/FxURxEW.jpg" /></a>
+<a href="http://i.imgur.com/FxURxEW.jpg"><img class="full" src="http://i.imgur.com/FxURxEW.jpg" /></a>
 
 From here, all I have left to do is
 

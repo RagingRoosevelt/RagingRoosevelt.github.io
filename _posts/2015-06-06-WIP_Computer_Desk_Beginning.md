@@ -17,11 +17,11 @@ I’ve been meaning to build myself a computer desk to replace the one I current
 
 So far I’ve just been planning it out in a 3D model (partly to practice my CAD skills and partly so that I can tally up how much lumber I’ll need).  Here’s what I have so far:
 
-<a href="http://i.imgur.com/RIjskGg.png"><img src="http://i.imgur.com/RIjskGg.png" style="width:49%;" /></a><a href="http://i.imgur.com/w6oM24p.png"><img src="http://i.imgur.com/w6oM24p.png" style="width:49%;" /></a>
+<a href="http://i.imgur.com/RIjskGg.png"><img class="half" src="http://i.imgur.com/RIjskGg.png" /></a><a href="http://i.imgur.com/w6oM24p.png"><img class="half" src="http://i.imgur.com/w6oM24p.png" /></a>
 
 And with blockouts of the room and electronics:
 
-<a href="http://i.imgur.com/RClIBSN.png"><img src="http://i.imgur.com/RClIBSN.png" style="width:49%;" /></a><a href="http://i.imgur.com/7BIwddt.png"><img src="http://i.imgur.com/7BIwddt.png" style="width:49%;" /></a>
+<a href="http://i.imgur.com/RClIBSN.png"><img class="half" src="http://i.imgur.com/RClIBSN.png" /></a><a href="http://i.imgur.com/7BIwddt.png"><img class="half" src="http://i.imgur.com/7BIwddt.png" /></a>
 
 Once I get this desk built, I’m thinking of adding a smaller desk section to form an ‘L’ shape. I’ll attach it to the right hand side of the desk and that should provide a quite useful work space when I’m doing non-computer tasks but still want to be within arms reach of it (soldering, writing, scratch work, etc).
 

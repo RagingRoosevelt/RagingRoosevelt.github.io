@@ -9,7 +9,7 @@ Still using QWERTY.  I previously had a pretty different thumb cluster.  I used 
 on the large 2x left thumb buttons and del and then space on the large 2x right thumb buttons.  I 
 also had vol+ and vol- on the small 1x right thumb buttons.  Here’s the new layout.
 
-<a href="http://i.imgur.com/kkUsCj6.png"><img src="http://i.imgur.com/kkUsCj6.png" width="100%" /></a>
+<a href="http://i.imgur.com/kkUsCj6.png"><img class="full" src="http://i.imgur.com/kkUsCj6.png" /></a>
 
 I found I wasn’t regularly using the del key with the old layout.  I’m hoping that with both bksp 
 and del on the same thumb, going back and forth as necessary will be easier.  Re-training my left 
