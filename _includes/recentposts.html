@@ -1,7 +1,7 @@
 <div id="recent_posts">
     Recent posts:
     <ul display="">
-        {% for post in site.posts limit: 5 %}
+        {% for post in site.posts limit: 15 %}
             <li><a href="{{ post.url }}">{{ post.title }}</a></li>
         {% endfor %}
     </ul>

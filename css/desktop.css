@@ -37,7 +37,6 @@ body {
 
 #header {
     width:850px;
-    display:inline-block;
     height:150px;
     /*padding:0px 10px 0px 0px; */
     background-color:#CCCCCC; /*rgba(80,80,80,0.3);*/
@@ -65,7 +64,6 @@ body {
     width:588px;
     /*      top  rght bttm left */
     padding:20px 10px 10px 10px;
-    display:inline-block;
     background-color:#EEEEEE;/*rgba(93,93,93,0.3);*/
     min-height: 600px;
 }
@@ -88,29 +86,56 @@ img.half{
     margin-left: auto;
     margin-right: auto;
 }
+img.split{
+    width: 49%;
+    padding:1px;
+    border:1px solid #000000;
+    
+    margin-left: auto;
+    margin-right: auto;
+}
 
 #sidebar {
     width:237px;
     /*width:15%;*/
     float:right;
-    padding:20px 0px 10px 0px;
-    display:inline-block;
+    padding:20px 5px 10px 0px;
     background-color:#BBBBBB;/*rgba(73,73,73,0.3);*/
     /*color:#ee3300; */
     /*height: 400px;*/
     min-height:600px;
 }
 
+#navbar {
+    background-color: #bbbbbb;
+    /*padding: 10px 0px 10px 0px;*/
+}
 #nav {
     /*width:192px;*/
     /*width:15%;
     position: absolute;
     float:left;*/
     /*float:right;*/
-    padding:0px 10px 0px 10px;
+    /*padding:0px 10px 0px 10px;*/
     /*display:inline-block;*/
     /*color:#ee3300; */
     /*min-height:100%*//*470px*/;
+}
+#nav table {
+    /*border: 3px solid red;*/
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+#nav td {
+    padding: 10px 20px 10px 20px;
+    /*border: 3px solid red;*/
+    width: 100px;
+}
+#active_nav {
+    background-color: #cccccc;
+    font-style: italic;
+    
 }
 
 #links {
@@ -125,6 +150,9 @@ img.half{
 #recent_posts ul{
     list-style: square outside;/*none;*/
     padding-left:20px;
+}
+#recent_posts li{
+    margin: 0 0 15px 0;
 }
 
 #disabled {
