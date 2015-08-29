@@ -60,6 +60,10 @@ body {
     border:solid 0px red;
 }
 
+#content_wrapper{
+    background-color:#BBBBBB;/*rgba(73,73,73,0.3);*/
+}
+
 #content {
     width:588px;
     /*      top  rght bttm left */
@@ -100,10 +104,9 @@ img.split{
     /*width:15%;*/
     float:right;
     padding:20px 5px 10px 0px;
-    background-color:#BBBBBB;/*rgba(73,73,73,0.3);*/
     /*color:#ee3300; */
     /*height: 400px;*/
-    min-height:600px;
+    max-height:600px;
 }
 
 #navbar {

@@ -4,21 +4,24 @@ layout: simple
 
 {% include header.html %}
 
+
 <div id="navbar">
     {% include nav.html %}
 </div>
 
-<div id="sidebar">
-    {% include links.html %}
-    <br /><hr /><br />    
-    {% include recentposts.html %}
-</div>
+<div id="content_wrapper">
+    <div id="sidebar">
+        {% include links.html %}
+        <br /><hr /><br />    
+        {% include recentposts.html %}
+    </div>
 
-<div id="content">
-    
-    {{ content }}
-    
-</div> <!--left container-->
+    <div id="content">
+        
+        {{ content }}
+        
+    </div> <!--left container-->
+</div>
 
 
 
