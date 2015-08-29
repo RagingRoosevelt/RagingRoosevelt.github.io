@@ -109,6 +109,7 @@ img.split{
 #navbar {
     background-color: #bbbbbb;
     /*padding: 10px 0px 10px 0px;*/
+    border-bottom: 2px #cccccc solid;
 }
 #nav {
     /*width:192px;*/
