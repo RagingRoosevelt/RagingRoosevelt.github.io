@@ -1,0 +1,36 @@
+---
+---
+<?xml version='1.0' encoding='UTF-8'?>
+<urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
+    <url>
+        <loc>{{ site.url }}/</loc>
+        <changefreq>monthly</changefreq>
+    </url>
+    <url>
+        <loc>{{ site.url }}/teaching/</loc>
+        <changefreq>yearly</changefreq>
+    </url>
+    <url>
+        <loc>{{ site.url }}/blog/</loc>
+        <changefreq>always</changefreq>
+    </url>
+    <url>
+        <loc>{{ site.url }}/assets/Theodore_Lindsey_Resume.pdf</loc>
+        <changefreq>weekly</changefreq>
+    </url>
+    <url>
+        <loc>{{ site.url }}/assets/Theodore_Lindsey_CV.pdf</loc>
+        <changefreq>weekly</changefreq>
+    </url>
+    
+    
+    
+    {% for post in site.posts %}
+    <url>
+        <loc>{{post.url}}</loc>
+        <lastmod>{{post.last_modified_at}}</lastmod>
+        <changefreq>yearly</changefreq>
+    </url>
+    {% endfor %}
+</urlset>
+    
