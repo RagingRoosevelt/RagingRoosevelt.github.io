@@ -19,11 +19,13 @@
 
 a {
     color: #888888;
+    max-width: 100%;
+    overflow-x: hidden;
 }
 
 .all {
     border-style: solid;
-    border-width: 1px;
+    border-width: 0px;
 }
 
 .centred_wrapper {
@@ -34,6 +36,12 @@ a {
     width: 70%;
     min-width: 400px;
     max-width: 1000px;
+    
+    float: left;
+    clear: none;
+    
+    padding: 0;
+    border: 0;
 }
 
 .header_wrapper {
@@ -41,8 +49,8 @@ a {
     height: 75px;
 }
 
-.main_wrapper {
-    background-color: #A4A4A4;
+.content_wrapper {
+    background-color: #A4A4A4; 
 }
 
 .footer_wrapper {
@@ -51,12 +59,16 @@ a {
 
 .sidebar_wrapper {
     background-color: #424242;
-    float:left;
-    height: 98%;
-    margin-bottom: auto;
+    height: 100%;
     
-    width:150px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    
     position: fixed;
+    width:150px;
+    top: 0;
+    left: 0;
 }
 
 .sidebar_wrapper  ul {
@@ -68,4 +80,15 @@ a {
 
 .clear {
     clear: both;
+}
+
+body {
+    max-width: 100%;
+    overflow-x: hidden;
+
+    background: url("/assets/soda_small.jpg") no-repeat center center fixed;
+    background-size: cover;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
 }
