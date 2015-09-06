@@ -1,0 +1,19 @@
+.sidebar_wrapper {
+    background-color: #888888;
+    width: 150px;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.content_wrapper {
+    background-color: #CCCCCC;
+    
+    position: absolute;
+    top: 0;
+    left: 150px;
+    
+    width: 75%;
+    max-width: 1000px;
+    min-width: 300px;
+}

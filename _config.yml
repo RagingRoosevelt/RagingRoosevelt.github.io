@@ -1,6 +1,5 @@
 # Site settings
 title: Theodore S. Lindsey
-email: theodore@theodorelindsey.io
 baseurl: "" # the subpath of your site, e.g. /blog/
 # for rss, etc
 name: Theodore S. Lindsey
@@ -15,6 +14,12 @@ username_gplus: +TheodoreSatchLindsey
 username_linkedin: theodorelindsey
 username_steam: RagingRoosevelt
 username_facebook: theodore.lindsey
+
+# contact info
+phone: "(503) 898-0184"
+email: theodore@theodorelindsey.io
+office: Eaton 2029
+hours: "M 11:30am - 15:30pm, or by appointment"
 
 # Build settings
 markdown: kramdown
