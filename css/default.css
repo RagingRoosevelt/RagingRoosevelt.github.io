@@ -30,6 +30,9 @@ body {
 }
 
 
+.sidebar{
+    padding: 0px 3px 0px 3px;
+}
 .sidebar_wrapper {
     background-color: #607D8B;
     color: #FFFFFF;
