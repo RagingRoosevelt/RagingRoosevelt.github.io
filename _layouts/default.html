@@ -1,31 +1,42 @@
 ---
-layout: simple
 ---
 
-{% include header.html %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=0.64">
+    <link rel="stylesheet" href="{{ "/css/default.css" | prepend: site.baseurl }}">
+    
+    <title>{% if page.title %}{{ page.title }}{% else %}{{ site.title }}{% endif %}</title>
+    <meta name="description" content="{% if page.excerpt %}{{ page.excerpt | strip_html | strip_newlines | truncate: 160 }}{% else %}{{ site.description }}{% endif %}">
+    <link rel="canonical" href="{{ page.url | replace:'index.html','' | prepend: site.baseurl | prepend: site.url }}">
+    <link rel="alternate" type="application/rss+xml" title="{{ site.title }}" href="{{ "/blog/feed.xml" | prepend: site.baseurl | prepend: site.url }}" />
+    
+    <link rel="icon" type="image/png" href="/favicon.png">
+    
+    {% include google_analytics.html %}
+</head>
 
 
-<div id="navbar">
-    {% include nav.html %}
-</div>
+<body>
 
-<div id="content_wrapper">
-    <div id="sidebar">
-        {% include links.html %}
-        <br /><hr /><br />    
-        {% include recentposts.html %}
+
+    {% include sidebar.html %}
+
+    <div class="content_wrapper">
+        <div class="content">
+            
+            {{ content }}
+            
+        </div>
     </div>
 
-    <div id="content">
-        
-        {{ content }}
-        
-    </div> <!--left container-->
-</div>
+<div class="clear"></div>
 
 
 
-<div id="footer">
-    <!--#config timefmt="%B %d, %Y" -->
-    Last modified: {{ page.last_modified_at }}
-</div>
+
+</body>
+</html>

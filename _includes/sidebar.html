@@ -4,31 +4,43 @@
 
     <b>Theodore S. Lindsey</b>
 
-    email: tlindsey@ku.edu<br />
-    office: Eaton 2029<br />
-    phone: (503) 898-0184<br />
-
     <hr>
 
-    <div class="nav" style="">
+    <div class="nav">
         <ul>
-        <li><a href="">Home</a></li>
-        <li><a href="">Academics</a></li>
-        <li><a href="">Teaching</a></li>
-        <li><a href="">Blog</a></li>
-        <li><a href="">Resume</a></li>
-        <li><a href="">CV</a></li>
+        <li {% if page.section == "Home" %}id="active_nav"{% endif %}>
+            <a href="/">Home</a></li>
+            
+        <li {% if page.section == "Academics" %}id="active_nav"{% endif %}>
+            <a href="/academics.html">Academics</a></li>
+            
+        <li {% if page.section == "Teaching" %}id="active_nav"{% endif %}>
+            <a href="/teaching/">Teaching</a></li>
+            
+        <li {% if page.section == "Blog" %}id="active_nav"{% endif %}>
+            <a href="/blog/">Blog</a></li>
+            
+        <li  {% if page.section == "Contact" %}id="active_nav"{% endif %}>
+            <a href="/contact.html">Contact</a></li>
+            
+        <li>
+            <a href="">Resume</a></li>
+            
+        <li>
+            <a href="">CV</a></li>
         </ul>
     </div>
+    
+    <hr>
 
-    <div class="external-links" style="">
+    <div class="external-links">
         <ul style="list-style-type: none;">
-        <li style="display: inline;"><a href="https://github.com/RagingRoosevelt" target="_blank"><img src="/assets/icons/github-24.png" width="24px" /></a></li>
-        <li style="display: inline;"><a href="http://www.linkedin.com/in/theodorelindsey" target="_blank"><img src="/assets/icons/linkedin-24.png" width="24px" /></a></li>
-        <li style="display: inline;"><a href="https://plus.google.com/+TheodoreSatchLindsey" target="_blank"><img src="/assets/icons/gplus-24.png" width="24px" /></a></li>
-        <li style="display: inline;"><a href="https://twitter.com/RagingRoosevelt" target="_blank"><img src="/assets/icons/twitter-24.png" width="24px" /></a></li>
-        <li style="display: inline;"><a href="https://facebook.com/theodore.lindsey" target="_blank"><img src="/assets/icons/facebook-24.png" width="24px" /></a></li>
-        <li style="display: inline;"><a href="https://steamcommunity.com/id/RagingRoosevelt" target="_blank"><img src="/assets/icons/steam-24.png" width="24px" /></a></li>
+        <li><a href="https://github.com/RagingRoosevelt" target="_blank"><img src="/assets/icons/github-24.png" width="24px" /></a></li>
+        <li><a href="http://www.linkedin.com/in/theodorelindsey" target="_blank"><img src="/assets/icons/linkedin-24.png" width="24px" /></a></li>
+        <!--<li><a href="https://plus.google.com/+TheodoreSatchLindsey" target="_blank"><img src="/assets/icons/gplus-24.png" width="24px" /></a></li>-->
+        <li><a href="https://twitter.com/RagingRoosevelt" target="_blank"><img src="/assets/icons/twitter-24.png" width="24px" /></a></li>
+        <li><a href="https://facebook.com/theodore.lindsey" target="_blank"><img src="/assets/icons/facebook-24.png" width="24px" /></a></li>
+        <li><a href="https://steamcommunity.com/id/RagingRoosevelt" target="_blank"><img src="/assets/icons/steam-24.png" width="24px" /></a></li>
         </ul>
     </div>
 
@@ -36,15 +48,15 @@
         
     <hr>
 
-    Recent Posts
+    <b>Recent Posts</b>
 
     <div class="recent_posts">
-        <ul style="list-style-type: square; list-style-position: outside;margin: 15px;padding: 0;">
-        <li><a href="http://theodorelindsey.io/blog/2015/08/26/Site_Migration.html">Site Migration</a></li>
-        <li><a href="http://theodorelindsey.io/blog/2015/06/15/Computer_Desk_Finished.html">Computer Desk, Finished (part 3)</a></li>
-        <li><a href="http://theodorelindsey.io/blog/2015/06/11/WIP_Computer_Desk_Update.html">Computer Desk, Update (part 2)</a></li>
-        <li><a href="http://theodorelindsey.io/blog/2015/06/06/WIP_Computer_Desk_Beginning.html">Computer Desk, Beginning (part 1)</a></li>
-        <li><a href="http://theodorelindsey.io/blog/2015/05/24/Multicolor_Pen_modeling.html">Multicolor Pen modeling</a></li>
+        <ul>
+        {% for post in site.posts limit: 5 %}
+            <li {% if post.title == page.title %}id="active_nav"{% endif %}>
+            <a href="{{ post.url }}">{{ post.title }}</a>
+            </li>
+        {% endfor %}
         </ul>
     </div>
 </div>

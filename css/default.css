@@ -1,19 +1,106 @@
-.sidebar_wrapper {
-    background-color: #888888;
-    width: 150px;
-    position: absolute;
-    top: 0;
-    left: 0;
+body {
+    background: url("/assets/soda_small.jpg") no-repeat center center fixed;
+    background-size: cover;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
 }
 
 .content_wrapper {
-    background-color: #CCCCCC;
+    background-color: #CFD8DC;
     
     position: absolute;
     top: 0;
+    margin: 150px 0px 10px 10px;
     left: 150px;
     
-    width: 75%;
-    max-width: 1000px;
-    min-width: 300px;
+    min-height: 80%;
+    width: 65%;
+    max-width: 800px;
+    min-width: 200px;
+    
+    border-radius: 10px;
+}
+.content {
+    margin: 20px;
+    color: #212121;
+}
+.content a{
+    color: #212121;
+}
+
+
+.sidebar_wrapper {
+    background-color: #607D8B;
+    color: #FFFFFF;
+    height: 100%;
+    width: 150px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    
+    border-radius: 10px;
+}
+.sidebar_wrapper ul {
+    /*background-color: #B6B6B6;*/
+    list-style-type: none;
+    list-style-position: outside;
+    margin: 0px;
+    padding: 0px 0px 0px 0px;
+}
+.sidebar_wrapper .external-links li {
+    display: inline;
+}
+.sidebar_wrapper .nav li, .sidebar_wrapper .recent_posts li{
+    padding: 5px 0px 5px 0px;
+}
+.sidebar_wrapper .nav a, .sidebar_wrapper .external-links a, .sidebar_wrapper .recent_posts a{
+    color: #FFFFFF;
+}
+.sidebar_wrapper img {
+    border-radius: 10px;
+}
+#active_nav{
+    background-color: #727272;
+}
+#active_nav a{
+    color: #FFFFFF;
+    font-style: italic;
+}
+
+
+img.full{
+    width: 98%;
+    padding:1px;
+    border:1px solid #000000;
+    
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+img.half{
+    width: 49%;
+    padding:1px;
+    border:1px solid #000000;
+    
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+img.split{
+    width: 49%;
+    padding:1px;
+    border:1px solid #000000;
+    
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+#hfill {
+    display: flex; 
+    justify-content: space-between; 
+    list-style-type: none; 
+    padding-left:0; 
+    margin: 2px;
 }
