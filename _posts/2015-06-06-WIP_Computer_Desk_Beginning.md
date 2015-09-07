@@ -3,6 +3,10 @@ layout: blog
 title: Computer Desk, Beginning (part 1)
 section: Blog
 last_modified_at: 2015-06-06
+categories:
+- Woodworking
+- Computer_Desk
+- WIP
 ---
 
 I’ve been meaning to build myself a computer desk to replace the one I currently use.  The features I need it to have are:

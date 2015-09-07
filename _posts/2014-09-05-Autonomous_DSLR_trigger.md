@@ -3,6 +3,10 @@ layout: blog
 title: Autonomous DSLR trigger
 section: Blog
 last_modified_at: 2014-09-05
+categories:
+- WIP
+- Arduino
+- Photography
 ---
 
 My goal with this project is to build a timelapse system.  When I’m done, I hope to have a camera control module (to automatically take photos on a specified interval), a motorized rail system that will allow my camera to perform pedestal (up/down), truck (forward/backward), and dolly(side to side) movements.

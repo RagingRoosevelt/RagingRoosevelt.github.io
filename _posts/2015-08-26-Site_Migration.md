@@ -3,6 +3,8 @@ layout: blog
 title: Site Migration
 section: Blog
 last_modified_at: 2015-08-26
+categories:
+- General
 ---
 
 I've pretty much finished migrating my blog posts from [RagingRoosevelt.com](http://ragingroosevelt.com) 

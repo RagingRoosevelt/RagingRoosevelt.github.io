@@ -3,6 +3,9 @@ layout: blog
 title: Computer Desk, Finished (part 3)
 section: Blog
 last_modified_at: 2015-06-15
+categories:
+- Woodworking
+- Computer_Desk
 ---
 
 [(part 1)]({% post_url 2015-06-06-WIP_Computer_Desk_Beginning %}) [(part 2)]({% post_url 2015-06-11-WIP_Computer_Desk_Update %}) I actually managed to finish this project surprisingly quickly.  I think I only spent about 10 hours total building it.

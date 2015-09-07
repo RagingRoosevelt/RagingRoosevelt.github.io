@@ -28,7 +28,28 @@ body {
 .content a{
     color: #212121;
 }
-
+.content h1{
+    margin: 10px 0px 0px 0px;
+    display: run-in;
+}
+.content .pagination ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+.content .pagination li {
+    display: inline;
+    padding: 0px 5px 0px 5px;
+    margin: 0px 0px 0px 0px;
+    border-radius: 5px;
+}
+.content .pagination .active{
+    background-color: #607D8B;
+    color: #FFFFFF;
+}
+.content .pagination .disabled a {
+    text-decoration: none;
+}
 
 .sidebar{
     padding: 0px 3px 0px 3px;
@@ -99,6 +120,10 @@ img.split{
     margin-right: auto;
 }
 
+
+small {
+    font-size: 0.5em;
+}
 
 #hfill {
     display: flex; 

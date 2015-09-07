@@ -6,3 +6,10 @@ layout: default
 <b>{{page.date | date: "%B %-d, %Y"}}</b><br /><br />
 
 {{ content }}
+
+<hr>
+
+Categories: 
+{% for category in page.categories %} 
+    <a href="">{{category}}</a>, 
+{% endfor %}

@@ -3,7 +3,8 @@ layout: blog
 title: Shooting in RAW vs jpeg – Exposure experiment
 section: Blog
 last_modified_at: 2014-09-29
-baseurl: "/blog/"
+categories:
+- Photography
 ---
 
 I was curious if there were any perceptible benefits of shooting in raw.  I know it's a pretty well covered topic but I had some time on my hands and wanted an excuse to play with lightroom.  Here’s the rundown of the experiment I did to test the question.  I shot a photo in raw.  I made sure it started out with an over-exposed portion.  I cropped it to just the part I wanted to observe.  I exported it from lightroom so that I would have an jpeg copy.  I then preformed the same operations on the raw copy and the jpeg copy:

@@ -3,6 +3,9 @@ layout: blog
 title: Visual Alarm Clock
 section: Blog
 last_modified_at: 2014-09-02
+categories:
+- WIP
+- Arduino
 ---
 
 It’s been a while since I last worked on my visual alarm clock project.  Since I haven’t mentioned it before, here’s the gist:  I’m working on an alarm clock that will turn on [this](http://www.amazon.com/Square-Perfect-3077-Professional-Fluorescent/dp/B000W07Y5M/) very bright 85w compact fluorescent bulb (note: not 85w equivalent) in an attempt to abandon an audible alarm (on my phone).  I’m hoping that this will be a much gentler wakeup experience.  When I get this finished, I’ll have an outlet that the arduino controls with a large 3-380vac relay.  I’ll then plug the CFL into that outlet.  Additionally, I’ll have a 4-digit 7-segment display to show the time and allow for easily setting the alarm. 

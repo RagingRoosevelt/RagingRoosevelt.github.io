@@ -3,6 +3,10 @@ layout: blog
 title: Computer Desk, Update (part 2)
 section: Blog
 last_modified_at: 2015-06-11
+categories:
+- Woodworking
+- Computer_Desk
+- WIP
 ---
 
 

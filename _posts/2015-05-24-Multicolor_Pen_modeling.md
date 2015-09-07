@@ -3,6 +3,9 @@ layout: blog
 title: Multicolor Pen modeling
 section: Blog
 last_modified_at: 2015-05-24
+categories:
+- 3D_Modeling
+- WIP
 ---
 
 Mariah’s multicolor pen broke.  I didn’t have any prior experience doing 3D modeling so I figured I’d take the opportunity to start learning CAD (I needed to anyhow if I ever hope to get any use out of a 3D printer).  My goal was to get a new pen machined in aluminum but it seems like that might be prohibitively expensive given that it’s a one-off design with some fiddly parts.
