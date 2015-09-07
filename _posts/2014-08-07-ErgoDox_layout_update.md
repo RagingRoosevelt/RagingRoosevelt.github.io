@@ -3,6 +3,12 @@ layout: blog
 title: ErgoDox Layout Update
 section: Blog
 last_modified_at: 2014-08-07
+tags:
+  - post:tags=tag
+  - post:type=thoughts
+categories:
+  - WIP
+  - Keyboarding
 ---
 
 Still using QWERTY.  I previously had a pretty different thumb cluster.  I used to have enter, bksp 
