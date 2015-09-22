@@ -1,3 +1,7 @@
+html {
+  overflow-y: scroll;
+}
+
 body {
     background: url("/assets/soda_small.jpg") no-repeat center center fixed;
     background-size: cover;
