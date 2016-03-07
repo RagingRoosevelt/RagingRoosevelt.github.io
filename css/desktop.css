@@ -210,3 +210,10 @@ fieldset {
     padding-left:0; 
     margin: 2px;
 }
+
+table {
+    border-collapse: collapse;
+}
+th, td {
+    text-align: left;
+}
