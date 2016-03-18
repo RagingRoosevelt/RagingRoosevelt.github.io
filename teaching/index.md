@@ -5,7 +5,9 @@ section: Teaching
 last_modified_at: 2015-08-21
 ---
 
-##Teaching
+
+<h2>Teaching</h2>
+
 
 | Course | Course Name | Semesters |
 | :---              | :---                      | :---                                      |
