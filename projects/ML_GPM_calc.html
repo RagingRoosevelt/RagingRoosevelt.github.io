@@ -1,0 +1,91 @@
+---
+layout: default
+title: GPM by level
+section: Test
+last_modified_at: 2015-08-27
+---
+
+<h2>GPM calculator for Monsters Legends</h2>
+
+To determine the base and per-level GPM, see the earning property listed for your monster <a target="_blank" href="http://monster-wiki.com/monster/">here</a>.
+
+<table>
+<tr><td>Rarity:         </td><td><select id="rarity" onchange="setMaxLevel()"><option>C</option><option>UC</option><option>R</option><option>E</option><option>L</option></select></td></tr>
+<tr><td>Level:          </td><td><input style="background-color: #CFD8DC; width: 3em;" id="level" type="number" min="0" max="40" pattern="[0-9]*" /> </td></tr>
+<tr><td>Base GPM:       </td><td><input style="background-color: #CFD8DC; width: 3em;" id="base" type="number" min="0" pattern="[0-9]*" /> </td></tr>
+<tr><td>Per-level GPM:  </td><td><input style="background-color: #CFD8DC; width: 3em;" id="per" type="number" min="0" pattern="[0-9]*" /> </td></tr>
+</table>
+<p id="gpm"></p>
+
+<button type="button" onclick="gpm()">Calculate</button>
+
+<p id="answer"></p>
+<p id="graph"><svg id="visualisation" width="1000" height="500"></svg></span>
+
+<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+<script>// quadratic equation function
+function gpm() {
+    var rarity, level, base, per, gpm;
+    
+    //Get values for a, b, c, x
+    level = Number(document.getElementById("level").value);
+    base = Number(document.getElementById("base").value);
+    per = Number(document.getElementById("per").value);
+    rarity = Number(document.getElementById("rarity").selectedIndex);
+    
+    if (1==0)//level == "" || base == "" || per == "")
+    {
+        document.getElementById("answer").innerHTML = "error: Some inputs missing.";  
+    }
+    else if (!isNaN(level))
+    {
+        gpm = Math.floor(base + per * Math.min(level-1, 9) + (per / 2) * Math.max(0,Math.min(level, max(rarity))-10));
+        document.getElementById("gpm").innerHTML = "GPM: " + base.toString() + " + " + (per * Math.min(level-1, 9)).toString() + " + " + (per / 2) * Math.max(0,Math.min(level, max(rarity))-10) + " = " + gpm;
+    }
+}
+function max(i) {
+    if (i==0) {
+        return 20;
+    }
+    else if (i==1) {
+        return 30;
+    }
+    else if (i==2) {
+        return 40;
+    }
+    else if (i==3) {
+        return 45;
+    }
+    else {
+        return 50;
+    }
+}
+function setMaxLevel(){
+    var rarity = Number(document.getElementById("rarity").selectedIndex);
+    var level = document.getElementById("level");
+    var maxL;
+    if (rarity == 0) {
+        maxL = 40;
+    }
+    else if (rarity == 1) {
+        maxL = 60;
+    }
+    else if (rarity == 2) {
+        maxL = 75;
+    }
+    else if (rarity == 3) {
+        maxL = 90;
+    }
+    else if (rarity == 1) {
+        maxL = 100;
+    }
+    
+    document.getElementById("level").setAttribute("max", maxL);
+    if (Number(level.value) > maxL){
+        level.value = maxL;
+    }
+}
+function load_monsters(){
+    //http://monster-wiki.com/monster-api/h=d4a123896042871f2ee9c4fb6877fbf7639ed461d3f5194480e54feb47044a34&t=1458323629&rarity=any&element=any
+}
+</script>
