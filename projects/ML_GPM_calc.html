@@ -81,7 +81,7 @@ function setMaxLevel(){
     }
     
     document.getElementById("level").setAttribute("max", maxL);
-    if (Number(level.value) > maxL){
+    if (Number(level.value) > maxL || Number(level.value)==null || level.value==""){
         level.value = maxL;
     }
 }
