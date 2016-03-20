@@ -1,8 +1,8 @@
 ---
 layout: default
 title: GPM by level
-section: Test
-last_modified_at: 2015-08-27
+section: Projects
+last_modified_at: 2016-03-18
 ---
 
 <h2>GPM calculator for Monsters Legends</h2>
@@ -15,12 +15,13 @@ To determine the base and per-level GPM, see the earning property listed for you
 <tr><td>Base GPM:       </td><td><input style="background-color: #CFD8DC; width: 3em;" id="base" type="number" min="0" pattern="[0-9]*" /> </td></tr>
 <tr><td>Per-level GPM:  </td><td><input style="background-color: #CFD8DC; width: 3em;" id="per" type="number" min="0" pattern="[0-9]*" /> </td></tr>
 </table>
-<p id="gpm"></p>
 
-<button type="button" onclick="gpm()">Calculate</button>
+<button type="button" onclick="gpm()">Calculate</button><br />
 
-<p id="answer"></p>
-<p id="graph"><svg id="visualisation" width="1000" height="500"></svg></span>
+<p>
+GPM: <span id="gpm"></span>
+</p>
+
 
 <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <script>// quadratic equation function
@@ -43,7 +44,7 @@ function gpm() {
         perL = per * Math.min(level-1, 9);
         perH = (per / 2) * Math.max(0,Math.min(level, max(rarity))-10);
         gpm = Math.floor(base + perL + perH);
-        document.getElementById("gpm").innerHTML = "GPM: " + base.toString() + " + " + perL.toString() + " + " + perH.toString() + " &rArr; " + gpm;
+        document.getElementById("gpm").innerHTML = base.toString() + " + " + perL.toString() + " + " + perH.toString() + " &rArr; " + gpm;
     }
 }
 function max(i) {

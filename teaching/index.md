@@ -6,7 +6,7 @@ last_modified_at: 2015-08-21
 ---
 
 
-<h2>Teaching</h2>
+##Teaching
 
 
 | Course | Course Name | Semesters |
