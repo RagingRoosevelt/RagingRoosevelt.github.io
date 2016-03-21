@@ -9,13 +9,15 @@ last_modified_at: 2015-08-27
 
 Paste text containing email addresses here:<br />
 <textarea rows="10" cols="50" id="textbox"></textarea><br />
-<button type="button" onclick="strip()">Process</button><br /><br />
+<button type="button" onclick="strip()">Process</button>
+<input type="checkbox" id="sorted" />Sort alphabetically?<br /><br />
 <span id="output"></span>
 
 <script>
 function strip() {
     textbox = document.getElementById("textbox");
     output = document.getElementById("output");
+    sorted = document.getElementById("sorted");
     
     contents = textbox.value.split(/[ ,\n\t]+/);
     emails = [];
@@ -24,6 +26,10 @@ function strip() {
         if (/[A-z0-9._%+-]+@[A-z0-9.-]+\.[A-z]{2,}/.test(contents[i])) {
             emails.push(contents[i]);
         }
+    }
+    
+    if (sorted.checked) {
+        emails.sort();
     }
     
     output_string = "Extracted " + emails.length + " emails:<br /><br />";
