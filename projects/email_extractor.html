@@ -1,0 +1,43 @@
+---
+layout: default
+title: Email Extractor
+section: Projects
+last_modified_at: 2015-08-27
+---
+
+<h2>Email extractor</h2>
+
+Paste text containing email addresses here:<br />
+<textarea rows="10" cols="50" id="textbox"></textarea><br />
+<button type="button" onclick="strip()">Process</button><br /><br />
+<span id="output"></span>
+
+<script>
+function strip() {
+    textbox = document.getElementById("textbox");
+    output = document.getElementById("output");
+    
+    contents = textbox.value.split(/[ ,\n\t]+/);
+    emails = [];
+    
+    for (var i=0; i < contents.length; i++) {
+        if (/[A-z0-9._%+-]+@[A-z0-9.-]+\.[A-z]{2,}/.test(contents[i])) {
+            emails.push(contents[i]);
+        }
+    }
+    
+    output_string = "Extracted " + emails.length + " emails:<br /><br />";
+    clipboard_string = "";
+    for (var i=0; i < emails.length; i++) {
+        output_string += emails[i] + "<br />";
+        clipboard_string += emails[i] + "\n";
+    }
+    
+    output.innerHTML = output_string;
+    //window.prompt("Copy to clipboard: Ctrl+C, Enter", clipboard_string);
+    
+    
+    
+}
+
+</script>

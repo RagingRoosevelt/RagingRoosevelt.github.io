@@ -65,8 +65,9 @@ function quadratic() {
 
 function func(x, a, b, c) {return a*x*x + b*x + c;}
 
-function draw(a,b,c, xS, xL) {
+function draw(a, b, c, xS, xL) {
     var canvas = document.getElementById("canvas");
+    
     
     if (null==canvas || !canvas.getContext) return;
     
