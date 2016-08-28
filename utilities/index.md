@@ -1,11 +1,11 @@
 ---
 layout: default
-title: Projects
-section: Projects
+title: Utilities
+section: Utilities
 last_modified_at: 2016-03-18
 ---
 
-## Projects
+## Utilities
 
 Each of these projects were something that I put together when teaching myself something new.  I 
 tried to make something useful for each one so I figured I'd post them.
