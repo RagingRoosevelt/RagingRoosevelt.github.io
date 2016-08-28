@@ -118,9 +118,9 @@ function calculate() {
             var interest_paid = total_loan_amnt - p;
             var years = Math.floor(months / 12);
             months = months % 12;
-            results[results.length] = ["Loan duration", years.toString() + " years, " + months.toString() + " months"]
-            results[results.length] = ["Total paid", toMoney(total_loan_amnt)];
+            results[results.length] = ["Loan duration", years.toString() + " years, " + months.toString() + " months"];
             results[results.length] = ["Total interest", toMoney(interest_paid)];
+            results[results.length] = ["Total paid", toMoney(total_loan_amnt)];
             results[results.length] = ["% of total to interest", (100 * interest_paid / p).toFixed(1) + "%"];
         }
     }
