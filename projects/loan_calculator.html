@@ -48,6 +48,8 @@ var eMethod = document.getElementById("method_v");
 var eMethodVal = document.getElementById("method_v");
 var eMethodUnits = document.getElementById("method_units");
 var eAnswer = document.getElementById("answer");
+var vByPayment = 200;
+var vByDuration = 5;
 
 calculate()
 
@@ -60,12 +62,14 @@ function changeMethod(element) {
     if (element == eByDuration) {
         eByPayment.checked = false;
         eMethod.innerHTML = "Loan duration:";
-        eMethodVal.value = 5;
+        vByPayment = Number(eMethodVal.value);
+        eMethodVal.value = vByDuration;
         eMethodUnits.innerHTML = " years";
     } else {
         eByDuration.checked = false;
         eMethod.innerHTML = "Monthly payment:";
-        eMethodVal.value = 200;
+        vByDuration = Number(eMethodVal.value);
+        eMethodVal.value = vByPayment;
         eMethodUnits.innerHTML = "";
     }
         
