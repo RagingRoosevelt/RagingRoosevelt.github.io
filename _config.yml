@@ -1,6 +1,6 @@
 # Site settings
 title: Theodore S. Lindsey
-baseurl: "" # the subpath of your site, e.g. /blog/
+baseurl: "" # the subpath of your site, e.g. /blog
 # for rss, etc
 name: Theodore S. Lindsey
 url: "http://theodorelindsey.io" # the base hostname & protocol for your site

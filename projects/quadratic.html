@@ -2,23 +2,23 @@
 layout: default
 title: Quadratic Formula Solver
 section: Projects
-last_modified_at: 2015-08-27
+last_modified_at: 2016-03-26
 ---
 
 <h2>Quadratic Formula Calculator</h2>
+<span  ng-app="app">
+0 = <input style="background-color: #CFD8DC; width: 3em;" id="a" type="number" pattern="[0-9]*" value="0" onchange="quadratic()" /> x<sup>2</sup> + 
+    <input style="background-color: #CFD8DC; width: 3em;" id="b" type="number" pattern="[0-9]*" value="0" onchange="quadratic()" /> x + 
+    <input style="background-color: #CFD8DC; width: 3em;" id="c" type="number" pattern="[0-9]*" value="0" onchange="quadratic()" /> <br /><br />
 
-0 = <input style="background-color: #CFD8DC; width: 3em;" id="a" type="number" pattern="[0-9]*" value="0" /> x<sup>2</sup> + 
-    <input style="background-color: #CFD8DC; width: 3em;" id="b" type="number" pattern="[0-9]*" value="0" /> x + 
-    <input style="background-color: #CFD8DC; width: 3em;" id="c" type="number" pattern="[0-9]*" value="0" /> <br /><br />
-
-<button type="button" onclick="quadratic()">Calculate</button><br /><br />
+<!--<button type="button" onclick="quadratic()">Calculate</button><br /><br />-->
 
 <span id="answer"></span><br />
 <canvas id="canvas" width="500px" height="500px"></canvas>
+</span>
 
-<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <script>// quadratic equation function
-function quadratic() {
+function quadratic() { 
     var a, b, c, xS, xL, result = document.getElementById("answer");
     
     //Get values for a, b, c, x
@@ -34,7 +34,7 @@ function quadratic() {
     if (a_element.value == "" || b_element.value == "" || c_element.value == "")
     {
         console.log("error: Some values are missing.");
-        result.innerHTML = "error: Some values are missing.";    
+        result.innerHTML = "error: Some values are missing.";
     }
     else if (a == 0 && b != 0) {
         var x = -c / b;
@@ -50,6 +50,7 @@ function quadratic() {
         if (isNaN(xS))
         {
             result.innerHTML = "No real solution";
+            //draw(0,0,0,0,0);
         }
         else 
         {
