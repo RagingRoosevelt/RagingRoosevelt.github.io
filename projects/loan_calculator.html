@@ -44,7 +44,7 @@ var eByPayment = document.getElementById("by_payment");
 var ePrinciple = document.getElementById("p");
 var eDownpayment = document.getElementById("d");
 var eRate = document.getElementById("r");
-var eMethod = document.getElementById("method_v");
+var eMethod = document.getElementById("method");
 var eMethodVal = document.getElementById("method_v");
 var eMethodUnits = document.getElementById("method_units");
 var eAnswer = document.getElementById("answer");
@@ -81,7 +81,7 @@ function calculate() {
     var p = Number(ePrinciple.value);
     var d = Number(eDownpayment.value);
     var r = Number(eRate.value);
-    var m = Number(eMethod.value);
+    var m = Number(eMethodVal.value);
     
     var results = [];
     
