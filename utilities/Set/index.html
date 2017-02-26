@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="style/master.css">
+    <title>Title</title>
+</head>
+<body onresize="resizedWindow()">
+
+    <div id="div_setup" class="fullView">
+        <select id="players" size="10">
+            <option>text1</option>
+            <option>text2</option>
+            <option>text3</option>
+            <option>text4</option>
+            <option>text5</option>
+        </select>
+
+    </div>
+
+    <div id="div_board" class="fullView">
+        <canvas id="board">Please install a modern browser that supports Canvas elements!</canvas>
+    </div>
+
+    <div id="div_rules" class="fullView">
+        <div id="div_rulesContent">
+            <h1>Rules</h1>
+            Each card has four attributes: color, shape, fill, and count.  Sets are composed of three cards.
+            For three cards to constitute a set, each attribute must be all the same or all different.
+        </div>
+    </div>
+
+
+
+
+    <script type="text/javascript" src="script/jquery-3.1.1.js"></script>
+    <script type="text/javascript" src="script/master.js"></script>
+</body>
+</html>

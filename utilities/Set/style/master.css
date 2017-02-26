@@ -1,0 +1,30 @@
+html, body {
+    height: 100vh;
+    width: 100vw;
+
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+}
+
+.fullView {
+    position: absolute;
+    top: 0vh;
+    left: 0vw;
+    width: 100vw;
+    height: 100vh;
+}
+
+#div_setup, #div_rules {
+    display: none;
+}
+#div_rulesContent {
+    padding: 1em;
+}
+
+#players {
+    position: relative;
+    left: 30vw;
+    top: 10vw;
+    width: 40vw;
+}
