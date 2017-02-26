@@ -21,6 +21,14 @@ html, body {
 #div_rulesContent {
     padding: 1em;
 }
+#div_board {
+    width: 100%;
+    height: 95%;
+}
+#div_status {
+    width: 100%;
+    height: 5%;
+}
 
 #players {
     position: relative;

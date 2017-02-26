@@ -48,13 +48,14 @@ function init() {
     }
     shuffle(board.deck);
 
+
     resizedWindow();
     drawBoard();
 }
 
 function resizedWindow() {
-    let h = $("body").height();
-    let w = $("body").width();
+    let h = $("#div_board").height();
+    let w = $("#div_board").width();
     if (h > card.ar * w) {
         board.h = 4;
         board.w = 3;
@@ -65,8 +66,6 @@ function resizedWindow() {
         //card.w = (h / 5)/card.ar;
     }
 
-    console.log(h / board.h);
-    console.log(w / board.w);
     card.w = 0.75 * Math.min(h / (board.h * card.ar), w / board.w);
 
     drawBoard();
@@ -101,6 +100,8 @@ function drawBoard() {
             drawCard(ctx, x,y, x+cw, y+ch, 3, board.cards[row*board.w+col]);
         }
     }
+
+    $("#div_status").html("A set is " + (isSetAvalible() ? "" : "not ") + "avalible");
 }
 
 function refillBoard() {
@@ -264,6 +265,37 @@ function drawWave(ctx,x,y,w,h,thickness,fill,color) {
     ctx.fillStyle = color;
     ctx.fillText(fill + "\nwave", x-1.3*w, y);
 
+}
+
+function isSetAvalible() {
+    let comb = k_combinations(board.cards, 3);
+
+
+    for (s of comb) {
+        c1 = s[0];
+        c2 = s[1];
+        c3 = s[2];
+
+        let isSet = true;
+        if (!(c1.color == c2.color && c2.color == c3.color)
+                    && !(c1.color != c2.color && c1.color != c3.color && c2.color != c3.color)) {
+            isSet = false;
+        } else if (!(c1.shape == c2.shape && c2.shape == c3.shape) &&
+            !(c1.shape != c2.shape && c1.shape != c3.shape && c2.shape != c3.shape)) {
+            isSet = false;
+        } else if (!(c1.fill == c2.fill && c2.fill == c3.fill) &&
+            !(c1.fill != c2.fill && c1.fill != c3.fill && c2.fill != c3.fill)) {
+            isSet = false;
+        } else if (!(c1.count == c2.count && c2.count == c3.count) &&
+            !(c1.count != c2.count && c1.count != c3.count && c2.count != c3.count)) {
+            isSet = false;
+        }
+        if (isSet) {
+            //console.log(s);
+            return true;
+        }
+    }
+    return false;
 }
 
 /**
