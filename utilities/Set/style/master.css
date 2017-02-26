@@ -18,8 +18,9 @@ html, body {
 #div_setup, #div_rules {
     display: none;
 }
-#div_rulesContent {
+#div_rulesContent, #status {
     padding: 1em;
+    margin: 0;
 }
 #div_board {
     width: 100%;

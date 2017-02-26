@@ -101,7 +101,7 @@ function drawBoard() {
         }
     }
 
-    $("#div_status").html("A set is " + (isSetAvalible() ? "" : "not ") + "avalible");
+    $("#div_status").html("<p id=\"status\">A set is " + (isSetAvalible() ? "" : "not ") + "avalible</p>");
 }
 
 function refillBoard() {
