@@ -22,8 +22,16 @@ let board = {w: 4,
             picked: []};
 let card = {ar: 1.56,
             w: 100,
-            pad: function(){return 0.1 * this.w},
-            h: function(){return this.ar*this.w}};
+            pad: function(){
+                return 0.1 * this.w
+            },
+            h: function(){
+                return this.ar*this.w
+            },
+            shading: function(){
+                let c = Math.ceil(this.w/6);
+                return (c%2==1) ? c : c-1;
+            }};
 
 window.onload = init;
 
@@ -152,7 +160,7 @@ function drawRectangleRounded(ctx, x1, y1, x2, y2, rad, thickness) {
 function drawDiamond(ctx,x,y,w,h,thickness,fill,color) {
     h = h/2;
     w = w/2;
-    const lineCount = width2count(w);
+    const lineCount = card.shading();
 
     ctx.beginPath();
     ctx.moveTo(x,y-h);
@@ -209,7 +217,7 @@ function drawDiamond(ctx,x,y,w,h,thickness,fill,color) {
 function drawOval(ctx,x,y,w,h,thickness,fill,color) {
     w = w/2;
     h = h/2;
-    const lineCount = width2count(w);
+    const lineCount = card.shading();
 
     ctx.beginPath();
     ctx.moveTo(x-w+h,y-h);
@@ -250,17 +258,12 @@ function drawOval(ctx,x,y,w,h,thickness,fill,color) {
 function drawWave(ctx,x,y,w,h,thickness,fill,color) {
     w = w / 2;
     h = h / 2;
-    const lineCount = width2count(w);
+    const lineCount = card.shading();
 
     ctx.font = h + "px Arial";
     ctx.fillStyle = color;
-    ctx.fillText(fill, x-w/2, y);
+    ctx.fillText(fill + "\nwave", x-1.3*w, y);
 
-}
-
-function width2count(w) {
-    let c = Math.ceil(w/3);
-    return (c%2==1) ? c : c-1;
 }
 
 /**
