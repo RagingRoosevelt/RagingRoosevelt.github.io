@@ -312,11 +312,36 @@ function drawWave(ctx,x,y,w,h,thickness,fill,color) {
 
 }
 
+function isSet(hand) {
+    let c1 = hand[0];
+    let c2 = hand[1];
+    let c3 = hand[2];
+
+    let v = true;
+
+    if (!(c1.color == c2.color && c2.color == c3.color)
+        && !(c1.color != c2.color && c1.color != c3.color && c2.color != c3.color)) {
+        v = false;
+    } else if (!(c1.shape == c2.shape && c2.shape == c3.shape) &&
+        !(c1.shape != c2.shape && c1.shape != c3.shape && c2.shape != c3.shape)) {
+        v = false;
+    } else if (!(c1.fill == c2.fill && c2.fill == c3.fill) &&
+        !(c1.fill != c2.fill && c1.fill != c3.fill && c2.fill != c3.fill)) {
+        v = false;
+    } else if (!(c1.count == c2.count && c2.count == c3.count) &&
+        !(c1.count != c2.count && c1.count != c3.count && c2.count != c3.count)) {
+        v = false;
+    }
+
+    return v;
+}
+
 function isSetAvalible() {
     let comb = k_combinations(board.cards, 3);
 
 
-    for (s of comb) {
+    for (hand of comb) {
+        /*
         c1 = s[0];
         c2 = s[1];
         c3 = s[2];
@@ -335,7 +360,8 @@ function isSetAvalible() {
             !(c1.count != c2.count && c1.count != c3.count && c2.count != c3.count)) {
             isSet = false;
         }
-        if (isSet) {
+        */
+        if (isSet(hand)) {
             //console.log(s);
             return true;
         }
@@ -380,6 +406,41 @@ function clickedBoard(e) {
 
 function clickedCard(i) {
     log("Clicked on card #" + i);
+    for (j in board.picked) {
+        if (i == board.picked[j].i) {
+            log("Card #" + i + " already picked");
+            let temp = board.picked.splice(j,1);
+            console.log(temp);
+            $("#card"+temp[0].i).css("box-shadow", "none");
+            return;
+        }
+    }
+
+    if (board.picked.length == 3) {
+        let temp = board.picked.shift();
+        $("#card"+temp.i).css("box-shadow", "none");
+    }
+
+    board.picked.push({i: i, v: board.cards[i]});
+    let r = Math.round(card.h() / 20);
+    let shadow = r + "px " + r + "px " + "#000000";
+    $("#card"+i).css("box-shadow", shadow);
+    log($("#card"+i));
+    //$("#card"+i).style.boxShadow = shadow;
+
+    if (board.picked.length == 3) {
+        let hand = [board.picked[0].v, board.picked[1].v, board.picked[2].v];
+        if (isSet(hand)) {
+            log("That's a set!");
+
+            while (board.picked.length > 0) {
+                let temp = board.picked.pop();
+                $("#card"+temp.i).css("box-shadow", "none");
+            }
+        } else {
+            log("That's not a set!");
+        }
+    }
 }
 
 function getMousePos(e) {
