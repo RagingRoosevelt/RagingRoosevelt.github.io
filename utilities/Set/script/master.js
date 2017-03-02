@@ -14,6 +14,9 @@ const sWave = "wave";
 const sOval = "oval";
 const pi = Math.PI;
 const lineCount = 33;
+let canvas;
+let ctx;
+let boardDiv;
 
 let board = {w: 4,
             h: 3,
@@ -31,11 +34,36 @@ let card = {ar: 1.56,
             shading: function(){
                 let c = Math.ceil(this.w/6);
                 return (c%2==1) ? c : c-1;
-            }};
+            },
+            posX: function(x0) {
+                let v = [];
+                for (let col=0; col<board.w; col++) {
+                    v.push(x0+this.w*col+this.pad()*(col+1));
+                }
+                return v;
+            },
+            posY: function(y0) {
+                let v = [];
+                for (let row=0; row<board.h; row++) {
+                    v.push(y0+this.h()*row+this.pad()*(row+1));
+                }
+                return v;
+            },
+            rowcol2i: function(row, col) {
+                return row*board.w+col;
+            }
+            };
 
 window.onload = init;
 
+/** Function sets up the deck.
+ *  Then calls functions to set up and draw the board.
+ */
 function init() {
+    canvas = $("#board").get(0);
+    ctx = canvas.getContext("2d");
+    boardDiv = $("#div_board");
+
     for (let color of [cRed, cGreen, cPurple]) {
         for (let shape of [sDiamond, sWave, sOval]) {
             for (let fill of [fEmpty, fPartial, fSolid]) {
@@ -48,14 +76,24 @@ function init() {
     }
     shuffle(board.deck);
 
+    refillBoard();
 
     resizedWindow();
     drawBoard();
+
+    //canvas.onclick = clickedBoard;
 }
 
+/** Function determines appropriate sizes for the canvas and cards in order to fit the window.
+ *  Then calls a function to redraw the board.
+ */
 function resizedWindow() {
-    let h = $("#div_board").height();
-    let w = $("#div_board").width();
+    let h = boardDiv.height();
+    let w = boardDiv.width();
+
+    ctx.canvas.height = h;
+    ctx.canvas.width = w;
+
     if (h > card.ar * w) {
         board.h = 4;
         board.w = 3;
@@ -68,40 +106,46 @@ function resizedWindow() {
 
     card.w = 0.75 * Math.min(h / (board.h * card.ar), w / board.w);
 
+
+
     drawBoard();
 }
 
+/** Function draws the board.
+ *  If more than 12 spaces are needed, it fills in extra rows or cols as orientation allows.
+ */
 function drawBoard() {
-    let canvas = $("#board").get(0);
-    let ctx = canvas.getContext("2d");
-    w = Math.round($("#div_board").width());
-    h = Math.round($("#div_board").height());
-    ctx.canvas.height = h;
-    ctx.canvas.width = w;
+    w = Math.round(boardDiv.width());
+    h = Math.round(boardDiv.height());
 
     const margin = 10;
     const thickness = 2;
     const shapeH = 100;
     const shapeW = 2*shapeH;
 
-    refillBoard();
+    let cw = Math.round(card.w);
+    let ch = Math.round(card.h());
+    let pad = Math.round(card.pad());
 
-    cw = card.w;
-    ch = card.h();
-    padding = card.pad();
+    let posX = card.posX(0);
+    let posY = card.posY(0);
 
-    x0 = padding;
-    y0 = padding;
+    $(".card").remove();
+
+    console.log(posX, board.h, posY, board.w);
 
     for (let row=0; row<board.h; row++) {
         for (let col=0; col<board.w; col++) {
-            x = x0+cw*col+padding*col;
-            y = y0+ch*row+padding*row;
-            drawCard(ctx, x,y, x+cw, y+ch, 3, board.cards[row*board.w+col]);
+            let x = Math.round(posX[col]);
+            let y = Math.round(posY[row]);
+            let i = card.rowcol2i(row,col);
+            drawCard(ctx, x,y, x+cw, y+ch, 3, board.cards[i]);
+
+            $("#div_board").append($(buildDiv(x,y,cw,ch,i)));
         }
     }
 
-    $("#div_status").html("<p id=\"status\">A set is " + (isSetAvalible() ? "" : "not ") + "avalible</p>");
+    log("A set is " + (isSetAvalible() ? "" : "not ") + "avalible");
 }
 
 function refillBoard() {
@@ -112,6 +156,7 @@ function refillBoard() {
 }
 
 function drawCard(ctx,x1,y1,x2,y2,thickness,info) {
+    console.log("drawing card at (" + x1 + ", " + y1 + ")");
     const w = x2-x1;
     const h = y2-y1;
     xm = (x1+x2)/2;
@@ -310,4 +355,39 @@ function shuffle(array) {
         array[j] = temp;
     }
     return array;
+}
+
+function buildDiv(x,y,w,h,i) {
+    let r = "<div class=card id=card"+i+" style=\"";
+    r += "height: "+h+"px; ";
+    r += "width: "+w+"px; ";
+    r += "left: "+x+"px; ";
+    r += "top: "+y+"px; ";
+    r += "border-radius: "+h/10+"px; "
+    r += "\" onclick=javascript:clickedCard("+i+")";
+    r += "></div>";
+    return r;
+}
+
+/*
+function clickedBoard(e) {
+    var mousePos = getMousePos(e);
+    ctx.beginPath();
+    ctx.arc(mousePos.x, mousePos.y, 3, 0, 2*Math.PI);
+    ctx.stroke();
+}
+*/
+
+function clickedCard(i) {
+    log("Clicked on card #" + i);
+}
+
+function getMousePos(e) {
+    let rect = canvas.getBoundingClientRect();
+    return {x: e.clientX-rect.left, y: e.clientY-rect.top};
+}
+
+function log(msg) {
+    console.log(msg);
+    $("#p_status").eq(0).text(msg);
 }
