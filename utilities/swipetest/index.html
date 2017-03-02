@@ -1,0 +1,64 @@
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, user-scalable=no" />
+	<style>
+		html, body {
+			height: 100vh;
+			width: 100vw;
+
+			overflow: hidden;
+			margin: 0;
+			padding: 0;
+		}
+		.fs {
+			left: 0;
+			top: 0;
+			height: 100vh;
+			width: 100vw;
+			background: #880000;
+		}
+	</style>
+</head>
+<body>
+	<div class="fs" id="d">
+	</div>
+
+	<script src="script/jquery-3.1.0.min.js"></script>
+	<script src="script/jquery.touchSwipe.min.js"></script>
+	<script>
+		function log(m) {
+			console.log(m);
+			$("#d").eq(0).html("<p style=\"color: #ffffff; font-size: 2em;\">"+m+"");
+		}
+		window.onload = function() {
+			$("#d").on("click", function() {
+				log(event.type);
+			});
+			$("#d").bind("pinch pinchopen pinchclose", function() {
+				log(event.type);
+				event.preventDefault();
+			});
+			$("body").on("mousewheel", function() {
+				log(event.deltaY > 0 ? "down" : "up");
+			});
+			$("#d").swipe( {
+				pinchIn:function(event, direction, distance, duration, fingerCount, pinchZoom) {
+					log("You pinched " +direction + " by " + distance +"px, zoom scale is "+pinchZoom);
+				},
+				pinchOut:function(event, direction, distance, duration, fingerCount, pinchZoom) {
+					log("You pinched " +direction + " by " + distance +"px, zoom scale is "+pinchZoom);
+				},
+				pinchStatus:function(event, phase, direction, distance , duration , fingerCount, pinchZoom) {
+					log("Pinch zoom scale "+pinchZoom+"  <br/>Distance pinched "+distance+" <br/>Direction " + direction);
+                    $("#d").css("font-size", pinchZoom * 100 + "%" );
+				},
+				fingers:2,  
+				pinchThreshold:0  
+			});
+		};
+		
+	       
+      
+	</script>
+</body>
+</html>
