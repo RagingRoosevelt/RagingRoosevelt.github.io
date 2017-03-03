@@ -5,8 +5,8 @@ html, body {
     overflow: hidden;
     margin: 0;
     padding: 0;
-    
-    font-size: 1.25em;
+
+    /*font-size: 1.25em;*/
 }
 
 #div_rules, #div_setup {
@@ -24,13 +24,13 @@ html, body {
 }
 #status {
     position: absolute;
-    right: 0;
+    right: 5px;
 }
 #div_rulesContent {
     position: absolute;
-    padding: 5%;
+    padding: 5px;
     margin: 0;
-    border-width: 2px;
+    border-width: 0 2px 2px 2px;
     border-style: solid;
     box-sizing: border-box;
     top: 0;
@@ -39,6 +39,7 @@ html, body {
     height: 100%;
 }
 #div_menu {
+    box-sizing: border-box;
     width: 100vw;
     height: 5vh;
     position: absolute;
@@ -46,6 +47,7 @@ html, body {
     display: block;
     border-width: 0 0 2px 0;
     border-style: solid;
+    padding: 10px;
 }
 
 #players {
