@@ -5,40 +5,51 @@ html, body {
     overflow: hidden;
     margin: 0;
     padding: 0;
+    
+    font-size: 1.25em;
 }
 
+#div_rules, #div_setup {
+    top: 100vh;
+}
 .fullView {
     position: absolute;
-    top: 0vh;
-    left: 0vw;
-    width: 100vw;
-    height: 100vh;
-}
-
-#div_setup, #div_rules {
-    display: none;
-}
-#div_rulesContent, #p_status {
-    padding: 1em;
-    margin: 0;
-}
-#div_board {
+    top: 5vh;
+    left: 0;
     width: 100vw;
     height: 95vh;
-    position: absolute;
-    top: 5%;
-    display: block;
 }
-#div_status {
+#div_game, #div_rules, #div_setup {
+    background: #ffffff;
+}
+#status {
+    position: absolute;
+    right: 0;
+}
+#div_rulesContent {
+    position: absolute;
+    padding: 5%;
+    margin: 0;
+    border-width: 2px;
+    border-style: solid;
+    box-sizing: border-box;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+#div_menu {
     width: 100vw;
     height: 5vh;
     position: absolute;
     top: 0;
     display: block;
+    border-width: 0 0 2px 0;
+    border-style: solid;
 }
 
 #players {
-    position: relative;
+    position: absolute;
     left: 30vw;
     top: 10vw;
     width: 40vw;
@@ -47,4 +58,9 @@ html, body {
 .card {
     position: absolute;
     z-index: 1;
+}
+#board {
+    position: absolute;
+    top: 0;
+    left: 0;
 }

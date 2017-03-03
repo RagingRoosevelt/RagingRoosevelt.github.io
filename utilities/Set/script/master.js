@@ -18,6 +18,7 @@ let canvas;
 let ctx;
 let boardDiv;
 
+let active = "board";
 let board = {w: 4,
             h: 3,
             cards: [],
@@ -62,7 +63,7 @@ window.onload = init;
 function init() {
     canvas = $("#board").get(0);
     ctx = canvas.getContext("2d");
-    boardDiv = $("#div_board");
+    boardDiv = $("#div_game");
 
     for (let color of [cRed, cGreen, cPurple]) {
         for (let shape of [sDiamond, sWave, sOval]) {
@@ -141,7 +142,7 @@ function drawBoard() {
             let i = card.rowcol2i(row,col);
             drawCard(ctx, x,y, x+cw, y+ch, 3, board.cards[i]);
 
-            $("#div_board").append($(buildDiv(x,y,cw,ch,i)));
+            $("#div_game").append($(buildDiv(x,y,cw,ch,i)));
         }
     }
 
@@ -265,6 +266,11 @@ function drawOval(ctx,x,y,w,h,thickness,fill,color) {
     h = h/2;
     const lineCount = card.shading();
 
+    ctx.lineWidth = thickness;
+    ctx.strokeStyle = color;
+    ctx.outlineStyle = color;
+    ctx.fillStyle = color;
+
     ctx.beginPath();
     ctx.moveTo(x-w+h,y-h);
     ctx.lineTo(x+w-h,y-h);
@@ -273,11 +279,6 @@ function drawOval(ctx,x,y,w,h,thickness,fill,color) {
     ctx.lineTo(x-w+h,y+h);
     ctx.arcTo(x-w,y+h,x-w,y,h);
     ctx.arcTo(x-w,y-h,x-w+h,y-h,h);
-
-    ctx.lineWidth = thickness;
-    ctx.strokeStyle = color;
-    ctx.outlineStyle = color;
-    ctx.fillStyle = color;
 
     if (fill==fEmpty) {
         ctx.stroke();
@@ -306,10 +307,53 @@ function drawWave(ctx,x,y,w,h,thickness,fill,color) {
     h = h / 2;
     const lineCount = card.shading();
 
-    ctx.font = h + "px Arial";
+    ctx.lineWidth = thickness;
+    ctx.strokeStyle = color;
+    ctx.outlineStyle = color;
     ctx.fillStyle = color;
-    ctx.fillText(fill + "\nwave", x-1.3*w, y);
 
+    ctx.beginPath();
+
+    // set up basic shape
+    let points = [{x: -4, y: 0}
+        , {x: 0, y: -4}
+        , {x: 3, y: -2}
+        , {x: 4, y: 0}
+        , {x: 0, y: 4}
+        , {x: -3, y: 2}
+        , {x: -4, y: 0}];
+    let control = [{x: -3, y: -4}
+        , {x: 1, y: 0}
+        , {x: 4, y: -2}
+        , {x: 3, y: 4}
+        , {x: -1, y: 0}
+        , {x: -4, y: 2}];
+    ctx.moveTo(x+points[0].x*w/4, y+points[0].y*h/4);
+    for (let i=1; i<points.length; i++) {
+        ctx.quadraticCurveTo(x+control[i-1].x*w/4, y+control[i-1].y*h/4, x+points[i].x*w/4, y+points[i].y*h/4);
+    }
+
+    // draw the shape's fill
+    if (fill==fEmpty) {
+        ctx.stroke();
+    } else if (fill==fPartial) {
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.lineWidth = (thickness > 1) ? Math.floor(thickness/3) : 1;
+
+        const dX = 2*w/(lineCount-1);
+
+        for (let i=x-w+dX; i<x+w; i+=dX) {
+            ctx.moveTo(i,y-h);
+            ctx.lineTo(i,y+h);
+        }
+        ctx.stroke();
+
+    } else if (fill==fSolid) {
+        ctx.closePath();
+        ctx.fill();
+    }
 }
 
 function isSet(hand) {
@@ -395,20 +439,13 @@ function buildDiv(x,y,w,h,i) {
     return r;
 }
 
-/*
-function clickedBoard(e) {
-    var mousePos = getMousePos(e);
-    ctx.beginPath();
-    ctx.arc(mousePos.x, mousePos.y, 3, 0, 2*Math.PI);
-    ctx.stroke();
-}
-*/
-
 function clickedCard(i) {
     log("Clicked on card #" + i);
+
+    // has the card already been picked?  if so, remove it
     for (j in board.picked) {
         if (i == board.picked[j].i) {
-            log("Card #" + i + " already picked");
+            log("Removing card #" + i + " (card already picked)");
             let temp = board.picked.splice(j,1);
             console.log(temp);
             $("#card"+temp[0].i).css("box-shadow", "none");
@@ -416,18 +453,19 @@ function clickedCard(i) {
         }
     }
 
+    // are there already three cards picked?  if so, removed the first one picked
     if (board.picked.length == 3) {
         let temp = board.picked.shift();
         $("#card"+temp.i).css("box-shadow", "none");
     }
 
+    // add the card that was just picked to the hand
     board.picked.push({i: i, v: board.cards[i]});
     let r = Math.round(card.h() / 20);
     let shadow = r + "px " + r + "px " + "#000000";
     $("#card"+i).css("box-shadow", shadow);
-    log($("#card"+i));
-    //$("#card"+i).style.boxShadow = shadow;
 
+    // are there now three cards in the hand?  if so, check if they are a set.
     if (board.picked.length == 3) {
         let hand = [board.picked[0].v, board.picked[1].v, board.picked[2].v];
         if (isSet(hand)) {
@@ -450,5 +488,18 @@ function getMousePos(e) {
 
 function log(msg) {
     console.log(msg);
-    $("#p_status").eq(0).text(msg);
+    $("#status").eq(0).text(msg);
+}
+
+function showRules() {
+    if (active == "board") {
+        $("#div_game").css("top", "100vh");
+        $("#div_rules").css("top", "5vh");
+        active = "rules";
+    } else if (active == "rules") {
+        $("#div_game").css("top", "5vh");
+        $("#div_rules").css("top", "100vh");
+        active = "board";
+    }
+
 }

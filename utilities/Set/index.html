@@ -7,6 +7,11 @@
     <title>Title</title>
 </head>
 <body onresize="resizedWindow()">
+    <div id="div_menu"><a onclick="javascript:showRules()">Rules</a><span id="status"></span></div>
+
+    <div id="div_game" class="fullView">
+        <canvas id="board">Please install a modern browser that supports Canvas elements!</canvas>
+    </div>
 
     <div id="div_setup" class="fullView">
         <select id="players" size="10">
@@ -16,21 +21,16 @@
             <option>text4</option>
             <option>text5</option>
         </select>
-
-    </div>
-
-    <div id="div_game" class="fullView">
-        <div id="div_status"><p id="p_status"></p></div>
-        <div id="div_board">
-            <canvas id="board">Please install a modern browser that supports Canvas elements!</canvas>
-        </div>
     </div>
 
     <div id="div_rules" class="fullView">
         <div id="div_rulesContent">
-            <h1>Rules</h1>
-            Each card has four attributes: color, shape, fill, and count.  Sets are composed of three cards.
-            For three cards to constitute a set, each attribute must be all the same or all different.
+            <h1 style="display: block;">Rules</h1>
+            <ul>
+                <li>Each card has four attributes: color, shape, fill, and count.</li>
+                <li>Sets are composed of three cards.</li>
+                <li>For three cards to constitute a set, each attribute must be all the same or all different.</li>
+            </ul>
         </div>
     </div>
 
