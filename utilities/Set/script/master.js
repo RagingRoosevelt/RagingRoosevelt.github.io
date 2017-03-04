@@ -146,7 +146,7 @@ function drawBoard() {
         }
     }
 
-    log("A set is " + (isSetAvalible() ? "" : "not ") + "avalible");
+    log("A set is " + (isSetAvailable() ? "" : "not ") + "available");
 }
 
 function refillBoard() {
@@ -317,16 +317,20 @@ function drawWave(ctx,x,y,w,h,thickness,fill,color) {
     // set up basic shape
     let points = [{x: -4, y: 0}
         , {x: 0, y: -4}
+        , {x: 1, y: -2}
         , {x: 3, y: -2}
         , {x: 4, y: 0}
         , {x: 0, y: 4}
+        , {x: -1, y: 2}
         , {x: -3, y: 2}
         , {x: -4, y: 0}];
     let control = [{x: -3, y: -4}
-        , {x: 1, y: 0}
+        , {x: 1, y: -4}
+        , {x: 1.5, y: 0}
         , {x: 4, y: -2}
         , {x: 3, y: 4}
-        , {x: -1, y: 0}
+        , {x: -1, y: 4}
+        , {x: -1.5, y: 0}
         , {x: -4, y: 2}];
     ctx.moveTo(x+points[0].x*w/4, y+points[0].y*h/4);
     for (let i=1; i<points.length; i++) {
@@ -380,33 +384,12 @@ function isSet(hand) {
     return v;
 }
 
-function isSetAvalible() {
+function isSetAvailable() {
     let comb = k_combinations(board.cards, 3);
 
 
     for (hand of comb) {
-        /*
-        c1 = s[0];
-        c2 = s[1];
-        c3 = s[2];
-
-        let isSet = true;
-        if (!(c1.color == c2.color && c2.color == c3.color)
-                    && !(c1.color != c2.color && c1.color != c3.color && c2.color != c3.color)) {
-            isSet = false;
-        } else if (!(c1.shape == c2.shape && c2.shape == c3.shape) &&
-            !(c1.shape != c2.shape && c1.shape != c3.shape && c2.shape != c3.shape)) {
-            isSet = false;
-        } else if (!(c1.fill == c2.fill && c2.fill == c3.fill) &&
-            !(c1.fill != c2.fill && c1.fill != c3.fill && c2.fill != c3.fill)) {
-            isSet = false;
-        } else if (!(c1.count == c2.count && c2.count == c3.count) &&
-            !(c1.count != c2.count && c1.count != c3.count && c2.count != c3.count)) {
-            isSet = false;
-        }
-        */
         if (isSet(hand)) {
-            //console.log(s);
             return true;
         }
     }
@@ -440,15 +423,14 @@ function buildDiv(x,y,w,h,i) {
 }
 
 function clickedCard(i) {
-    log("Clicked on card #" + i);
+    //log("Selected card #" + i);
 
     // has the card already been picked?  if so, remove it
     for (j in board.picked) {
         if (i == board.picked[j].i) {
-            log("Removing card #" + i + " (card already picked)");
+            //log("Deselected card #" + i);
             let temp = board.picked.splice(j,1);
-            console.log(temp);
-            $("#card"+temp[0].i).css("box-shadow", "none");
+            setCardHighlight(temp[0].i, false);
             return;
         }
     }
@@ -456,29 +438,44 @@ function clickedCard(i) {
     // are there already three cards picked?  if so, removed the first one picked
     if (board.picked.length == 3) {
         let temp = board.picked.shift();
-        $("#card"+temp.i).css("box-shadow", "none");
+        setCardHighlight(temp.i, false);
     }
 
     // add the card that was just picked to the hand
     board.picked.push({i: i, v: board.cards[i]});
-    let r = Math.round(card.h() / 20);
-    let shadow = r + "px " + r + "px " + "#000000";
-    $("#card"+i).css("box-shadow", shadow);
+    setCardHighlight(i, true);
 
     // are there now three cards in the hand?  if so, check if they are a set.
     if (board.picked.length == 3) {
         let hand = [board.picked[0].v, board.picked[1].v, board.picked[2].v];
         if (isSet(hand)) {
-            log("That's a set!");
-
-            while (board.picked.length > 0) {
-                let temp = board.picked.pop();
-                $("#card"+temp.i).css("box-shadow", "none");
-            }
+            //log("That's a set!");
+            setFound();
         } else {
-            log("That's not a set!");
+            //log("That's not a set!");
+            swal("Oops...", "Those cards don't form a set!", "error");
         }
     }
+}
+
+function setFound() {
+    /*swal("Good job!", "You clicked the button!", "success");*/
+
+    swal({
+        title: "Set found!",
+        text: "<canvas id='setFoundDisplay' width='"+3*card.w+"px' height='"+card.h()+"'></canvas>",
+        html: true
+    });
+    confirmationCTX = $("#setFoundDisplay").get(0).getContext("2d");
+    drawCard(confirmationCTX, 0*card.w+2,0+2,1*card.w-2,card.h()-2,3,board.picked[0].v);
+    drawCard(confirmationCTX, 1*card.w+2,0+2,2*card.w-2,card.h()-2,3,board.picked[1].v);
+    drawCard(confirmationCTX, 2*card.w+2,0+2,3*card.w-2,card.h()-2,3,board.picked[2].v);
+
+    while (board.picked.length > 0) {
+        let temp = board.picked.pop();
+        setCardHighlight(temp.i, false);
+    }
+    board.picked = [];
 }
 
 function getMousePos(e) {
@@ -502,4 +499,10 @@ function showRules() {
         active = "board";
     }
 
+}
+
+function setCardHighlight(i, highlighted) {
+    let r = Math.round(card.h() / 20);
+    let shadow = highlighted ? r + "px " + r + "px " + 3*r + "px " + cBlack : "none";
+    $("#card"+i).css("box-shadow", shadow);
 }
