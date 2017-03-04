@@ -1,6 +1,15 @@
 /**
  * Created by Theodore on 2/25/2017.
+ *
+ * TODO: mask hashlines for partial fill
+ * TODO: score sets per user
+ * TODO: add a card to the board when no set is available
+ * TODO: add button to shuffle the board
+ * TODO: 2x(6+) card layout for very long screens
+ * TODO: deal with how to draw cards when the deck is empty
+ * TODO: comment functions
  */
+
 
 const cRed = "#ff0000";
 const cPurple = "#8800ff";
@@ -118,6 +127,7 @@ function resizedWindow() {
 function drawBoard() {
     w = Math.round(boardDiv.width());
     h = Math.round(boardDiv.height());
+    ctx.clearRect(0,0,w,h);
 
     const margin = 10;
     const thickness = 2;
@@ -133,8 +143,6 @@ function drawBoard() {
 
     $(".card").remove();
 
-    console.log(posX, board.h, posY, board.w);
-
     for (let row=0; row<board.h; row++) {
         for (let col=0; col<board.w; col++) {
             let x = Math.round(posX[col]);
@@ -146,7 +154,7 @@ function drawBoard() {
         }
     }
 
-    log("A set is " + (isSetAvailable() ? "" : "not ") + "available");
+    log("A set is " + (isSetAvailable() ? "" : "not ") + "available / " + board.deck.length + " cards unseen");
 }
 
 function refillBoard() {
@@ -157,7 +165,7 @@ function refillBoard() {
 }
 
 function drawCard(ctx,x1,y1,x2,y2,thickness,info) {
-    console.log("drawing card at (" + x1 + ", " + y1 + ")");
+    //console.log("drawing card at (" + x1 + ", " + y1 + ")");
     const w = x2-x1;
     const h = y2-y1;
     xm = (x1+x2)/2;
@@ -474,8 +482,10 @@ function setFound() {
     while (board.picked.length > 0) {
         let temp = board.picked.pop();
         setCardHighlight(temp.i, false);
+
+        board.cards[temp.i] = board.deck.pop();
     }
-    board.picked = [];
+    drawBoard();
 }
 
 function getMousePos(e) {
