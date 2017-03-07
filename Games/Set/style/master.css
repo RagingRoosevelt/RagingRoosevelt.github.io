@@ -9,24 +9,23 @@ html, body {
     /*font-size: 1.25em;*/
 }
 
-#div_rules, #div_setup {
-    top: 100vh;
-}
 .fullView {
     position: absolute;
     top: 5vh;
     left: 0;
     width: 100vw;
     height: 95vh;
-}
-#div_game, #div_rules, #div_setup {
     background: #ffffff;
+}
+.offScreen {
+    top: 100vh !important;
 }
 #status {
     position: absolute;
     right: 5px;
 }
 #div_rulesContent {
+    overflow-y:auto;
     position: absolute;
     padding: 5px;
     margin: 0;
@@ -38,7 +37,7 @@ html, body {
     width: 100%;
     height: 100%;
 }
-#div_menu {
+#div_header {
     box-sizing: border-box;
     width: 100vw;
     height: 5vh;
@@ -48,6 +47,8 @@ html, body {
     border-width: 0 0 2px 0;
     border-style: solid;
     padding: 10px;
+    line-height: 3vh;
+    font-size: 2vh;
 }
 
 #players {

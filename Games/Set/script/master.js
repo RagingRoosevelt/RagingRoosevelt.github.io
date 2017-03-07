@@ -1,13 +1,13 @@
 /**
  * Created by Theodore on 2/25/2017.
  *
+ * TODO: Refactor using JS best practices
+ * TODO: comment functions
  * TODO: mask hashlines for partial fill
  * TODO: score sets per user
- * TODO: add a card to the board when no set is available
  * TODO: add button to shuffle the board
  * TODO: 2x(6+) card layout for very long screens
  * TODO: deal with how to draw cards when the deck is empty
- * TODO: comment functions
  */
 
 
@@ -28,40 +28,52 @@ let ctx;
 let boardDiv;
 
 let active = "board";
-let board = {w: 4,
-            h: 3,
-            cards: [],
-            deck: [],
-            picked: []};
-let card = {ar: 1.56,
-            w: 100,
-            pad: function(){
-                return 0.1 * this.w
-            },
-            h: function(){
-                return this.ar*this.w
-            },
-            shading: function(){
-                let c = Math.ceil(this.w/6);
-                return (c%2==1) ? c : c-1;
-            },
-            posX: function(x0) {
-                let v = [];
-                for (let col=0; col<board.w; col++) {
-                    v.push(x0+this.w*col+this.pad()*(col+1));
+let board = {w: 4
+            , h: 3
+            , inPlayMain: []
+            , inPlayExtra: []
+            , deck: []
+            , picked: []};
+let card = {ar: 1.56
+            , w: 100
+            , padAmnt: 0.2
+            , pad: function(){
+                    return (this.padAmnt / 2) * this.w
                 }
-                return v;
-            },
-            posY: function(y0) {
-                let v = [];
-                for (let row=0; row<board.h; row++) {
-                    v.push(y0+this.h()*row+this.pad()*(row+1));
+            , thickness: 3
+            , h: function(){
+                    return this.ar*this.w
                 }
-                return v;
-            },
-            rowcol2i: function(row, col) {
-                return row*board.w+col;
-            }
+            , shading: function(){
+                    let c = Math.ceil(this.w/6);
+                    return (c%2==1) ? c : c-1;
+                }
+            , posX: function(x0) {
+                    let v = [];
+                    for (let col=0; col<board.w; col++) {
+                        v.push(x0+this.w*col+this.pad()*(col+1));
+                    }
+                    return v;
+                }
+            , posY: function(y0) {
+                    let v = [];
+                    for (let row = 0; row < board.h; row++) {
+                        v.push(y0 + this.h() * row + this.pad() * (row + 1));
+                    }
+                    return v;
+                }
+            , posExtra: function(x0,y0) {
+                    if (board.w == 4){
+                        let x = this.posX(x0);
+                        return 2 * x[3] - x[2];
+                    } else {
+                        let y = this.posY(y0);
+                        return  2 * y[3] - y[2];
+                    }
+                }
+            , rowcol2i: function(row, col) {
+                    return row*board.w+col;
+                }
             };
 
 window.onload = init;
@@ -86,7 +98,14 @@ function init() {
     }
     shuffle(board.deck);
 
-    refillBoard();
+    while (board.inPlayMain.length < 12) {
+        board.inPlayMain.push(board.deck.pop());
+        console.log("Board now has " + board.inPlayMain.length + " inPlayMain");
+    }
+
+    if (!isSetAvailable()) {
+        needExtraCards();
+    }
 
     resizedWindow();
     drawBoard();
@@ -94,7 +113,7 @@ function init() {
     //canvas.onclick = clickedBoard;
 }
 
-/** Function determines appropriate sizes for the canvas and cards in order to fit the window.
+/** Function determines appropriate sizes for the canvas and inPlayMain in order to fit the window.
  *  Then calls a function to redraw the board.
  */
 function resizedWindow() {
@@ -104,17 +123,17 @@ function resizedWindow() {
     ctx.canvas.height = h;
     ctx.canvas.width = w;
 
-    if (h > card.ar * w) {
+    if (h/(5*card.ar) > w/5) {
         board.h = 4;
         board.w = 3;
-        //card.w = (h / 5)/card.ar;
+        card.w = (1-card.padAmnt) * Math.min(w / board.w, h / ((board.h+1) * card.ar));
     } else {
         board.h = 3;
         board.w = 4;
-        //card.w = (h / 5)/card.ar;
+        card.w = (1-card.padAmnt) * Math.min(w / (board.w+1), h / (board.h * card.ar));
     }
 
-    card.w = 0.75 * Math.min(h / (board.h * card.ar), w / board.w);
+    //card.w = 0.75 * Math.min(h / ((board.h+1) * card.ar), w / board.w);
 
 
 
@@ -148,20 +167,33 @@ function drawBoard() {
             let x = Math.round(posX[col]);
             let y = Math.round(posY[row]);
             let i = card.rowcol2i(row,col);
-            drawCard(ctx, x,y, x+cw, y+ch, 3, board.cards[i]);
+            drawCard(ctx, x,y, x+cw, y+ch, card.thickness, board.inPlayMain[i]);
 
-            $("#div_game").append($(buildDiv(x,y,cw,ch,i)));
+            $("#div_game").append($(buildDiv(x,y,cw,ch,i,false)));
         }
     }
 
-    log("A set is " + (isSetAvailable() ? "" : "not ") + "available / " + board.deck.length + " cards unseen");
-}
-
-function refillBoard() {
-    while (board.cards.length < 12) {
-        board.cards.push(board.deck.pop());
-        console.log("Board now has " + board.cards.length + " cards");
+    let f = Math.round(card.posExtra(0,0));
+    let l = undefined, x = undefined, y = undefined;
+    if (board.w == 4) {
+        l = posY;
+    } else {
+        l = posX
     }
+    for (let k=0; k<board.inPlayExtra.length; k++) {
+        if (board.w == 4) {
+            x = f;
+            y = Math.round(l[k]);
+        } else {
+            x = Math.round(l[k]);
+            y = f;
+        }
+        drawCard(ctx, x, y, x+cw, y+ch, card.thickness, board.inPlayExtra[k]);
+
+        $("#div_game").append($(buildDiv(x,y,cw,ch,k,true)));
+    }
+
+    log("A set is " + (isSetAvailable() ? "" : "not ") + "available / " + board.deck.length + " cards unseen");
 }
 
 function drawCard(ctx,x1,y1,x2,y2,thickness,info) {
@@ -393,7 +425,7 @@ function isSet(hand) {
 }
 
 function isSetAvailable() {
-    let comb = k_combinations(board.cards, 3);
+    let comb = k_combinations(board.inPlayMain.concat(board.inPlayExtra), 3);
 
 
     for (hand of comb) {
@@ -418,42 +450,42 @@ function shuffle(array) {
     return array;
 }
 
-function buildDiv(x,y,w,h,i) {
-    let r = "<div class=card id=card"+i+" style=\"";
+function buildDiv(x,y,w,h,i,inExtra) {
+    let r = "<div class=card id=card"+i+(inExtra?"extra":"main")+" style=\"";
     r += "height: "+h+"px; ";
     r += "width: "+w+"px; ";
     r += "left: "+x+"px; ";
     r += "top: "+y+"px; ";
     r += "border-radius: "+h/10+"px; "
-    r += "\" onclick=javascript:clickedCard("+i+")";
+    r += "\" onclick=javascript:clickedCard("+i+","+inExtra+")";
     r += "></div>";
     return r;
 }
 
-function clickedCard(i) {
+function clickedCard(i, inExtra) {
     //log("Selected card #" + i);
 
     // has the card already been picked?  if so, remove it
     for (j in board.picked) {
-        if (i == board.picked[j].i) {
+        if (i == board.picked[j].i && inExtra == board.picked[j].inExtra) {
             //log("Deselected card #" + i);
-            let temp = board.picked.splice(j,1);
-            setCardHighlight(temp[0].i, false);
+            let temp = board.picked.splice(j, 1);
+            setCardHighlight(temp[0].i, inExtra, false);
             return;
         }
     }
 
-    // are there already three cards picked?  if so, removed the first one picked
+    // are there already three inPlayMain picked?  if so, removed the first one picked
     if (board.picked.length == 3) {
         let temp = board.picked.shift();
-        setCardHighlight(temp.i, false);
+        setCardHighlight(temp.i, inExtra, false);
     }
 
     // add the card that was just picked to the hand
-    board.picked.push({i: i, v: board.cards[i]});
-    setCardHighlight(i, true);
+    board.picked.push({i: i, v: (inExtra?board.inPlayExtra[i]:board.inPlayMain[i]), inExtra: inExtra});
+    setCardHighlight(i, inExtra, true);
 
-    // are there now three cards in the hand?  if so, check if they are a set.
+    // are there now three inPlayMain in the hand?  if so, check if they are a set.
     if (board.picked.length == 3) {
         let hand = [board.picked[0].v, board.picked[1].v, board.picked[2].v];
         if (isSet(hand)) {
@@ -471,20 +503,39 @@ function setFound() {
 
     swal({
         title: "Set found!",
-        text: "<canvas id='setFoundDisplay' width='"+3*card.w+"px' height='"+card.h()+"'></canvas>",
+        text: "<canvas id='setFoundDisplay' width='478px' height='"+(478/3)*card.ar+"'></canvas>",
         html: true
     });
     confirmationCTX = $("#setFoundDisplay").get(0).getContext("2d");
-    drawCard(confirmationCTX, 0*card.w+2,0+2,1*card.w-2,card.h()-2,3,board.picked[0].v);
-    drawCard(confirmationCTX, 1*card.w+2,0+2,2*card.w-2,card.h()-2,3,board.picked[1].v);
-    drawCard(confirmationCTX, 2*card.w+2,0+2,3*card.w-2,card.h()-2,3,board.picked[2].v);
+    let w = 478 / 3
+    drawCard(confirmationCTX, 0*w+2, 0+2, 1*w-2, card.ar*w-2, card.thickness, board.picked[0].v);
+    drawCard(confirmationCTX, 1*w+2, 0+2, 2*w-2, card.ar*w-2, card.thickness, board.picked[1].v);
+    drawCard(confirmationCTX, 2*w+2, 0+2, 3*w-2, card.ar*w-2, card.thickness, board.picked[2].v);
 
     while (board.picked.length > 0) {
         let temp = board.picked.pop();
-        setCardHighlight(temp.i, false);
+        setCardHighlight(temp.i, temp.inExtra, false);
 
-        board.cards[temp.i] = board.deck.pop();
+        if (temp.inExtra) {
+            board.inPlayExtra.splice(temp.i,1);
+        } else {
+            board.inPlayMain[temp.i] = board.deck.pop();
+        }
     }
+
+    if (!isSetAvailable()) {
+        needExtraCards();
+    }
+
+    drawBoard();
+}
+
+function needExtraCards() {
+    while (board.inPlayExtra.length < 3) {
+        board.inPlayExtra.push(board.deck.pop());
+    }
+
+
     drawBoard();
 }
 
@@ -500,19 +551,19 @@ function log(msg) {
 
 function showRules() {
     if (active == "board") {
-        $("#div_game").css("top", "100vh");
-        $("#div_rules").css("top", "5vh");
+        $("#div_game").addClass("offScreen");
+        $("#div_rules").removeClass("offScreen");
         active = "rules";
     } else if (active == "rules") {
-        $("#div_game").css("top", "5vh");
-        $("#div_rules").css("top", "100vh");
+        $("#div_game").removeClass("offScreen");
+        $("#div_rules").addClass("offScreen");
         active = "board";
     }
 
 }
 
-function setCardHighlight(i, highlighted) {
+function setCardHighlight(i, inExtra, highlighted) {
     let r = Math.round(card.h() / 20);
-    let shadow = highlighted ? r + "px " + r + "px " + 3*r + "px " + cBlack : "none";
-    $("#card"+i).css("box-shadow", shadow);
+    let shadow = highlighted ? "0 0 " + 2 * r + "px " + 0.5 * r + "px " + cBlack : "none";
+    $("#card"+i+(inExtra?"extra":"main")).css("box-shadow", shadow);
 }

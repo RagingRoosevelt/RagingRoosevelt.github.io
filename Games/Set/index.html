@@ -8,13 +8,13 @@
     <title>Set</title>
 </head>
 <body onresize="resizedWindow()">
-    <div id="div_menu"><a onclick="javascript:showRules()">Rules</a><span id="status"></span></div>
+    <div id="div_header"><a onclick="javascript:showRules()">Rules</a><span id="status"></span></div>
 
     <div id="div_game" class="fullView">
         <canvas id="board">Please install a modern browser that supports Canvas elements!</canvas>
     </div>
 
-    <div id="div_setup" class="fullView">
+    <div id="div_setup" class="fullView offScreen">
         <select id="players" size="10">
             <option>text1</option>
             <option>text2</option>
@@ -24,13 +24,20 @@
         </select>
     </div>
 
-    <div id="div_rules" class="fullView">
+    <div id="div_rules" class="fullView offScreen">
         <div id="div_rulesContent">
             <h1 style="display: block;">Rules</h1>
             <ul>
                 <li>Each card has four attributes: color, shape, fill, and count.</li>
                 <li>Sets are composed of three cards.</li>
-                <li>For three cards to constitute a set, each attribute must be all the same or all different.</li>
+                <li>For three cards to constitute a set, each attribute must be all the same or all different.  That is,
+                    for three cards, color must be all the same or all different, shape must be all the same or all
+                    different, number must be all the same or all different, and finally, fill must be all the same or
+                    all different.
+                </li>
+                <li>If no set can be found, three extra cards will be added to the field.  As sets are found, rather
+                    than refilling back up to 15, the board is only refilled back up to 12, when necessary.
+                </li>
             </ul>
         </div>
     </div>
