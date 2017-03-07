@@ -167,6 +167,10 @@ function drawBoard() {
             let x = Math.round(posX[col]);
             let y = Math.round(posY[row]);
             let i = card.rowcol2i(row,col);
+
+            if (i >= board.inPlayMain.length) {
+                break;
+            }
             drawCard(ctx, x,y, x+cw, y+ch, card.thickness, board.inPlayMain[i]);
 
             $("#div_game").append($(buildDiv(x,y,cw,ch,i,false)));
@@ -193,7 +197,11 @@ function drawBoard() {
         $("#div_game").append($(buildDiv(x,y,cw,ch,k,true)));
     }
 
-    log("A set is " + (isSetAvailable() ? "" : "not ") + "available / " + board.deck.length + " cards unseen");
+    if (isSetAvailable()) {
+        log("A set is available / " + board.deck.length + " cards unseen");
+    } else {
+        log("A set is not available / your score: " + String(81-(board.deck.length+board.inPlayExtra.length+board.inPlayMain.length)));
+    }
 }
 
 function drawCard(ctx,x1,y1,x2,y2,thickness,info) {
@@ -517,11 +525,20 @@ function setFound() {
         setCardHighlight(temp.i, temp.inExtra, false);
 
         if (temp.inExtra) {
-            board.inPlayExtra.splice(temp.i,1);
+            board.inPlayExtra[temp.i] = undefined;
         } else {
-            board.inPlayMain[temp.i] = board.deck.pop();
+            if  (board.deck.length > 0) {
+                board.inPlayMain[temp.i] = board.deck.pop();
+            } else {
+                board.inPlayMain[temp.i] = undefined;
+            }
         }
     }
+    board.picked = [];
+
+    board.inPlayExtra = board.inPlayExtra.filter(function(e) {return undefined != e});
+    board.inPlayMain = board.inPlayMain.filter(function(e) {return undefined != e});
+
 
     if (!isSetAvailable()) {
         needExtraCards();
@@ -531,12 +548,9 @@ function setFound() {
 }
 
 function needExtraCards() {
-    while (board.inPlayExtra.length < 3) {
+    while (board.inPlayExtra.length < 3 && board.deck.length > 0) {
         board.inPlayExtra.push(board.deck.pop());
     }
-
-
-    drawBoard();
 }
 
 function getMousePos(e) {
