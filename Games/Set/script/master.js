@@ -200,7 +200,7 @@ function drawBoard() {
     if (isSetAvailable()) {
         log("A set is available / " + board.deck.length + " cards unseen");
     } else {
-        log("A set is not available / your score: " + String(81-(board.deck.length+board.inPlayExtra.length+board.inPlayMain.length)));
+        log("A set is not available / your score: " + String((81-(board.deck.length+board.inPlayExtra.length+board.inPlayMain.length))/3));
     }
 }
 
@@ -509,36 +509,42 @@ function clickedCard(i, inExtra) {
 function setFound() {
     /*swal("Good job!", "You clicked the button!", "success");*/
 
+    swalWidth = Math.min(478, $(window).width() - 2*15 - 2*17);
     swal({
         title: "Set found!",
-        text: "<canvas id='setFoundDisplay' width='478px' height='"+(478/3)*card.ar+"'></canvas>",
+        text: "<canvas id='setFoundDisplay' width='"+swalWidth+"px' height='"+(swalWidth/3)*card.ar+"'></canvas>",
         html: true
     });
     confirmationCTX = $("#setFoundDisplay").get(0).getContext("2d");
-    let w = 478 / 3
+    let w = swalWidth / 3
     drawCard(confirmationCTX, 0*w+2, 0+2, 1*w-2, card.ar*w-2, card.thickness, board.picked[0].v);
     drawCard(confirmationCTX, 1*w+2, 0+2, 2*w-2, card.ar*w-2, card.thickness, board.picked[1].v);
     drawCard(confirmationCTX, 2*w+2, 0+2, 3*w-2, card.ar*w-2, card.thickness, board.picked[2].v);
 
-    while (board.picked.length > 0) {
-        let temp = board.picked.pop();
-        setCardHighlight(temp.i, temp.inExtra, false);
-
-        if (temp.inExtra) {
+    for (let k=0; k<board.picked.length; k++) {
+        let temp = board.picked[k]
+        if (undefined != temp && temp.inExtra) {
+            setCardHighlight(temp.i, temp.inExtra, false);
             board.inPlayExtra[temp.i] = undefined;
-        } else {
-            if  (board.deck.length > 0) {
+        }
+    }
+    board.inPlayExtra = board.inPlayExtra.filter(function(e) {return undefined != e});
+
+    for (let k=0; k<board.picked.length; k++) {
+        let temp = board.picked[k]
+        if (undefined != temp && !temp.inExtra) {
+            if (board.inPlayExtra.length > 0) {
+                board.inPlayMain[temp.i] = board.inPlayExtra.pop();
+            } else if  (board.deck.length > 0) {
                 board.inPlayMain[temp.i] = board.deck.pop();
             } else {
                 board.inPlayMain[temp.i] = undefined;
             }
         }
     }
-    board.picked = [];
-
-    board.inPlayExtra = board.inPlayExtra.filter(function(e) {return undefined != e});
     board.inPlayMain = board.inPlayMain.filter(function(e) {return undefined != e});
 
+    board.picked = [];
 
     if (!isSetAvailable()) {
         needExtraCards();
