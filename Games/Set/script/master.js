@@ -213,15 +213,6 @@ function drawCard(ctx,x1,y1,x2,y2,thickness,info) {
 
     drawRectangleRounded(ctx,x1,y1,x2,y2,h/10,thickness);
 
-    let shape;
-    if (info.shape == sOval) {
-        shape = drawOval;
-    } else if (info.shape == sWave) {
-        shape = drawWave;
-    } else if (info.shape == sDiamond) {
-        shape = drawDiamond;
-    }
-
     let locations = [ym];
     if (info.count == 2) {
         locations = [ym-h/6, ym+h/6];
@@ -230,7 +221,7 @@ function drawCard(ctx,x1,y1,x2,y2,thickness,info) {
     }
 
     for (y of locations) {
-        shape(ctx, xm, y, 2*w/3, 2*w/6, thickness, info.fill, info.color);
+        drawShape(ctx, xm, y, 2*w/3, 2*w/6, thickness, info.shape, info.fill, info.color);
     }
 }
 
@@ -252,108 +243,10 @@ function drawRectangleRounded(ctx, x1, y1, x2, y2, rad, thickness) {
 
 }
 
-function drawDiamond(ctx,x,y,w,h,thickness,fill,color) {
-    h = h/2;
-    w = w/2;
-    const lineCount = card.shading();
-
-    ctx.beginPath();
-    ctx.moveTo(x,y-h);
-    ctx.lineTo(x+w,y);
-    ctx.lineTo(x,y+h);
-    ctx.lineTo(x-w,y);
-    ctx.lineTo(x,y-h);
-
-    ctx.lineWidth = thickness;
-    ctx.strokeStyle = color;
-    ctx.outlineStyle = color;
-    ctx.fillStyle = color;
-
-    if (fill==fEmpty) {
-        ctx.stroke();
-    } else if (fill==fPartial) {
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.lineWidth = (thickness > 1) ? Math.floor(thickness/3) : 1;
-
-        function topleft(x,x1,y1,w,h) {
-            return -(h*x)/w + h*(x1/w - 1) + y1;
-        }
-        function topright(x,x1,y1,w,h) {
-            return  (h*x)/w - (h*(w + x1))/w + y1;
-        }
-        function bottomright(x,x1,y1,w,h) {
-            return  -(h*x)/w + (h*x1)/w + h + y1;
-        }
-        function bottomleft(x,x1,y1,w,h) {
-            return (h*x)/w - (h*x1)/w + h + y1 ;
-        }
-
-        const dX = 2*w/(lineCount-1);
-        for (let i=x-w+dX; i<x; i+=dX) {
-            ctx.moveTo(i,bottomleft(i,x,y,w,h));
-            ctx.lineTo(i,topleft(i,x,y,w,h));
-        }
-        for (let i=x+dX; i<x+w; i+=dX) {
-            ctx.moveTo(i,topright(i,x,y,w,h));
-            ctx.lineTo(i,bottomright(i,x,y,w,h));
-        }
-        ctx.moveTo(x,y-h);
-        ctx.lineTo(x,y+h);
-
-        ctx.stroke();
-    } else if (fill==fSolid) {
-        ctx.closePath();
-        ctx.fill();
-    }
-}
-
-function drawOval(ctx,x,y,w,h,thickness,fill,color) {
-    w = w/2;
-    h = h/2;
-    const lineCount = card.shading();
-
-    ctx.lineWidth = thickness;
-    ctx.strokeStyle = color;
-    ctx.outlineStyle = color;
-    ctx.fillStyle = color;
-
-    ctx.beginPath();
-    ctx.moveTo(x-w+h,y-h);
-    ctx.lineTo(x+w-h,y-h);
-    ctx.arcTo(x+w,y-h,x+w,y,h);
-    ctx.arcTo(x+w,y+h,x+w-h,y+h,h);
-    ctx.lineTo(x-w+h,y+h);
-    ctx.arcTo(x-w,y+h,x-w,y,h);
-    ctx.arcTo(x-w,y-h,x-w+h,y-h,h);
-
-    if (fill==fEmpty) {
-        ctx.stroke();
-    } else if (fill==fPartial) {
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.lineWidth = (thickness > 1) ? Math.floor(thickness/3) : 1;
-
-        const dX = 2*w/(lineCount-1);
-
-        for (let i=x-w+dX; i<x+w; i+=dX) {
-            ctx.moveTo(i,y-h);
-            ctx.lineTo(i,y+h);
-        }
-        ctx.stroke();
-
-    } else if (fill==fSolid) {
-        ctx.closePath();
-        ctx.fill();
-    }
-}
-
-function drawWave(ctx,x,y,w,h,thickness,fill,color) {
+function drawShape(ctx,x,y,w,h,thickness,shape,fill,color) {
     w = w / 2;
     h = h / 2;
-    const lineCount = card.shading();
+    const lineCount = Math.floor(card.shading()/2);
 
     ctx.lineWidth = thickness;
     ctx.strokeStyle = color;
@@ -362,49 +255,71 @@ function drawWave(ctx,x,y,w,h,thickness,fill,color) {
 
     ctx.beginPath();
 
-    // set up basic shape
-    let points = [{x: -4, y: 0}
-        , {x: 0, y: -4}
-        , {x: 1, y: -2}
-        , {x: 3, y: -2}
-        , {x: 4, y: 0}
-        , {x: 0, y: 4}
-        , {x: -1, y: 2}
-        , {x: -3, y: 2}
-        , {x: -4, y: 0}];
-    let control = [{x: -3, y: -4}
-        , {x: 1, y: -4}
-        , {x: 1.5, y: 0}
-        , {x: 4, y: -2}
-        , {x: 3, y: 4}
-        , {x: -1, y: 4}
-        , {x: -1.5, y: 0}
-        , {x: -4, y: 2}];
-    ctx.moveTo(x+points[0].x*w/4, y+points[0].y*h/4);
-    for (let i=1; i<points.length; i++) {
-        ctx.quadraticCurveTo(x+control[i-1].x*w/4, y+control[i-1].y*h/4, x+points[i].x*w/4, y+points[i].y*h/4);
+    let outline = new Path2D();
+    if (shape == sWave) {
+        // set up basic shape
+        let points = [{x: -4, y: 0}
+            , {x: 0, y: -4}
+            , {x: 1, y: -2}
+            , {x: 3, y: -2}
+            , {x: 4, y: 0}
+            , {x: 0, y: 4}
+            , {x: -1, y: 2}
+            , {x: -3, y: 2}
+            , {x: -4, y: 0}];
+        let control = [{x: -3, y: -4}
+            , {x: 1, y: -4}
+            , {x: 1.5, y: 0}
+            , {x: 4, y: -2}
+            , {x: 3, y: 4}
+            , {x: -1, y: 4}
+            , {x: -1.5, y: 0}
+            , {x: -4, y: 2}];
+        outline.moveTo(x + points[0].x * w / 4, y + points[0].y * h / 4);
+        for (let i = 1; i < points.length; i++) {
+            outline.quadraticCurveTo(x + control[i - 1].x * w / 4, y + control[i - 1].y * h / 4, x + points[i].x * w / 4, y + points[i].y * h / 4);
+        }
+    } else if (shape == sOval) {
+        outline.moveTo(x-w+h,y-h);
+        outline.lineTo(x+w-h,y-h);
+        outline.arcTo(x+w,y-h,x+w,y,h);
+        outline.arcTo(x+w,y+h,x+w-h,y+h,h);
+        outline.lineTo(x-w+h,y+h);
+        outline.arcTo(x-w,y+h,x-w,y,h);
+        outline.arcTo(x-w,y-h,x-w+h,y-h,h);
+    } else if (shape == sDiamond) {
+        outline.moveTo(x,y-h);
+        outline.lineTo(x+w,y);
+        outline.lineTo(x,y+h);
+        outline.lineTo(x-w,y);
+        outline.lineTo(x,y-h);
     }
+    outline.closePath();
 
     // draw the shape's fill
     if (fill==fEmpty) {
-        ctx.stroke();
+        ctx.lineWidth = thickness;
+        ctx.stroke(outline);
     } else if (fill==fPartial) {
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.lineWidth = (thickness > 1) ? Math.floor(thickness/3) : 1;
-
-        const dX = 2*w/(lineCount-1);
-
-        for (let i=x-w+dX; i<x+w; i+=dX) {
-            ctx.moveTo(i,y-h);
-            ctx.lineTo(i,y+h);
+        let hash = new Path2D();
+        for (let i=-lineCount+1; i<lineCount; i++) {
+            hash.moveTo(x+i*w/lineCount, y-h);
+            hash.lineTo(x+i*w/lineCount, y+h);
         }
-        ctx.stroke();
+        hash.closePath();
 
+        // save in order to undo clip region
+        ctx.save();
+        ctx.clip(outline);
+        ctx.lineWidth = (thickness > 1) ? Math.floor(thickness/3) : 1;
+        ctx.stroke(hash);
+        // restore in order to clear clip region
+        ctx.restore();
+
+        ctx.lineWidth = thickness;
+        ctx.stroke(outline);
     } else if (fill==fSolid) {
-        ctx.closePath();
-        ctx.fill();
+        ctx.fill(outline);
     }
 }
 
