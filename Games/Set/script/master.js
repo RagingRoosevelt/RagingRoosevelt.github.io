@@ -1,13 +1,12 @@
 /**
  * Created by Theodore on 2/25/2017.
  *
+ * TODO: page orientation to do layout -> long edge of card should be along long edge of page
  * TODO: Refactor using JS best practices
  * TODO: comment functions
- * TODO: mask hashlines for partial fill
  * TODO: score sets per user
  * TODO: add button to shuffle the board
  * TODO: 2x(6+) card layout for very long screens
- * TODO: deal with how to draw cards when the deck is empty
  */
 
 
