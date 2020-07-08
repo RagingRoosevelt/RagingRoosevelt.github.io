@@ -24,7 +24,7 @@ sequence for placement. If the random walk ever gets trapped (all four cardinal 
 already been visited), then I search for the closest unvisited pixel. This approach, as I had it 
 implemented, produces images that pretty consistantly look like this 
 
-<a href="http://i.imgur.com/uCpPQHl.png"><img class="full" src="http://i.imgur.com/uCpPQHl.png" /></a>
+<a href="https://i.imgur.com/uCpPQHl.png"><img class="full" src="https://i.imgur.com/uCpPQHl.png" /></a>
 
 The clustering bottom right is caused by my approach to teleportation.  Currently, the search for 
 the nearest neighbor begins in the bottom right and searches in a square of a given radius around 
