@@ -8,15 +8,15 @@ categories:
 - Arduino
 ---
 
-It’s been a while since I last worked on my visual alarm clock project.  Since I haven’t mentioned it before, here’s the gist:  I’m working on an alarm clock that will turn on [this](http://www.amazon.com/Square-Perfect-3077-Professional-Fluorescent/dp/B000W07Y5M/) very bright 85w compact fluorescent bulb (note: not 85w equivalent) in an attempt to abandon an audible alarm (on my phone).  I’m hoping that this will be a much gentler wakeup experience.  When I get this finished, I’ll have an outlet that the arduino controls with a large 3-380vac relay.  I’ll then plug the CFL into that outlet.  Additionally, I’ll have a 4-digit 7-segment display to show the time and allow for easily setting the alarm. 
+It’s been a while since I last worked on my visual alarm clock project.  Since I haven’t mentioned it before, here’s the gist:  I’m working on an alarm clock that will turn on [this](https://www.amazon.com/Square-Perfect-3077-Professional-Fluorescent/dp/B000W07Y5M/) very bright 85w compact fluorescent bulb (note: not 85w equivalent) in an attempt to abandon an audible alarm (on my phone).  I’m hoping that this will be a much gentler wakeup experience.  When I get this finished, I’ll have an outlet that the arduino controls with a large 3-380vac relay.  I’ll then plug the CFL into that outlet.  Additionally, I’ll have a 4-digit 7-segment display to show the time and allow for easily setting the alarm. 
 
 When I last worked on this project, I wasn’t all that good at soldering.  I was also using a cheap $25 radioshack iron.  I’ve since upgraded to a Weller WES51 and refined my technique (once I realized I had no clue what I was doing).  For comparison, here’s the difference that knowing what you are doing and having a good iron can do:
 
-<a href="http://i.imgur.com/UxRlyYs.jpg"><img class="full" src="http://i.imgur.com/UxRlyYs.jpg" /></a>
+<a href="https://i.imgur.com/UxRlyYs.jpg"><img class="full" src="https://i.imgur.com/UxRlyYs.jpg" /></a>
 
 I stopped working on the project around 9 months ago because I had thought I’d burnt out my led display (I’d been running it without resistors).  After a lot of practice soldering the SMD diodes on my ErgoDox, I figured that may have at least been a contributing factor to the issues I was previously having so I might as well give it a shot with updated technique.  Rather than trying to repair the old solder job, I decided to just re-do it.  So far, the solder job seems to be working well.  I also re-checked my pin diagram from the last time I was working on this (the display didn’t come with any documentation).  It’s a common cathode display (also required testing to determine that).  Anyhow, here’s the pin layout:
 
-<a href="http://i.imgur.com/w7NndxA.png"><img class="full" src="http://i.imgur.com/w7NndxA.png" /></a> 
+<a href="https://i.imgur.com/w7NndxA.png"><img class="full" src="https://i.imgur.com/w7NndxA.png" /></a> 
 
 All the segments seem to work and I’ve been working on getting the harness to wire it into the arduino.  I already know more or less how I’ll handle the display from the software side (essentially, it’s just a POV display), so getting that part working should be pretty quick.  After that, I’ll just have to get my relay finished and everything should be golden.
 
