@@ -20,17 +20,17 @@ Lens: Olympus M.Zuiko 17mm f1.8
 Settings: ISO 200, f/4.5, 1/400 sec
 Here are the original images (raw on the left, jpeg on the right)
 
-<a href="http://i.imgur.com/VZMvaWV.jpg"><img class="split" src="http://i.imgur.com/VZMvaWV.jpg" /></a><a href="http://i.imgur.com/smghIRP.jpg"><img class="split" src="http://i.imgur.com/smghIRP.jpg" /></a>
+<a href="https://i.imgur.com/VZMvaWV.jpg"><img class="split" src="https://i.imgur.com/VZMvaWV.jpg" /></a><a href="https://i.imgur.com/smghIRP.jpg"><img class="split" src="https://i.imgur.com/smghIRP.jpg" /></a>
 
 Here are the images after the highlight levels have been decreased (raw on the left, jpeg on the right)
 
-<a href="http://i.imgur.com/67Xmi3s.jpg"><img class="split" src="http://i.imgur.com/67Xmi3s.jpg" /></a><a href="http://i.imgur.com/UH4hTlD.jpg"><img class="split" src="http://i.imgur.com/UH4hTlD.jpg" /></a>
+<a href="https://i.imgur.com/67Xmi3s.jpg"><img class="split" src="https://i.imgur.com/67Xmi3s.jpg" /></a><a href="https://i.imgur.com/UH4hTlD.jpg"><img class="split" src="https://i.imgur.com/UH4hTlD.jpg" /></a>
 
 Note that we can start to see the effect of the lack of information in the over-exposed portion of the jpeg image. It’s showing up as lacking in color definition.
 
 Here are the images after dropping by 1/3 stops twice
 
-<a href="http://i.imgur.com/6wxazXZ.jpg"><img class="split" src="http://i.imgur.com/6wxazXZ.jpg"></a><a href="http://i.imgur.com/2Xp0Ewh.jpg"><img class="split" src="http://i.imgur.com/2Xp0Ewh.jpg" /></a>
+<a href="https://i.imgur.com/6wxazXZ.jpg"><img class="split" src="https://i.imgur.com/6wxazXZ.jpg"></a><a href="https://i.imgur.com/2Xp0Ewh.jpg"><img class="split" src="https://i.imgur.com/2Xp0Ewh.jpg" /></a>
 
 This is where the result of fixing the over-exposure really highlights the difference between raw and jpeg.
 
