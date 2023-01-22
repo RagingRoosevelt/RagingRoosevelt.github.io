@@ -1,15 +1,17 @@
 ---
-layout: default
+layout: default3
 ---
 
-<h2>{{page.title}}</h2><br />
-<b>{{page.date | date: "%B %-d, %Y"}}</b><br /><br />
+<h2>{{page.title}}</h2>
+<span class="blog_date">{{page.date | date: "%B %-d, %Y"}}</span>
 
-{{ content }}
+<section>
+  {{ content }}
+</section>
 
 <hr>
 
-Categories: 
-{% for category in page.categories %} 
-    <a href="">{{category}}</a>, 
+Categories:
+{% for category in page.categories %}
+    <a href="">{{category}}</a>,
 {% endfor %}

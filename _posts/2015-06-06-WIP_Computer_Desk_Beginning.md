@@ -9,24 +9,40 @@ categories:
 - WIP
 ---
 
-I’ve been meaning to build myself a computer desk to replace the one I currently use.  The features I need it to have are:
+I’ve been meaning to build myself a computer desk to replace the one I
+currently use.  The features I need it to have are:
 
-* Shelf for speakers and other electronics (speakers, amp, server, printer, networking gear) – currently speakers are being used as supports for the shelf =(
-* Easy mounting of Ergotron flexible monitor arms (for when I upgrade to them from my static triple monitor stand)
-* Easy-to-hide cable management (sufficient to be able to run that inside the nooks and crannies of the desk)
+* Shelf for speakers and other electronics (speakers, amp, server, printer,
+  networking gear) – currently speakers are being used as supports for the
+  shelf =(
+* Easy mounting of Ergotron flexible monitor arms (for when I upgrade to them
+  from my static triple monitor stand)
+* Easy-to-hide cable management (sufficient to be able to run that inside
+  the nooks and crannies of the desk)
 * Able to fit through standard doorways (roughly 34 inches)
-* High enough that my legs will fit comfortable while maintaining proper posture for computer usage
-* Relatively modular so that disassembly isn’t too difficult if I have to break it down in order to move
+* High enough that my legs will fit comfortable while maintaining proper
+  posture for computer usage
+* Relatively modular so that disassembly isn’t too difficult if I have to break
+  it down in order to move
 * Possible to build with the tools I have available.
 
-So far I’ve just been planning it out in a 3D model (partly to practice my CAD skills and partly so that I can tally up how much lumber I’ll need).  Here’s what I have so far:
+So far I’ve just been planning it out in a 3D model (partly to practice my CAD
+skills and partly so that I can tally up how much lumber I’ll need).  Here’s
+what I have so far:
 
-<a href="https://i.imgur.com/RIjskGg.png"><img class="split" src="https://i.imgur.com/RIjskGg.png" /></a><a href="https://i.imgur.com/w6oM24p.png"><img class="split" src="https://i.imgur.com/w6oM24p.png" /></a>
+<!--more-->
+
+<a href="http://i.imgur.com/RIjskGg.png"><img class="split" src="http://i.imgur.com/RIjskGg.png" /></a><a href="http://i.imgur.com/w6oM24p.png"><img class="split" src="http://i.imgur.com/w6oM24p.png" /></a>
 
 And with blockouts of the room and electronics:
 
-<a href="https://i.imgur.com/RClIBSN.png"><img class="split" src="https://i.imgur.com/RClIBSN.png" /></a><a href="https://i.imgur.com/7BIwddt.png"><img class="split" src="https://i.imgur.com/7BIwddt.png" /></a>
+<a href="http://i.imgur.com/RClIBSN.png"><img class="split" src="http://i.imgur.com/RClIBSN.png" /></a><a href="http://i.imgur.com/7BIwddt.png"><img class="split" src="http://i.imgur.com/7BIwddt.png" /></a>
 
-Once I get this desk built, I’m thinking of adding a smaller desk section to form an ‘L’ shape. I’ll attach it to the right hand side of the desk and that should provide a quite useful work space when I’m doing non-computer tasks but still want to be within arms reach of it (soldering, writing, scratch work, etc).
+Once I get this desk built, I’m thinking of adding a smaller desk section to
+form an ‘L’ shape. I’ll attach it to the right hand side of the desk and that
+should provide a quite useful work space when I’m doing non-computer tasks but
+still want to be within arms reach of it (soldering, writing, scratch work,
+etc).
 
-Next posts: [(part 2)]({% post_url 2015-06-11-WIP_Computer_Desk_Update %}) [(part 3)]({% post_url 2015-06-15-Computer_Desk_Finished %})
+Next posts: [(part 2)]({% post_url 2015-06-11-WIP_Computer_Desk_Update %})
+[(part 3)]({% post_url 2015-06-15-Computer_Desk_Finished %})

@@ -1,0 +1,138 @@
+---
+layout: default3
+title: Loan Calculator
+section: Applications
+last_modified_at: 2016-08-28
+---
+
+<h2>Loan Calculator</h2>
+<span  ng-app="app">
+    <input type="radio" id="by_payment" onchange="changeMethod(this)" checked> By monthly payment<br />
+    <input type="radio" id="by_duration" onchange="changeMethod(this)"> By loan duration<br />
+
+    <br />
+
+    <table>
+        <tr>
+            <td>Starting amount:</td>
+            <td><input style="background-color: #CFD8DC; width: 6em; text-align: right;" id="p" type="number" pattern="[0-9]*" value="5000" onchange="calculate()" /></td>
+        </tr>
+        <tr>
+            <td>Down payment:</td>
+            <td><input style="background-color: #CFD8DC; width: 6em; text-align: right;" id="d" type="number" pattern="[0-9]*" value="500" onchange="calculate()" /></td>
+        </tr>
+        <tr>
+            <td>APR:</td>
+            <td><input style="background-color: #CFD8DC; width: 6em; text-align: right;" id="r" type="number" pattern="[0-9]*" value="3" onchange="calculate()" />%</td>
+        </tr>
+        <tr>
+            <td id="method">Monthly payment:</td>
+            <td><input style="background-color: #CFD8DC; width: 6em; text-align: right;" id="method_v" type="number" pattern="[0-9]*" value="200" onchange="calculate()" /><span id="method_units"></span></td>
+    </table>
+
+
+    <br />
+
+    <span id="answer"></span><br />
+</span>
+
+<script>
+var selected = "by_payment";
+
+var eByDuration = document.getElementById("by_duration");
+var eByPayment = document.getElementById("by_payment");
+var ePrinciple = document.getElementById("p");
+var eDownpayment = document.getElementById("d");
+var eRate = document.getElementById("r");
+var eMethod = document.getElementById("method");
+var eMethodVal = document.getElementById("method_v");
+var eMethodUnits = document.getElementById("method_units");
+var eAnswer = document.getElementById("answer");
+var vByPayment = 200;
+var vByDuration = 5;
+
+calculate()
+
+function changeMethod(element) {
+    eAnswer.innerHTML = "";
+
+    selected = element.id;
+    console.log("method changed");
+
+    if (element == eByDuration) {
+        eByPayment.checked = false;
+        eMethod.innerHTML = "Loan duration:";
+        vByPayment = Number(eMethodVal.value);
+        eMethodVal.value = vByDuration;
+        eMethodUnits.innerHTML = " years";
+    } else {
+        eByDuration.checked = false;
+        eMethod.innerHTML = "Monthly payment:";
+        vByDuration = Number(eMethodVal.value);
+        eMethodVal.value = vByPayment;
+        eMethodUnits.innerHTML = "";
+    }
+
+    calculate()
+}
+function calculate() {
+    console.log("using method: " + selected);
+
+    var p = Number(ePrinciple.value);
+    var d = Number(eDownpayment.value);
+    var r = Number(eRate.value);
+    var m = Number(eMethodVal.value);
+
+    var results = [];
+
+    console.log(toMoney(p) + ", " + r.toString() + "%, " + m.toString() + ", " + toMoney(d));
+
+    var principle = p - d;
+    var rate = r /(12 * 100);
+    if (selected == "by_duration") {
+        var num_payments = m * 12;
+        var monthly_payment = rate * principle / (1 - Math.pow(1+rate, -num_payments));
+        var total_loan_amnt = num_payments * monthly_payment + d;
+        var interest_paid = total_loan_amnt - p;
+        results[results.length] = ["Monthly payment", toMoney(monthly_payment)];
+        results[results.length] = ["Total interest", toMoney(interest_paid)];
+        results[results.length] = ["Total paid", toMoney(total_loan_amnt)];
+        results[results.length] = ["% of total to interest", (100 * interest_paid / p).toFixed(1) + "%"];
+    } else {
+        temp = principle;
+        temp_old = temp+1;
+        months = 0;
+        while (temp > 0){
+            if (temp_old <= temp) {
+                results[results.length] = ["Your monthly payments aren't high enough to ever pay off this loan",""];
+                break;
+            }
+            temp_old = temp;
+            temp = (1 + rate) * temp - m;
+            months += 1;
+            console.log(months.toString() + ": " + toMoney(temp));
+        }
+
+        if (temp <= 0) {
+            var total_loan_amnt = months * m + d + Math.min(0, temp);
+            var interest_paid = total_loan_amnt - p;
+            var years = Math.floor(months / 12);
+            months = months % 12;
+            results[results.length] = ["Loan duration", years.toString() + " years, " + months.toString() + " months"];
+            results[results.length] = ["Total interest", toMoney(interest_paid)];
+            results[results.length] = ["Total paid", toMoney(total_loan_amnt)];
+            results[results.length] = ["% of total to interest", (100 * interest_paid / p).toFixed(1) + "%"];
+        }
+    }
+
+    var result = "<table>";
+    for (var i=0; i<results.length; i++) {
+        result += "<tr><td>" + results[i][0] + "</td><td>:</td><td>" + results[i][1] + "</td></tr>";
+    }
+    result += "</table>"
+    eAnswer.innerHTML = result;
+}
+function toMoney(number) {
+    return "$" + number.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+</script>

@@ -16,14 +16,17 @@ username_steam: RagingRoosevelt
 username_facebook: theodore.lindsey
 
 # contact info
-phone: "(503) 898-0184"
-email: theodore.lindsey@gmail.com
+phone: "(503) 745-8444"
+email: me@theodore.io
 office: Montgomery Park, Portland
 office_link: "https://www.google.com/maps/place/2701 NW Vaughn St, Portland, OR 97210"
 
-timezone: America/Chicago
+timezone: America/Los_Angeles
 
 # blog post url format
 permalink: /blog/:year/:month/:day/:title.html
 paginate: 5
 paginate_path: "/blog/page:num/"
+excerpt_separator: <!--more-->
+
+plugins: [jekyll-paginate]

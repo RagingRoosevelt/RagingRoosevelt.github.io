@@ -1,0 +1,146 @@
+---
+layout: default3
+title: Sorting Algorithms
+section: Applications
+last_modified_at: 2015-08-27
+---
+
+<h2>Sorting Algorithms</h2>
+
+<select id="method" onchange="runner()"><option>Bubble Sort</option><option>Quick Sort</option></select><br />
+Unsorted: <span id="pre"></span><br />
+Sorted: <span id="post"></span><br />
+<canvas id="canvas" width="500px" height="500px"></canvas>
+</span>
+
+<script>// quadratic equation function
+var canvas = document.getElementById("canvas");
+var axes={}, ctx=canvas.getContext("2d");
+window.onload = plotInit;
+var data_prev = [];
+var data = [];
+
+function plotInit(){
+    axes.x0 = 0;                // x0 pixels from left to x=0
+    axes.y0 = canvas.height;    // y0 pixels from top to y=0
+    axes.scale = 40;            // 40 pixels from x=0 to x=1
+    axes.doNegativeX = false;   // don't show quadrants with negatives x
+    axes.doNegativeY = false;   // don't show quadrants with negative y
+    showAxes();         // draw the axes
+}
+
+function runner() {
+    var method = document.getElementById("method");
+    var pre = document.getElementById("pre");
+    var post = document.getElementById("post");
+
+    data_prev = data;
+    data = shuffle(arrayGen(10));
+    pre.innerHTML = "[" + data.toString() + "]";
+
+
+    //var canvas = document.getElementById("canvas");
+    if (null==canvas || !canvas.getContext) return;
+    //var axes={}, ctx=canvas.getContext("2d");
+    //ctx.clearRect(0, 0, canvas.width, canvas.height); // empty the canvas
+
+    unPlotArray(data_prev);
+    plotArray(data);
+
+    if (method.value == 0) {
+        data = bubleSort(data);
+        post.innerHTML = "[" + data.toString() + "]";
+    }
+    else {
+        post.innerHTML = "";
+    }
+
+
+
+}
+
+function bubleSort(array) {
+    for (var end = array.length; end > 1; end--) {
+        for (var i = 0; i < end; i++)
+        {
+            if (array[i] > array[i+1])
+                unPlotPoint(i+1, array[i]);
+                unPlotPoint(i+2, array[i+1]);
+                var temp = array[i];
+                array[i] = array[i+1];
+                array[i+1] = temp;
+                plotPoint(i+1, array[i]);
+                plotPoint(i+2, array[i+1]);
+        }
+    }
+    console.log(array);
+    return array;
+}
+
+function arrayGen(size) {
+    var data = [];
+    for (var i=0; i<size; i++){
+        data[i] = i+1;
+    }
+
+    return data;
+}
+
+function shuffle(array) {
+    var m = array.length, t, i;
+
+    // While there remain elements to shuffle…
+    while (m) {
+
+        // Pick a remaining element…
+        i = Math.floor(Math.random() * m--);
+
+        // And swap it with the current element.
+        t = array[m];
+        array[m] = array[i];
+        array[i] = t;
+    }
+
+    return array;
+}
+
+function showAxes() {
+    var x0=axes.x0, w=ctx.canvas.width;
+    var y0=axes.y0, h=ctx.canvas.height;
+    var xmin = axes.doNegativeX ? 0 : x0;
+    ctx.beginPath();
+    ctx.strokeStyle = "rgb(128,128,128)";
+    ctx.moveTo(xmin,y0); ctx.lineTo(w,y0);  // X axis
+    ctx.moveTo(x0,0);    ctx.lineTo(x0,h);  // Y axis
+    ctx.stroke();
+}
+
+function unPlotArray(data) {
+    for (var i=0; i < data.length; i++) {
+        unPlotPoint(i+1, data[i]);
+    }
+}
+function plotArray(data) {
+    for (var i=0; i < data.length; i++) {
+        plotPoint(i+1, data[i]);
+    }
+}
+function plotPoint(x, y) {
+    var x0=axes.x0, y0=axes.y0, scale=axes.scale;
+
+    ctx.fillStyle="Blue";//color;
+
+    ctx.beginPath();
+    ctx.arc(x0+x*scale, y0-y*scale, 2, 0, 2 * Math.PI, true);
+    ctx.fill();
+}
+function unPlotPoint(x, y) {
+    var x0=axes.x0, y0=axes.y0, scale=axes.scale;
+
+    ctx.fillStyle="#CFD8DC";//color;
+
+    ctx.beginPath();
+    ctx.arc(x0+x*scale, y0-y*scale, 2, 0, 2 * Math.PI, true);
+    ctx.fill();
+}
+</script>

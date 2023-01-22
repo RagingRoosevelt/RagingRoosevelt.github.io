@@ -1,0 +1,83 @@
+---
+layout: default3
+title: Email Extractor
+section: Applications
+last_modified_at: 2016-03-21
+---
+<script src="https://code.jquery.com/jquery-3.2.1.js"></script>
+<style>
+    .button {
+        box-sizing: border-box;
+        padding: 5px 10px 5px 10px;
+        border-radius: 5px;
+        box-shadow: 0 0 5px #888888;
+        margin: 5px;
+    }
+</style>
+
+<h2>Average Age of Credit Simulator</h2>
+
+<table id="tab_accounts">
+    <tr><th>Account</th><th>Opening Date</th><th>Age</th><th></th></tr>
+</table>
+<a id="btn_addAccount" class="button">+</a>
+
+<script>
+    tableRows = []
+
+    $("#btn_addAccount").on("click", function() {
+        var tab_accounts = $("#tab_accounts");
+
+        var row_name = get_row_name();
+        console.log(row_name);
+
+        tab_accounts.append('<tr id="'+row_name+'">'+
+                            '<td><input id="'+row_name+'_nam'+'" type="text" /></td>'+
+                            '<td><input id="'+row_name+'_dat'+'" type="date" /></td>'+
+                            '<td id="'+row_name+'_dlt'+'"></td>'+
+                            '<td><a id="'+row_name+'_del'+'" class="button">-</a></td>'+
+                            '</tr>');
+        $("#"+row_name+'_del').on("click", function() {
+            $("#"+row_name).remove();
+            tableRows.splice(tableRows.indexOf(row_name), 1);
+        });
+        $("#"+row_name+'_dat').on("change", function(){did_update_date(row_name);});
+    });
+
+    function did_update_date(row_name) {
+        var dat_now = new Date();
+        var dat_raw = $("#"+row_name+'_dat').val();
+        var dat_val = new Date();
+        dat_val.setTime(Date.parse(dat_raw) + 60000*dat_now.getTimezoneOffset());
+        var delta_days = (dat_now.getTime() - dat_val.getTime()) / (60000 * 60 * 24);
+        var delta_display;
+        if (!delta_days || delta_days <= 0) {
+            $("#"+row_name+'_dat').val("");
+            delta_display = "";
+        } else if (delta_days > 30*6) {
+            delta_display = roundTo(delta_days / 365, 0.01) + " years";
+        } else if (delta_days >= 30) {
+            delta_display = roundTo(delta_days / 30, 0.01) + " months";
+        } else {
+            delta_display = Math.floor(delta_days) + " days";
+        }
+        $("#"+row_name+"_dlt").html(delta_display);
+    }
+
+    function get_row_name() {
+        var n = 0;
+        while ($.inArray("row"+n, tableRows) >= 0) {
+            n += 1;
+        }
+
+        tableRows.push("row" + n);
+
+        return "row"+n;
+    }
+
+    function roundTo(val, to) {
+        to = Math.round(1/to);
+        return Math.round(val * to) / to;
+    }
+
+</script>
