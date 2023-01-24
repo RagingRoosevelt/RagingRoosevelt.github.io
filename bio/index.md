@@ -11,12 +11,12 @@ last_modified_at: 2023-01-22
 
 <h2>Contact Info</h2>
 
-<ul>
-    <li><a href="https://www.linkedin.com/in/theodorelindsey/"><img src="/assets/icons/linkedin-24.png" />/theodorelindsey</a></li>
-    <li><a href="https://github.com/RagingRoosevelt/"><img src="/assets/icons/github-24.png" />/RagingRoosevelt</a></li>
-    <li><a href="https://twitter.com/RagingRoosevelt/"><img src="/assets/icons/twitter-24.png" />/RagingRoosevelt</a></li>
-    <li><a href="https://steamcommunity.com/id/RagingRoosevelt/"><img src="/assets/icons/steam-24.png" />/RagingRoosevelt</a></li>
-</ul>
+<!-- <ul>
+    <li><a href="https://www.linkedin.com/in/theodorelindsey/"><img src="/assets/icons/linkedin-24.png" />LinkedIn</a></li>
+    <li><a href="https://github.com/RagingRoosevelt/"><img src="/assets/icons/github-24.png" />GitHub</a></li>
+    <li><a href="https://twitter.com/RagingRoosevelt/"><img src="/assets/icons/twitter-24.png" />Twitter</a></li>
+    <li><a href="https://steamcommunity.com/id/RagingRoosevelt/"><img src="/assets/icons/steam-24.png" />Steam</a></li>
+</ul> -->
 <p>
 <table>
 <tr><td><b>Email:</b></td><td>{{ site.email }}</td></tr>

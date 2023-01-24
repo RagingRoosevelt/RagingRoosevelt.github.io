@@ -108,10 +108,21 @@ header>div.img-profile:is(:hover,:focus)>img:nth-child(2) {
     }
 }
 
+@media only screen and (max-width: 500px){
+    nav {
+        flex-direction: column !important;
+    }
+}
+
 nav {
     padding: 0 1rem;
     border-bottom-left-radius: var(--border-radius);
     border-bottom-right-radius: var(--border-radius);
+    flex-direction: row;
+}
+
+nav ul {
+    flex-shrink: 0;
 }
 
 
