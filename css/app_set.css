@@ -1,0 +1,142 @@
+:root {
+    --rule_transition_time: 200ms;
+}
+
+button {
+    width: 10ch;
+}
+
+
+
+
+
+div#game_header {
+    position: relative;
+    width: 100%;
+}
+
+
+
+
+
+div#rules {
+    visibility: hidden;
+    opacity: 0;
+    z-index: 10;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: hsla(0,0%,0%,0.8);
+    /* box-shadow: 0px 0px 50vmax hsla(0,0%,0%,1); */
+}
+div#rules[data-visible="0"] {
+    opacity: 0;
+    visibility: hidden;
+    transition:
+        visibility 0s linear var(--rule_transition_time),
+        opacity var(--rule_transition_time) ease-in-out 0s;
+}
+div#rules[data-visible="1"] {
+    opacity: 1;
+    visibility: visible;
+    transition:
+        visibility 0s linear 0s,
+        opacity var(--rule_transition_time) ease-in-out 0s;
+}
+div#rules article {
+    position: fixed;
+    top: 50vh;
+    left: 50vw;
+    transform: translate(-50%,-50%);
+    margin: 0;
+    min-width: 40ch;
+    max-width: 80ch;
+    /* min-width:75vmin;
+    min-height:75vmin; */
+    box-sizing: border-box;
+}
+
+
+
+
+
+
+div#game {
+    position: relative;
+    top: 0;
+    box-sizing: border-box;
+    border: 1px solid red;
+    flex-direction: column;
+    display: flex;
+    /* padding: 1rem; */
+}
+
+.card {
+    width: 15vmin;
+    height: 25vmin;
+    display: flex;
+    border-radius: 0.75rem;
+    margin: 1rem;
+}
+
+.card::after {
+    width: 15vmin;
+    position: absolute;
+    height: 25vmin;
+    display: flex;
+    flex-direction: column;
+    /* align-items:center; */
+}
+.card::after *{
+    display: flex;
+    align-self: stretch;
+}
+
+.card[data-shape="diamond"]::after {
+    content: url(/games/set/assets/diamond.svg);
+}
+.card[data-shape="diamond"][data-count="2"]::after {
+    content: url(/games/set/assets/diamond.svg)
+             url(/games/set/assets/diamond.svg);
+}
+.card[data-shape="diamond"][data-count="3"]::after {
+    content: url(/games/set/assets/diamond.svg)
+             url(/games/set/assets/diamond.svg)
+             url(/games/set/assets/diamond.svg);
+}
+.card[data-shape="oval"][data-count="1"]::after {
+    content: url(/games/set/assets/oval.svg);
+}
+.card[data-shape="oval"][data-count="2"]::after {
+    content: url(/games/set/assets/oval.svg)
+             url(/games/set/assets/oval.svg);
+}
+.card[data-shape="oval"][data-count="3"]::after {
+    content: url(/games/set/assets/oval.svg)
+             url(/games/set/assets/oval.svg)
+             url(/games/set/assets/oval.svg);
+}
+.card[data-shape="squiggle"][data-count="1"]::after {
+    content: url(/games/set/assets/squiggle.svg);
+}
+.card[data-shape="squiggle"][data-count="2"]::after {
+    content: url(/games/set/assets/squiggle.svg)
+             url(/games/set/assets/squiggle.svg);
+}
+.card[data-shape="squiggle"][data-count="3"]::after {
+    content: url(/games/set/assets/squiggle.svg)
+             url(/games/set/assets/squiggle.svg)
+             url(/games/set/assets/squiggle.svg);
+}
+
+.card[data-color="red"] {
+    background-color: red;
+}
+.card[data-color="blue"] {
+    background-color: aqua;
+}
+.card[data-color="green"] {
+    background-color: greenyellow;
+}

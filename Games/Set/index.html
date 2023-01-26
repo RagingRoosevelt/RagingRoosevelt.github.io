@@ -1,54 +1,87 @@
-<!DOCTYPE html>
-<html lang="en">
+---
+layout: empty
+title: Set
+section: Applications
+last_modified_at: 2023-01-24
+---
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta charset="UTF-8">
-    <link rel="stylesheet" type="text/css" href="style/sweetalert.css">
-    <link rel="stylesheet" type="text/css" href="style/master.css">
-    <link rel="icon" type="image/png" href="/assets/favicon.png">
-    <title>Set</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="{{ "/css/pico.min.css" | prepend: site.baseurl }}">
+  <!-- <link rel="stylesheet" type="text/css" href="/games/set/style/sweetalert.css">
+  <link rel="stylesheet" type="text/css" href="/games/set/style/master.css"> -->
+  <link rel="stylesheet" type="text/css" href="/css/nav.css">
+  <link rel="stylesheet" type="text/css" href="/css/app_set.css">
+  <link rel="icon" type="image/png" href="/assets/favicon.png">
+  <title>Set</title>
 </head>
 <body onresize="resizedWindow()">
-    <div id="div_header"><a onclick="javascript:showRules()">Rules</a><span id="status"></span></div>
 
-    <div id="div_game" class="fullView">
-        <canvas id="board">Please install a modern browser that supports Canvas elements!</canvas>
-    </div>
+  {% include nav.html %}
 
-    <div id="div_setup" class="fullView offScreen">
-        <select id="players" size="10">
-            <option>text1</option>
-            <option>text2</option>
-            <option>text3</option>
-            <option>text4</option>
-            <option>text5</option>
-        </select>
-    </div>
+  <div id="game_header">
+    <button onclick="toggle_rules(1)">Rules</button>
+    <button onclick="new_game()">New Game</button>
+  </div>
 
-    <div id="div_rules" class="fullView offScreen">
-        <div id="div_rulesContent">
-            <h1 style="display: block;">Rules</h1>
-            <ul>
-                <li>Each card has four attributes: color, shape, fill, and count.</li>
-                <li>Sets are composed of three cards.</li>
-                <li>For three cards to constitute a set, each attribute must be all the same or all different.  That is,
-                    for three cards, color must be all the same or all different, shape must be all the same or all
-                    different, number must be all the same or all different, and finally, fill must be all the same or
-                    all different.
-                </li>
-                <li>If no set can be found, three extra cards will be added to the field.  As sets are found, rather
-                    than refilling back up to 15, the board is only refilled back up to 12, when necessary.
-                </li>
-            </ul>
-        </div>
-    </div>
+  <div id="rules" data-visible="0">
+    <article>
+      <h1>Rules</h1>
+      <section>
+        <ul>
+          <li>Each card has four attributes: color, shape, fill, and count.</li>
+          <li>Sets are composed of three cards.</li>
+          <li>For three cards to constitute a set, each attribute must be all the same or all different.  That is,
+            for three cards, color must be all the same or all different, shape must be all the same or all
+            different, number must be all the same or all different, and finally, fill must be all the same or
+            all different.
+          </li>
+          <li>If no set can be found, three extra cards will be added to the field.  As sets are found, rather
+            than refilling back up to 15, the board is only refilled back up to 12, when necessary.
+          </li>
+        </ul>
+      </section>
+      <button onclick="toggle_rules()">OK</button>
+    </article>
+  </div>
 
+  <div id="game" onclick="on_clicked_card(event)">
+    <div class="card" data-shape="squiggle" data-color="red" data-count="1" data-fill="solid"></div>
+    <div class="card" data-shape="diamond" data-color="green" data-count="3" data-fill="empty"></div>
+    <div class="card" data-shape="squiggle" data-color="red" data-count="2" data-fill="shaded"></div>
+    <div class="card" data-shape="diamond" data-color="blue" data-count="1" data-fill="shaded"></div>
+    <div class="card" data-shape="oval" data-color="green" data-count="3" data-fill="empty"></div>
+    <div class="card" data-shape="squiggle" data-color="red" data-count="3" data-fill="empty"></div>
+  </div>
 
+  <script>
+    let ELEM_RULES = document.querySelector("div#rules")
+    let ELEM_GAME = document.querySelector("div#game")
+    function toggle_rules(new_value=undefined) {
+      if (new_value == undefined) {
+        new_value = ELEM_RULES.dataset.visible == "0" ? "1" : "0"
+      }
 
+      ELEM_RULES.dataset.visible = new_value
+    }
 
-    <script type="text/javascript" src="script/jquery-3.1.1.min.js"></script>
-    <script type="text/javascript" src="script/combinations.js"></script>
-    <script type="text/javascript" src="script/sweetalert.min.js"></script>
-    <script type="text/javascript" src="script/master.js"></script>
+    function resizedWindow(e) {
+      console.log(e)
+    }
+
+    function on_clicked_card(e) {
+      let click_target = e.originalTarget
+      let card_index = Array.from(ELEM_GAME.children).indexOf(click_target)
+
+      if (card_index >= 0) {
+        console.log(`Clicked on card with index ${card_index}`)
+        console.log(`Card had properties `, Object.assign({},click_target.dataset))
+      }
+    }
+    function new_game(){
+      console.log("Player wants to start a new game")
+      throw Error("Not yet implemented")
+    }
+  </script>
+
 </body>
-</html>
