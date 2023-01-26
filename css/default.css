@@ -1,138 +1,174 @@
-html {
-  overflow-y: scroll;
-}
-
-body {
-    background: url("/assets/soda_small.jpg") no-repeat center center fixed;
+/* body {
+    min-height: 100vh;
+    background-image: url("/assets/soda_small.jpg");
+    background-repeat: no-repeat;
+    background-origin: border-box;
+    background-clip: border-box;
+    background-position-x: center;
+    background-position-y: center;
     background-size: cover;
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
+} */
+div.all-content {
+    z-index: 0;
 }
-
-.content_wrapper {
-    background-color: #CFD8DC;
-    
-    position: absolute;
-    top: 0;
-    margin: 150px 0px 10px 10px;
-    left: 150px;
-    
-    min-height: 80%;
-    width: 65%;
-    max-width: 800px;
-    min-width: 200px;
-    
-    border-radius: 10px;
-}
-.content {
-    margin: 20px;
-    color: #212121;
-}
-.content a{
-    color: #212121;
-}
-.content h1{
-    margin: 10px 0px 0px 0px;
-    display: run-in;
-}
-.content .pagination ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-}
-.content .pagination li {
-    display: inline;
-    padding: 2px 10px 2px 10px;
-    margin: 0px 0px 0px 0px;
-    border-radius: 5px;
-}
-.content .pagination .active{
-    background-color: #607D8B;
-    color: #FFFFFF;
-}
-.content .pagination .disabled a {
-    text-decoration: none;
-}
-
-.sidebar{
-    padding: 0px 3px 0px 3px;
-}
-.sidebar_wrapper {
-    background-color: #607D8B;
-    color: #FFFFFF;
-    height: 100%;
-    width: 150px;
+div.background_image {
+    z-index: -100;
     position: fixed;
     top: 0;
     left: 0;
-    
-    border-radius: 10px;
+    width: 100vw;
+    height: 100vh;
+    background-image: url("/assets/soda_small.jpg");
+    background-repeat: no-repeat;
+    background-origin: border-box;
+    background-clip: border-box;
+    background-position-x: left;
+    background-position-y: center;
+    background-size: cover; /*fixed;*/
+
 }
-.sidebar_wrapper ul {
-    /*background-color: #B6B6B6;*/
-    list-style-type: none;
-    list-style-position: outside;
-    margin: 0px;
-    padding: 0px 0px 0px 0px;
+@media only screen and (min-width: 1100px) {
+    body  {
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+        padding-top: 0.5rem;
+    }
+    header {
+        border-top-left-radius: var(--border-radius);
+        border-top-right-radius: var(--border-radius);
+    }
+    header > div.img-profile > img {
+        border-top-left-radius: var(--border-radius) !important;
+    }
 }
-.sidebar_wrapper .external-links li {
-    display: inline;
+
+article, header {
+    max-width: 105ch;
+    background-color: hsla(0,100%,100%,0.9);
 }
-.sidebar_wrapper .nav li, .sidebar_wrapper .recent_posts li{
-    padding: 5px 0px 5px 0px;
+
+article {
+    min-height: 60vh;
 }
-.sidebar_wrapper .nav a, .sidebar_wrapper .external-links a, .sidebar_wrapper .recent_posts a{
-    color: #FFFFFF;
+article :is(h2, h3, h4, h5) {
+    margin-bottom: calc(var(--typography-spacing-vertical) / 2);
+    margin-top: 0;
 }
-.sidebar_wrapper img {
-    border-radius: 10px;
+
+header a.hero-link {
+    font-size: 3rem;
+    white-space: nowrap;
 }
-#active_nav{
-    background-color: #727272;
+@media only screen and (max-width: 475px){
+    header a.hero-link {
+        font-size: 2rem;
+    }
 }
-#active_nav a{
-    color: #FFFFFF;
-    font-style: italic;
+
+/* header profile image */
+header>div.img-profile {
+    width: 20ch;
+    height: 20ch;
+    display: inline-block;
+}
+header>div.img-profile>img {
+    position: absolute;
+    border-radius: 1rem;
+    width: 20ch;
+}
+header>div.img-profile>img:first-child {
+    z-index: 1;
+}
+header>div.img-profile>img:nth-child(2) {
+    z-index: 2;
+    opacity: 0;
+    transition: opacity 0.5s;
+}
+header>div.img-profile:is(:hover,:focus)>img:nth-child(2) {
+    opacity: 1;
+    transition: opacity 0.5s;
 }
 
 
-img.full{
-    width: 98%;
-    padding:1px;
-    border:1px solid #000000;
-    
+
+@media only screen and (
+    (orientation: portrait)
+    or (max-height: 900px)
+){
+    header>div.img-profile {
+        width: 3rem;
+        height: 3rem;
+    }
+    header>div.img-profile>img {
+        width: 3rem;
+    }
+}
+
+/* Blog pagination links */
+ul.pagination li {
+    display: inline-block;
+    border-radius: 0.25rem;
+    background-color: hsla(0, 0%, 71%, 0.75);
+    box-sizing: border-box;
+}
+ul.pagination li :is(a,span,text),
+ul.pagination li.disabled {
+    display: inline-block;
+    text-align: center;
+    min-width: 6ch;
+}
+ul.pagination li a {
+    color: var(--primary);
+}
+ul.pagination li a:is(:hover,:focus) {
+    text-decoration: none;
+    color: var(--primary-inverse);
+}
+ul.pagination li.active span,
+ul.pagination li.disabled {
+    color: var(--primary-inverse);
+}
+
+
+section::before {
+    content: '';
+    height: 2px;
+    background-color: var(--muted-color);
+    width: calc(100% - 60px);
     display: block;
-    margin-left: auto;
-    margin-right: auto;
-}
-img.half{
-    width: 49%;
-    padding:1px;
-    border:1px solid #000000;
-    
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-}
-img.split{
-    width: 49%;
-    padding:1px;
-    border:1px solid #000000;
-    
-    margin-left: auto;
-    margin-right: auto;
+    left: 30px;
+    position: relative;
+    margin-bottom: calc(var(--block-spacing-vertical) / 3);
 }
 
+/* ul.pagination li:not(:first-child):not(:last-child) :is(a,span) {
+    min-width: 6ch;
+}
+ul.pagination li:is(:first-child,:last-child) :is(a,span) {
+    min-width: 3ch;
+} */
+footer {
+    color: var(--primary-inverse);
+    text-shadow: 0px 0px 3px var(--contrast-hover);
+}
+
+
+article tr:nth-child(odd) {
+    background-color: hsla(0,100%,100%,0.55);
+}
+article tr:has(th:first-child) {
+    background-color: var(--contrast) !important;
+}
+article tr th {
+    color: var(--contrast-inverse);
+}
+
+.blog_date {
+    font-weight: 600;
+    position: relative;
+    top: -1rem;
+}
 
 small {
-    font-size: 0.5em;
-}
-
-#hfill {
-    display: flex; 
-    justify-content: space-between; 
-    list-style-type: none; 
-    padding-left:0; 
-    margin: 2px;
+    font-size: calc(var(--font-size) - 0.5rem);
 }

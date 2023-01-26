@@ -9,20 +9,38 @@ html, body {
     /*font-size: 1.25em;*/
 }
 
+#main {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    transition: left linear .05s;
+    /*box-shadow: 0 0 5vw #000000;*/
+    z-index: 1;
+}
+#menu {
+    z-index: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 8em;
+    height: 100vh;
+}
+.menuVisible {
+    left: 8em !important;
+}
 .fullView {
     position: absolute;
     top: 5vh;
     left: 0;
     width: 100vw;
     height: 95vh;
-    background: #ffffff;
 }
 .offScreen {
     top: 100vh !important;
 }
 #status {
-    position: absolute;
-    right: 5px;
 }
 #div_rulesContent {
     overflow-y:auto;
@@ -46,16 +64,9 @@ html, body {
     display: block;
     border-width: 0 0 2px 0;
     border-style: solid;
-    padding: 10px;
-    line-height: 3vh;
-    font-size: 2vh;
-}
-
-#players {
-    position: absolute;
-    left: 30vw;
-    top: 10vw;
-    width: 40vw;
+    /*padding: 10px;*/
+    vertical-align: middle;
+    line-height: 5vh;
 }
 
 .card {
@@ -66,4 +77,73 @@ html, body {
     position: absolute;
     top: 0;
     left: 0;
+}
+/*
+@media (orientation: landscape) {
+    #div_game {
+
+        transform-origin: left top;
+        -webkit-transform: rotate(90deg);
+        -moz-transform: rotate(90deg);
+        -ms-transform: rotate(90deg);
+        -o-transform: rotate(90deg);
+        transform: rotate3d(-45,-45,0,180deg);
+
+
+    }
+}
+*/
+
+#render_canvas {
+    top: 100vh;
+    position: absolute;
+}
+
+
+.BG_white {
+    background: #ffffff;
+}
+
+.btn {
+    display: block;
+    background: #aaaaaa;
+    border-radius: 10px;
+    line-height: 2em;
+    height: 2em;
+    text-align:center;
+    vertical-align:middle;
+}
+.btn.sidebar {
+    width: 100%;
+}
+.btn.setup {
+    position: absolute;
+    width: 10%;
+}
+#setupBtnAddPlayer {
+    top: 0;
+    left: 20vw;
+}
+#setupBtnRemovePlayer {
+    top: 0;
+    right: 20vw;
+}
+#setupPlayers {
+    position: absolute;
+    left: 20vw;
+    width: 60vw;
+
+    top: 5%;
+    height: 70%;
+
+    border: 1px solid #000000;
+}
+#setupPlayerName {
+    position: absolute;
+    top: 1%;
+    width: 30vw;
+    left: 35vw;
+}
+#setupBtnStartGame {
+
 }
