@@ -153,13 +153,13 @@ footer {
 }
 
 
-article tr:nth-child(odd) {
+article tr:has(td):nth-child(even) {
     background-color: hsla(0,100%,100%,0.55);
 }
-article tr:has(th:first-child) {
+article tr:has(th) {
     background-color: var(--contrast) !important;
 }
-article tr th {
+article tr:has(th) th {
     color: var(--contrast-inverse);
 }
 
