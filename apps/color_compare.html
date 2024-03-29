@@ -50,9 +50,11 @@
     }
   </style>
   <link href="https://cdn.statically.io/gh/mickelsonmichael/js-snackbar/v1.5.1/dist/js-snackbar.css" rel="stylesheet">
+  <!-- <link href="https://cdn.jsdelivr.net/gh/mickelsonmichael/js-snackbar@v1.5.1/dist/js-snackbar.css" rel="stylesheet"> -->
 </head>
 <body>
   <script src="https://cdn.statically.io/gh/mickelsonmichael/js-snackbar/v1.5.1/dist/js-snackbar.js"></script>
+  <!-- <script src="https://cdn.jsdelivr.net/gh/mickelsonmichael/js-snackbar@v1.5.1/dist/js-snackbar.js"></script> -->
   <script>
     if (document.readyState !== 'loading') init_page()
     else document.addEventListener('DOMContentLoaded', init_page)
@@ -81,7 +83,7 @@
             SnackBar({
               message: "Copied to clipboard!",
               status: "info",
-              timeout: 5000, // ms
+              timeout: 1000, // ms
               position: "bc"
             })
           }
