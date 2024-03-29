@@ -1,0 +1,86 @@
+<html>
+<head>
+  <style>
+    :root {
+      --header-height: 3rem;
+      
+    }
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      height: var(--header-height);
+    }
+    article {
+      display: flex;
+      flex-direction: column;
+      height: calc(100% - var(--header-height));
+    }
+    article div {
+      height: calc(100% / 3);
+      align-items: center;
+      position: relative;
+    }
+    article div span {
+      text-shadow: 0 0 20px white;
+      font-weight: 800;
+      font-size: 3rem;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  </style>
+</head>
+<body>
+  <script src="https://unpkg.com/vanilla-picker@2"></script>
+  <script>
+    if (document.readyState !== 'loading') init_page()
+    else document.addEventListener('DOMContentLoaded', init_page)
+    
+    let color_pickers;
+    
+    function init_page() {
+      var parent = document.querySelector('.color_picker:nth-child(1)');
+      var picker = new Picker(parent);
+      console.log(picker)
+    
+      color_pickers = [
+        document.getElementById("1"),
+        document.getElementById("2"),
+        document.getElementById("3")
+      ]
+      console.log(color_pickers)
+      
+      for (let k=0; k < color_pickers.length; k+=1) {
+        color_pickers[k].addEventListener("input", update => change_color(k+1, update.target.value))
+      }
+    }
+    
+    function change_color(idx, color) {
+      const target_elem = document.querySelector(`article div:nth-child(${idx})`)
+      console.log(idx, color, target_elem)
+      if (target_elem) {
+        target_elem.style.setProperty("background-color", color)
+        
+        target_elem.childNodes[0].textContent = color
+      }
+    }
+  </script>
+  
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  
+  <header>
+    <div class="color_picker">Color Picker</div>
+    <input id="1" type="color">
+    <input id="2" type="color">
+    <input id="3" type="color">
+  </header>
+  <article>
+    <div><span></span></div>
+    <div><span></span></div>
+    <div><span></span></div>
+  </article>
+</body>
+</html>
