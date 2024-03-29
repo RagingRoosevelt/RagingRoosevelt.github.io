@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="height=device-height, width=device-width, initial-scale=1" />
+  <!-- <link rel="stylesheet" href="https://unpkg.com/js-snackbar@1.1.2/snackbar.css" /> -->
   <style>
     :root {
       --header-height: 3rem;
@@ -48,9 +49,10 @@
       transform: translate(-50%, -50%);
     }
   </style>
+  <link href="https://cdn.statically.io/gh/mickelsonmichael/js-snackbar/v1.5.1/dist/js-snackbar.css" rel="stylesheet">
 </head>
 <body>
-  <script src="https://unpkg.com/vanilla-picker@2"></script>
+  <script src="https://cdn.statically.io/gh/mickelsonmichael/js-snackbar/v1.5.1/dist/js-snackbar.js"></script>
   <script>
     if (document.readyState !== 'loading') init_page()
     else document.addEventListener('DOMContentLoaded', init_page)
@@ -76,6 +78,12 @@
           
           if (color_string.length > 0) {
             navigator.clipboard.writeText(color_string);
+            SnackBar({
+              message: "Copied to clipboard!",
+              status: "info",
+              timeout: 5000, // ms
+              position: "bc"
+            })
           }
         })
       }
