@@ -34,18 +34,13 @@
   </style>
 </head>
 <body>
-  <script src="https://unpkg.com/vanilla-picker@2"></script>
   <script>
     if (document.readyState !== 'loading') init_page()
     else document.addEventListener('DOMContentLoaded', init_page)
     
     let color_pickers;
     
-    function init_page() {
-      var parent = document.querySelector('.color_picker:nth-child(1)');
-      var picker = new Picker(parent);
-      console.log(picker)
-    
+    function init_page() {    
       color_pickers = [
         document.getElementById("1"),
         document.getElementById("2"),
@@ -72,7 +67,6 @@
   <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
   
   <header>
-    <div class="color_picker">Color Picker</div>
     <input id="1" type="color">
     <input id="2" type="color">
     <input id="3" type="color">
