@@ -11,6 +11,16 @@
     }
     header {
       height: var(--header-height);
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+    }
+    header input {
+      vertical-align: middle;
+      height: 2rem;
+    }
+    header input[type="text"] {
+      width: 10ch;
     }
     article {
       display: flex;
@@ -34,42 +44,69 @@
   </style>
 </head>
 <body>
+  <script src="https://unpkg.com/vanilla-picker@2"></script>
   <script>
     if (document.readyState !== 'loading') init_page()
     else document.addEventListener('DOMContentLoaded', init_page)
     
     let color_pickers;
+    let text_inputs;
     
     function init_page() {    
-      color_pickers = [
-        document.getElementById("1"),
-        document.getElementById("2"),
-        document.getElementById("3")
-      ]
-      console.log(color_pickers)
-      
+      color_pickers = document.querySelectorAll("input[type='color']")
+      text_inputs = document.querySelectorAll("input[type='text']")
+            
       for (let k=0; k < color_pickers.length; k+=1) {
-        color_pickers[k].addEventListener("input", update => change_color(k+1, update.target.value))
+        color_pickers[k].addEventListener("input", update => {
+          text_inputs[k].value = update.target.value
+          change_color(k+1, update.target.value)
+        })
+        text_inputs[k].addEventListener("change", update => {
+          color_pickers[k].value = update.target.value; 
+          change_color(k+1, update.target.value)
+        })
       }
     }
     
     function change_color(idx, color) {
       const target_elem = document.querySelector(`article div:nth-child(${idx})`)
       console.log(idx, color, target_elem)
+      
+      
+      
       if (target_elem) {
         target_elem.style.setProperty("background-color", color)
         
         target_elem.childNodes[0].textContent = color
       }
     }
+    
+    function convert_to_hex(str) {
+      const r_rgb = /rgb\((\d{1,3}),(\d{1,3}),(\d{1,3})\)/gmi ;
+      const r_hsl = /hsl\((\d{1,3})(?:deg)? (\d{1,3})%? (\d{1,3}%?)\)/gmi ;
+      // const r_hsv = /hsv\((\d{1,3}),(\d{1,3}),(\d{1,3})\)/gmi ;
+          
+      if (r_rgb.test(str.trim())) {
+        console.log("RGB!")
+      } else if (r_hsl.test(str.trim())) {
+        console.log("HSL!")
+      }
+      // } else if (r_hsv.test(str.trim())) {
+      //   console.log("HSV!")        
+      // }
+    }
   </script>
   
-  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-  
   <header>
-    <input id="1" type="color">
-    <input id="2" type="color">
-    <input id="3" type="color">
+    <div>
+      <input type="text"></input><input id="1" type="color">
+    </div>
+    <div>
+      <input type="text"></input><input id="2" type="color">
+    </div>
+    <div>
+      <input type="text"></input><input id="3" type="color">
+    </div>
   </header>
   <article>
     <div><span></span></div>
