@@ -31,10 +31,10 @@
       height: calc(100% - var(--header-height));
     }
     article div {
-      min-height: 150px;
       height: calc(100% / 3);
       align-items: center;
       position: relative;
+      min-height: 150px;
     }
     article div span {
       text-shadow: 0 0 20px white;
@@ -53,8 +53,9 @@
     if (document.readyState !== 'loading') init_page()
     else document.addEventListener('DOMContentLoaded', init_page)
     
-    let color_pickers;
-    let text_inputs;
+    let color_pickers
+    let text_inputs
+    let display_elements
     
     function init_page() {    
       color_pickers = document.querySelectorAll("input[type='color']")
@@ -62,14 +63,10 @@
       display_elements = document.querySelectorAll("article div")
             
       for (let k=0; k < color_pickers.length; k+=1) {
-        color_pickers[k].addEventListener("input", update => {
-          text_inputs[k].value = update.target.value
-          change_color(k+1, update.target.value)
-        })
-        text_inputs[k].addEventListener("change", update => {
-          color_pickers[k].value = update.target.value; 
-          change_color(k+1, update.target.value)
-        })
+        color_pickers[k].addEventListener("input", update => handle_color_picker_change(k, update))
+        color_pickers[k].addEventListener("change", update => handle_color_picker_change(k, update))
+        text_inputs[k].addEventListener("change", update => handle_text_input_change(k,update))
+        
         display_elements[k].addEventListener("click", event => {
           const target_div = event.currentTarget
           const value_holding_elem = target_div.getElementsByTagName("span")[0]
@@ -82,11 +79,17 @@
       }
     }
     
+    function handle_color_picker_change(k, event) {          
+      text_inputs[k].value = event.target.value
+      change_color(k+1, event.target.value)
+    }
+    function handle_text_input_change(k, event) {
+      color_pickers[k].value = event.target.value; 
+      change_color(k+1, event.target.value)
+    }
+    
     function change_color(idx, color) {
       const target_elem = document.querySelector(`article div:nth-child(${idx})`)
-      console.log(idx, color, target_elem)
-      
-      
       
       if (target_elem) {
         target_elem.style.setProperty("background-color", color)
