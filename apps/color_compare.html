@@ -56,6 +56,7 @@
     function init_page() {    
       color_pickers = document.querySelectorAll("input[type='color']")
       text_inputs = document.querySelectorAll("input[type='text']")
+      display_elements = document.querySelectorAll("article div")
             
       for (let k=0; k < color_pickers.length; k+=1) {
         color_pickers[k].addEventListener("input", update => {
@@ -65,6 +66,15 @@
         text_inputs[k].addEventListener("change", update => {
           color_pickers[k].value = update.target.value; 
           change_color(k+1, update.target.value)
+        })
+        display_elements[k].addEventListener("click", event => {
+          const target_div = event.currentTarget
+          const value_holding_elem = target_div.getElementsByTagName("span")[0]
+          const color_string = value_holding_elem.textContent
+          
+          if (color_string.length > 0) {
+            navigator.clipboard.writeText(color_string);
+          }
         })
       }
     }
