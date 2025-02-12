@@ -1,5 +1,5 @@
 ---
-layout: default3
+layout: main
 title: Teaching - Theodore S. Lindsey
 section: Teaching
 last_modified_at: 2015-08-21

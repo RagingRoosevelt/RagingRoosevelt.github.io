@@ -1,5 +1,5 @@
 ---
-layout: default3
+layout: main
 title: Blog Posts
 section: Blog
 ---
@@ -18,7 +18,7 @@ section: Blog
             <li><a href="{{ paginator.previous_page_path }}">&laquo;</a></li>
         {% endif %}
     {% else %}
-        <li class="disabled">&laquo;</li>
+        <li class="disabled"><span>&laquo;</span></li>
     {% endif %}
 
     {% for page in (1..paginator.total_pages) %}
@@ -34,24 +34,24 @@ section: Blog
     {% if paginator.next_page %}
         <li><a href="{{ paginator.next_page_path }}">&raquo;</a></li>
     {% else %}
-        <li class="disabled">&raquo;</li>
+        <li class="disabled"><span>&raquo;</span></li>
     {% endif %}
     </ul>
 {% endif %}
 
 {% if paginator.posts %}
     {% for post in paginator.posts %}
-        <section>
-        <h2 class="post-title">
+        <article>
+        <h1 class="post-title">
             <a href="{{ post.url }}">{{ post.title }}</a>
-            <small>(<time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%b. %d, %Y' }}</time>)</small>
-        </h2>
+        </h1>
+        (<time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%b. %d, %Y' }}</time>)
 
         <p>{{ post.excerpt }}</p>
 
         <a href="{{ post.url }}" class="pull-right">[read more]</a>
 
-        </section>
+        </article>
     {% endfor %}
 {% else %}
     <p>No posts found.</p>
@@ -66,7 +66,7 @@ section: Blog
             <li><a href="{{ paginator.previous_page_path }}">&laquo;</a></li>
         {% endif %}
     {% else %}
-        <li class="disabled">&laquo;</li>
+        <li class="disabled"><span>&laquo;</span></li>
     {% endif %}
 
     {% for page in (1..paginator.total_pages) %}
@@ -82,7 +82,7 @@ section: Blog
     {% if paginator.next_page %}
         <li><a href="{{ paginator.next_page_path }}">&raquo;</a></li>
     {% else %}
-        <li class="disabled">&raquo;</li>
+        <li class="disabled"><span>&raquo;</span></li>
     {% endif %}
     </ul>
 {% endif %}
