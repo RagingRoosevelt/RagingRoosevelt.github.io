@@ -192,7 +192,7 @@ body {
     main {
         ul.pagination {
             padding-left: 0;
-            :is(a, span) {
+            a, span {
                 padding: 0.5ch 1ch;
             }
         }
