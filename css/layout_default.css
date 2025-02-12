@@ -1,0 +1,197 @@
+:root {
+    /* --background-color: rgba(255,255,255,0.85); */
+    --background-color: oklch(from white l c h / 0.85);
+    --background-color-header: var(--background-color);
+    --background-color-main: var(--background-color);
+    --background-color-nav: var(--background-color);
+    --background-color-footer: var(--background-color);
+    --text: rgb(61, 61, 61);
+    --contrast: rgb(61, 61, 61);
+    --contrast-inverse: beige;
+    --principle-padding: 1em;
+    
+    font-family: "IBM Plex Mono", serif;
+    font-weight: 600;
+    font-style: normal;
+}
+
+a, [role=link], a:visited {
+    color: rgb(16, 149, 193);
+}
+a:is([aria-current], :hover, :active, :focus) {
+    color: hsl(195deg, 90%, 32%);
+}
+
+header {
+    --border-radius: 5px;
+    border-radius: var(--border-radius);
+    grid-area: head;
+    background-color: var(--background-color-header);
+    div.img-profile {
+        display: inline-block;
+        width: 20ch;
+        height: 20ch;
+    }
+    margin-bottom: 3em;
+
+    div.img-profile {
+        width: 20ch;
+        height: 20ch;
+        display: inline-block;
+    }
+    div.img-profile>img {
+        position: absolute;
+        border-radius: 1rem;
+        border-top-left-radius: var(--border-radius);;
+        width: 20ch;
+        height: 20ch;
+    }
+    div.img-profile>img:first-child {
+        z-index: 1;
+    }
+    div.img-profile>img:nth-child(2) {
+        z-index: 2;
+        opacity: 0;
+        transition: opacity 0.5s;
+    }
+    div.img-profile:is(:hover,:focus)>img:nth-child(2) {
+        opacity: 1;
+        transition: opacity 0.5s;
+    }
+
+    a.hero-link {
+        font-size: 3rem;
+        white-space: nowrap;
+    }
+}
+@media only screen and (
+    (orientation: portrait)
+    or (max-height: 900px)
+){
+    header {
+        margin-bottom: 0;
+        div.img-profile {
+            width: 3rem;
+            height: 3rem;
+        }
+        div.img-profile>img {
+            width: 3rem;
+            height: 3rem;
+        }
+    }
+}
+
+nav {
+    position:sticky;
+    top: 0;
+
+    grid-area: nav;
+    background-color: var(--background-color-nav);
+    li.active-nav {
+        font-weight: bold;
+        font-style: italic;
+    }
+    ul {
+        padding: 0;
+    }
+    li {
+        padding: 0.4em var(--principle-padding);
+        list-style: none;
+    }
+}
+main {
+    padding: var(--principle-padding);
+    grid-area: content;
+    /* background-color: darksalmon; */
+    background-color: var(--background-color-main);
+    img {
+        width: 100%
+    }
+    ul.pagination li {
+        display: inline-block;
+        a, span {
+            display: inline-block;
+            width: 5ch;
+            text-align: center;
+            background-color: var(--background-color);
+            border-radius: 5px;
+            padding: 0.5ch 3ch;
+        }
+    }
+}
+article {
+    background-color: var(--background-color-article);
+}
+footer {
+    padding: 0.5em var(--principle-padding);
+    grid-area: foot;
+    /* background-color: bisque; */
+    background-color: var(--background-color-footer);
+}
+
+main table {
+    border-collapse: collapse;
+}
+main tr :is(th,td) {
+    padding: 0.25em var(--principle-padding);
+}
+main tr:has(td):nth-child(even) {
+    background-color: hsla(0,100%,100%,0.55);
+}
+main tr:has(th) {
+    background-color: var(--contrast) !important;
+}
+main tr:has(th) th {
+    color: var(--contrast-inverse);
+}
+
+
+html {
+    min-height: 100%;
+}
+body {
+    display: grid;
+    grid-template-columns: 20ch 120ch auto;
+    grid-template-rows: auto auto auto 1fr auto;
+    grid-template-areas: 
+    "head head ."
+    "nav content ."
+    "nav content ."
+    ". . ."
+    ". foot .";
+    background-image: url("/assets/soda.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    min-width: fit-content;
+    min-height: 100%;
+    position: absolute;
+    margin: 0;
+}
+@media (max-width: 100ch){
+    nav ul li {
+        display: inline-block;
+    }
+    body{
+        width: 100%;
+        grid-template-columns: auto auto auto;
+        grid-template-areas: 
+            "head head head"
+            "nav nav nav"
+            "content content content"
+            ". . ."
+            "foot foot foot";
+    }
+    header {
+        margin-bottom: 0;
+        a.hero-link {
+            font-size: 2rem;
+            white-space: nowrap;
+        }
+    }
+}
+@media (min-width: 100ch) and (max-width: 140ch){
+    body { 
+        grid-template-columns: 20ch 80ch auto;
+    }
+}

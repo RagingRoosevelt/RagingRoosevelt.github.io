@@ -1,0 +1,49 @@
+---
+layout: base
+---
+
+<header>
+  <div class="img-profile">
+    <img height="100%" src="/assets/theodore.jpg" alt="Theodore's headshot">
+    <img height="100%" src="/assets/ragingroosevelt.png" alt="Theodore's avatar">
+  </div>
+  <a href="/" class="hero-link">Theodore S. Lindsey</a>
+</header>
+
+<nav>
+  <ul>
+    <li {% if page.section == "Home" %}class="active-nav"{% endif %}>
+      <a href="/">Home</a>
+    </li>
+
+    <li {% if page.section == "Bio" %}class="active-nav"{% endif %}>
+      <a href="{{site.baseurl}}/bio/">Bio</a>
+    </li>
+
+    <li {% if page.section == "Blog" %}class="active-nav"{% endif %}>
+      <a href="{{site.baseurl}}/blog/">Blog</a>
+    </li>
+
+    <li {% if page.section == "Applications" %}class="active-nav"{% endif %}>
+        <a href="/apps/">Applets</a>
+    </li>
+
+    <li>
+      <a href="/assets/Theodore_Lindsey_Resume.pdf" target="_blank">Resume</a>
+    </li>
+  </ul>
+</nav>
+
+
+<main>
+  {{ content }}
+</main>
+
+<footer>
+  {% if page.title != "Blog Posts" %}
+    <!--#config timefmt="%B %d, %Y" -->
+    Last modified: <!--#echo var="LAST_MODIFIED"--> {{ page.last_modified_at }}
+  {% endif %}
+</footer>
+
+<div class="background"></div>

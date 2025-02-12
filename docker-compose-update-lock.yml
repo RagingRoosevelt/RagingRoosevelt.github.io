@@ -1,0 +1,4 @@
+services:
+  jekyll:
+    command: bundle install
+    

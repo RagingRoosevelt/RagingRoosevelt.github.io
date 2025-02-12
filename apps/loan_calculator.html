@@ -1,5 +1,5 @@
 ---
-layout: default3
+layout: main
 title: Loan Calculator
 section: Applications
 last_modified_at: 2016-08-28
@@ -15,19 +15,19 @@ last_modified_at: 2016-08-28
     <table>
         <tr>
             <td>Starting amount:</td>
-            <td><input style="background-color: #CFD8DC; width: 6em; text-align: right;" id="p" type="number" pattern="[0-9]*" value="5000" onchange="calculate()" /></td>
+            <td><input style="background-color: #CFD8DC; width: 15ch; text-align: right;" id="p" type="number" pattern="[0-9]*" value="5000" onchange="calculate()" /></td>
         </tr>
         <tr>
             <td>Down payment:</td>
-            <td><input style="background-color: #CFD8DC; width: 6em; text-align: right;" id="d" type="number" pattern="[0-9]*" value="500" onchange="calculate()" /></td>
+            <td><input style="background-color: #CFD8DC; width: 15ch; text-align: right;" id="d" type="number" pattern="[0-9]*" value="500" onchange="calculate()" /></td>
         </tr>
         <tr>
             <td>APR:</td>
-            <td><input style="background-color: #CFD8DC; width: 6em; text-align: right;" id="r" type="number" pattern="[0-9]*" value="3" onchange="calculate()" />%</td>
+            <td><input style="background-color: #CFD8DC; width: 15ch; text-align: right;" id="r" type="number" pattern="[0-9]*" value="3" onchange="calculate()" />%</td>
         </tr>
         <tr>
             <td id="method">Monthly payment:</td>
-            <td><input style="background-color: #CFD8DC; width: 6em; text-align: right;" id="method_v" type="number" pattern="[0-9]*" value="200" onchange="calculate()" /><span id="method_units"></span></td>
+            <td><input style="background-color: #CFD8DC; width: 15ch; text-align: right;" id="method_v" type="number" pattern="[0-9]*" value="200" onchange="calculate()" /><span id="method_units"></span></td>
     </table>
 
 
