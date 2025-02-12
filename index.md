@@ -6,7 +6,7 @@ last_modified_at: 2025-02-12
 ---
 
 
-<h2>Intro</h2>
+# Intro
 
 Hi!  I like to dabble in a number of maker-related hobbies and I write about them here.  Mostly this ends up in the [blog](/blog/) section.  Notably, I'm into:
 
