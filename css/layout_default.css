@@ -193,7 +193,7 @@ body {
         ul.pagination {
             padding-left: 0;
             a, span {
-                padding: 0.5ch 1ch;
+                padding: 0.5ch 1ch !important;
             }
         }
     }
