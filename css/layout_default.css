@@ -189,6 +189,14 @@ body {
             white-space: nowrap;
         }
     }
+    main {
+        ul.pagination {
+            padding-left: 0;
+            li {
+            padding: 0.5ch 1ch;
+            }
+        }
+    }
 }
 @media (min-width: 100ch) and (max-width: 140ch){
     body { 
