@@ -22,9 +22,13 @@ Category:
   {% endfor %}
 </select>
 Tags: 
-<select 
+<!-- <select 
     id="search_tag_picker"
     multiple
+    search='true'
+    > -->
+  <select 
+    id="search_tag_picker"
     search='true'
     >
   <option value="">(all)</option>
@@ -111,21 +115,25 @@ Tags:
     }
   }
   function handle_search_clear() {
-    one("#search_category_picker").value = null
-    one("#search_tag_picker").value = null
+    one("#search_category_picker").value = ""
+    one("#search_tag_picker").value = ""
     Object.values(posts).forEach(o => o.hidden = false)
     set_url(null, null)
   }
   function handle_search_from_query_params(query_params) {
-    const tags = query_params.get("tags") ? query_params.get("tags").split("|").filter(s=>s.length>0) : null
     const category = query_params.get("category") ? query_params.get("category") : null
+    const tags = query_params.get("tags") ? query_params.get("tags").split("|").filter(s=>s.length>0) : null
     
     console.log(tags, category)
 
-    entities.sel_category.value = category
-    Array.from(entities.sel_tags.options).forEach(o=>{
-      o.selected = tags.includes(o.value)
-    })
+    entities.sel_category.value = category !== null ? category : ""
+    if (tags !== null) {
+      Array.from(entities.sel_tags.options).forEach(o=>{
+        o.selected = tags.includes(o.value)
+      })
+    } else {
+      entities.sel_tags.value = ""
+    }
     handle_search_go()
   }
   function set_url(category, tags) {
