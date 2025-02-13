@@ -3,7 +3,8 @@ layout: blog
 title: Computer Desk, Finished (part 3)
 section: Blog
 last_modified_at: 2015-06-15
-categories:
+categories: Making
+tags:
 - Woodworking
 - Computer_Desk
 ---

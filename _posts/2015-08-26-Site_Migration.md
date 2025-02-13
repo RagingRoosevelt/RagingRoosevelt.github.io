@@ -3,8 +3,9 @@ layout: blog
 title: Site Migration
 section: Blog
 last_modified_at: 2015-08-26
-categories:
-- General
+categories: Musings
+tags:
+- Website
 ---
 
 I've pretty much finished migrating my blog posts from

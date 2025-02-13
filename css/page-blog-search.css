@@ -1,0 +1,6 @@
+main select {
+    vertical-align: text-top;
+}
+main select#search_tag_picker {
+    color: red;
+}
