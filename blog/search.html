@@ -10,6 +10,7 @@ extra_css:
 
 {% assign site_categories = site.categories|sort %}
 {% assign site_tags = site.tags|sort %}
+Category: 
 <select 
     id="search_category_picker"
     search='true'
@@ -20,6 +21,7 @@ extra_css:
     <option value="{{ category_name }}">{{ category_name|replace: "_", " " }}</option>
   {% endfor %}
 </select>
+Tags: 
 <select 
     id="search_tag_picker"
     multiple
@@ -31,8 +33,6 @@ extra_css:
     <option value="{{ tag_name }}">{{ tag_name|replace: "_", " " }}</option>
   {% endfor %}
 </select>
-
-<button id="search_go">Filter</button>
 <button id="search_clear">Clear</button>
 
 {% for post in site.posts %}
