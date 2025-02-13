@@ -4,6 +4,9 @@ title: Blog Posts
 section: Blog
 ---
 
+<!-- TODO: https://blog.webjeda.com/jekyll-categories/ -->
+<!-- TODO: https://onthefencedevelopment.com/2022/05/15/tag-generation-with-jekyll.html -->
+
 <h1>Blog <a href="/blog/feed.xml"><img style="width: 16px" src="/assets/icons/rss.svg" alt="rss feed" /></a></h1>
 
 
@@ -13,28 +16,28 @@ section: Blog
     <ul class="pagination">
     {% if paginator.previous_page %}
         {% if paginator.previous_page == 1 %}
-            <li><a href="/blog/">&laquo;</a></li>
+            <li><a aria-label="Previous page of blog posts" href="/blog/">&laquo;</a></li>
         {% else %}
-            <li><a href="{{ paginator.previous_page_path }}">&laquo;</a></li>
+            <li><a aria-label="Previous page of blog posts" href="{{ paginator.previous_page_path }}">&laquo;</a></li>
         {% endif %}
     {% else %}
-        <li class="disabled"><span>&laquo;</span></li>
+        <li class="disabled"><span aria-label="No previous page of blog posts">&laquo;</span></li>
     {% endif %}
 
     {% for page in (1..paginator.total_pages) %}
         {% if page == paginator.page %}
-            <li class="active"><span>{{ page }}</span></li>
+            <li class="active"><span aria-label="On page {{ page }} of blog posts">{{ page }}</span></li>
         {% elsif page == 1 %}
-            <li><a href="/blog/">1</a></li>
+            <li><a aria-label="Page {{ page }} of blog posts" href="/blog/">1</a></li>
         {% else %}
-            <li><a href="{{ site.paginate_path | replace: ':num', page }}">{{ page }}</a></li>
+            <li><a aria-label="Page {{ page }} of blog posts" href="{{ site.paginate_path | replace: ':num', page }}">{{ page }}</a></li>
         {% endif %}
     {% endfor %}
 
     {% if paginator.next_page %}
-        <li><a href="{{ paginator.next_page_path }}">&raquo;</a></li>
+        <li><a aria-label="Next page of blog posts" href="{{ paginator.next_page_path }}">&raquo;</a></li>
     {% else %}
-        <li class="disabled"><span>&raquo;</span></li>
+        <li class="disabled"><span aria-label="No next page of blog posts">&raquo;</span></li>
     {% endif %}
     </ul>
 {% endif %}
@@ -43,13 +46,13 @@ section: Blog
     {% for post in paginator.posts %}
         <article>
         <h1 class="post-title">
-            <a href="{{ post.url }}">{{ post.title }}</a>
+            <a aria-label="Blog Post: {{ post.title }}" href="{{ post.url }}">{{ post.title }}</a>
         </h1>
-        (<time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: '%b. %d, %Y' }}</time>)
+        (<time datetime="{{ post.date | date_to_xmlschema }}" aria-label="Posted on {{ post.date | date: '%B %-d, %Y' }}">{{ post.date | date: '%B %-d, %Y' }}</time>)
 
-        <p>{{ post.excerpt }}</p>
+        <section aria-label="Post excerpt">{{ post.excerpt }}</section>
 
-        <a href="{{ post.url }}" class="pull-right">[read more]</a>
+        <a aria-label="Read more" href="{{ post.url }}" class="pull-right">[read more]</a>
 
         </article>
     {% endfor %}

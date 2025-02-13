@@ -41,7 +41,7 @@ layout: base
 </main>
 
 <footer>
-  {% if page.title != "Blog Posts" %}
+  {% if page.last_modified_at %}
     <!--#config timefmt="%B %d, %Y" -->
     Last modified: <!--#echo var="LAST_MODIFIED"--> {{ page.last_modified_at }}
   {% endif %}

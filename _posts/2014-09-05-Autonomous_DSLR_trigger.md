@@ -3,8 +3,9 @@ layout: blog
 title: Autonomous DSLR trigger
 section: Blog
 last_modified_at: 2014-09-05
-categories:
-- WIP
+categories: Making
+tags:
+- Electronics
 - Arduino
 - Photography
 ---

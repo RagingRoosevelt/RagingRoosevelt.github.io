@@ -3,12 +3,10 @@ layout: blog
 title: Procedural All-Color Images
 section: Blog
 last_modified_at: 2016-12-28
+categories: Coding
 tags:
-  - post:tags=tag
-  - post:type=python
-categories:
-  - Python
-  - cv2
+- Python
+- CV2
 ---
 
 [Project Github link](https://github.com/RagingRoosevelt/allRGBImages)

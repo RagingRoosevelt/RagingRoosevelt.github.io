@@ -3,7 +3,8 @@ layout: blog
 title: Coup – First impressions of base game
 section: Blog
 last_modified_at: 2014-09-07
-categories:
+categories: Musings
+tags:
 - Boardgames
 ---
 

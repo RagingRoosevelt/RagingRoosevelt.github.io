@@ -3,7 +3,8 @@ layout: blog
 title: Surface Pro 4 and Academic Note Taking
 section: Blog
 last_modified_at: 2016-03-06
-categories:
+categories: Musings
+tags:
 - Computers
 ---
 

@@ -1,0 +1,145 @@
+---
+layout: main
+title: Blog Posts
+section: Blog
+permalink: /blog/search/
+extra_css:
+- page-blog-search.css
+---
+
+
+{% assign site_categories = site.categories|sort %}
+{% assign site_tags = site.tags|sort %}
+<select 
+    id="search_category_picker"
+    search='true'
+    >
+  <option value="">(all)</option>
+  {% for category in site_categories %}
+    {% capture category_name %}{{ category|first }}{% endcapture %}
+    <option value="{{ category_name }}">{{ category_name|replace: "_", " " }}</option>
+  {% endfor %}
+</select>
+<select 
+    id="search_tag_picker"
+    multiple
+    search='true'
+    >
+  <option value="">(all)</option>
+  {% for tag in site_tags %}
+  {% capture tag_name %}{{ tag|first }}{% endcapture %}
+    <option value="{{ tag_name }}">{{ tag_name|replace: "_", " " }}</option>
+  {% endfor %}
+</select>
+
+<button id="search_go">Filter</button>
+<button id="search_clear">Clear</button>
+
+{% for post in site.posts %}
+<article 
+    data-category="{{post.categories}}"
+    data-tags="{{ post.tags|join: ';' }}"
+    data-key="{{ post.url|md5 }}"
+    >
+  <h1 class="post-title">
+    <a aria-label="Blog Post: {{ post.title }}" href="{{ post.url }}">{{ post.title }}</a>
+  </h1>
+  (<time datetime="{{ post.date | date_to_xmlschema }}" aria-label="Posted on {{ post.date | date: '%B %-d, %Y' }}">{{ post.date | date: '%B %-d, %Y' }}</time>)
+
+  <section aria-label="Post excerpt">{{ post.excerpt }}</section>
+
+  <a aria-label="Read more" href="{{ post.url }}" class="pull-right">[read more]</a>
+
+</article>
+{% endfor %}
+
+<script>
+  const all = document.querySelectorAll.bind(document)
+  const one = document.querySelector.bind(document)
+  let tags = {}
+  let categories = {}
+  let posts = {}
+  let entities = {}
+  let initial_url = undefined
+  window.addEventListener("load", () => {
+    [...all("article")].forEach(o => {
+      const key = o.dataset.key
+      posts[key] = o
+      o.dataset.tags.split(";").forEach(t => {
+        if (!(t in tags)) { tags[t] = [] }
+        tags[t].push(key)
+      })
+      if (!(o.dataset.category in categories)) {
+        categories[o.dataset.category] = []
+      }
+      categories[o.dataset.category].push(key)
+    });
+
+    entities = {
+      sel_category: one("#search_category_picker"),
+      sel_tags: one("#search_tag_picker"),
+      btn_clear: one("#search_clear"),
+    }
+    entities.sel_category.addEventListener("change", handle_search_go)
+    entities.sel_tags.addEventListener("change", handle_search_go)
+    entities.btn_clear.addEventListener("click", handle_search_clear)
+
+    initial_url = new URL(document.location.toString())
+    handle_search_from_query_params(initial_url.searchParams)
+  })
+  function handle_search_go() {
+    const search_tags = [...one("#search_tag_picker").selectedOptions].map(o=>o.value).filter(o=>o!=="")
+    const search_category = one("#search_category_picker").value
+
+    set_url(search_category, search_tags)
+    
+    filter = Object.keys(posts)
+    if (search_category) {
+      filter = filter.filter(k => (categories[search_category] && categories[search_category].includes(k)))
+    }
+    for (const tag of search_tags) {
+      filter = filter.filter(k => (tags[tag] && tags[tag].includes(k)))
+    }
+    console.log(`Limited to ${filter.length} of ${Object.keys(posts).length} posts`)
+    console.log(filter)
+    for (const [key, elem] of Object.entries(posts)){
+      if (filter.includes(key)) {
+        elem.hidden = false
+      } else {
+        elem.hidden = true
+      }
+    }
+  }
+  function handle_search_clear() {
+    one("#search_category_picker").value = null
+    one("#search_tag_picker").value = null
+    Object.values(posts).forEach(o => o.hidden = false)
+    set_url(null, null)
+  }
+  function handle_search_from_query_params(query_params) {
+    const tags = query_params.get("tags") ? query_params.get("tags").split("|").filter(s=>s.length>0) : null
+    const category = query_params.get("category") ? query_params.get("category") : null
+    
+    console.log(tags, category)
+
+    entities.sel_category.value = category
+    Array.from(entities.sel_tags.options).forEach(o=>{
+      o.selected = tags.includes(o.value)
+    })
+    handle_search_go()
+  }
+  function set_url(category, tags) {
+    if (category === null || category === "") {
+      initial_url.searchParams.delete("category")
+    } else {
+      initial_url.searchParams.set("category", category)
+    }
+    if (tags === null || tags.length === 0) {
+      initial_url.searchParams.delete("tags")
+    } else {
+      initial_url.searchParams.set("tags", tags.join("|"))
+    }
+
+    window.history.pushState({}, document.title, `${initial_url.pathname}${initial_url.search}`)
+  }
+</script>

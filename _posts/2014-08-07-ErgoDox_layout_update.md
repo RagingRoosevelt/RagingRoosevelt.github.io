@@ -3,12 +3,10 @@ layout: blog
 title: ErgoDox Layout Update
 section: Blog
 last_modified_at: 2014-08-07
+categories: Making
 tags:
-  - post:tags=tag
-  - post:type=thoughts
-categories:
-  - WIP
-  - Keyboarding
+  - Electronics
+  - Keyboards
 ---
 
 Still using QWERTY.  I previously had a pretty different thumb cluster.  I used

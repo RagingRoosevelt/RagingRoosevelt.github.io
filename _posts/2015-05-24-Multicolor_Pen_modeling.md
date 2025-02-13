@@ -3,9 +3,9 @@ layout: blog
 title: Multicolor Pen modeling
 section: Blog
 last_modified_at: 2015-05-24
-categories:
+categories: Making
+tags:
 - 3D_Modeling
-- WIP
 ---
 
 Mariah’s multicolor pen broke.  I didn’t have any prior experience doing 3D
