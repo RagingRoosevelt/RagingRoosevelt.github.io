@@ -13,10 +13,10 @@ layout: main
 
 Categories:
 {% for category in page.categories %}
-    <a href="{{site.baseurl}}/blog/categories.html#{{category|slugize}}">{{category}}</a>,
+    <a href="{{site.baseurl}}/blog/search/?category={{category|slugize}}">{{category}}</a>,
 {% endfor %}
 
 Tags:
 {% for tag in page.tags %}
-    <a href="{{site.baseurl}}/blog/tags.html#{{tag|slugize}}">{{tag}}</a>,
+    <a href="{{site.baseurl}}/blog/search/?tags={{tag|slugize}}">{{tag}}</a>,
 {% endfor %}
