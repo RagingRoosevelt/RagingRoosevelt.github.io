@@ -1,7 +1,7 @@
 ---
 layout: main
 title: Teaching - Theodore S. Lindsey
-section: Teaching
+section: Bio
 last_modified_at: 2015-08-21
 ---
 

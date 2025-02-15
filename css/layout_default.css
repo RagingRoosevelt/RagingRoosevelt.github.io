@@ -1,14 +1,21 @@
 :root {
     /* --background-color: rgba(255,255,255,0.85); */
-    --background-color: oklch(from white l c h / 0.85);
+    /* --text: rgb(61, 61, 61); */
+    --lightness: 10%;
+    /* --text: oklch(var(--lightness) 0.9 120); */
+    --text: oklch(0.9 0.20 290 / 0.8);
+    --text-link: oklch(from var(--text) l c calc(120 + h) / 1);
+    --text-link-hover: oklch(from var(--text-link) calc(0.8 * l) c h / 1);
+    --contrast: rgb(61, 61, 61);
+    --contrast-inverse: beige;
+    --principle-padding: 1em;
+
+    /* --background-color: oklch(from white l c h / 0.95); */
+    --background-color: oklch(from var(--text) calc(1.0 - l) 0.3 calc(240 + h) / 0.8);
     --background-color-header: var(--background-color);
     --background-color-main: var(--background-color);
     --background-color-nav: var(--background-color);
     --background-color-footer: var(--background-color);
-    --text: rgb(61, 61, 61);
-    --contrast: rgb(61, 61, 61);
-    --contrast-inverse: beige;
-    --principle-padding: 1em;
     
     font-family: "IBM Plex Mono", serif;
     font-weight: 600;
@@ -16,10 +23,15 @@
 }
 
 a, [role=link], a:visited {
-    color: rgb(16, 149, 193);
+    /* color: rgb(16, 149, 193); */
+    color: var(--text-link);
+    text-decoration: none;
 }
 a:is([aria-current], :hover, :active, :focus) {
-    color: hsl(195deg, 90%, 32%);
+    /* color: hsl(195deg, 90%, 32%); */
+    color: var(--text-link-hover);
+    text-decoration: dotted underline;
+    background-color: var(--background-color-main);
 }
 
 header {
@@ -118,6 +130,49 @@ main {
             padding: 0.5ch 3ch;
         }
     }
+    input {
+        border-radius: 5px;
+        line-height: 2em;
+        font-size: medium;
+    }
+    :has(> input.lightness) {
+        content: "";
+        background: linear-gradient(
+            to right, 
+            oklch(0 0 0) 0%, 
+            oklch(1 0 0) 100%
+        );
+
+    }
+    :has(> input.chroma) {
+        content: "";
+        background: linear-gradient(
+            to right, 
+            oklch(from var(--text) 1 0 h) 0%, 
+            oklch(from var(--text) 1 1 h) 100%
+        );
+
+    }
+    :has(> input.hue) {
+        content: "";
+        background: linear-gradient(
+            to right, 
+            oklch(1 1 0) 0%, 
+            oklch(1 1 60) 17%, 
+            oklch(1 1 120) 33%, 
+            oklch(1 1 180) 50%, 
+            oklch(1 1 240) 66%, 
+            oklch(1 1 300) 83%, 
+            oklch(1 1 360) 100%
+        );
+
+    }
+    select {
+        font-size: medium;
+    }
+    button {
+        padding: 0.5em 1em;
+    }
 }
 article {
     background-color: var(--background-color-article);
@@ -149,20 +204,37 @@ main tr:has(th) th {
 html {
     min-height: 100%;
 }
+body::before {
+    content: "";
+    z-index: -1;
+    background-color: var(--background-color);
+    background-image: url("/assets/soda.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    filter: brightness(20%);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+body::after {
+    content: "";
+    background-color: var(--background-color-main);
+    grid-area: spacer;
+}
 body {
+    color: var(--text);
     display: grid;
     grid-template-columns: 20ch 120ch auto;
     grid-template-rows: auto auto auto 1fr auto;
     grid-template-areas: 
     "head head ."
     "nav content ."
-    "nav content ."
-    ". . ."
+    ". content ."
+    ". spacer ."
     ". foot .";
-    background-image: url("/assets/soda.jpg");
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
     min-width: fit-content;
     min-height: 100%;
     position: absolute;
@@ -179,7 +251,7 @@ body {
             "head head head"
             "nav nav nav"
             "content content content"
-            ". . ."
+            "spacer spacer spacer"
             "foot foot foot";
     }
     header {
