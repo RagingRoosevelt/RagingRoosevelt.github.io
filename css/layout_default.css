@@ -3,7 +3,7 @@
     /* --text: rgb(61, 61, 61); */
     --lightness: 10%;
     /* --text: oklch(var(--lightness) 0.9 120); */
-    --text: oklch(0.9 0.20 290 / 0.8);
+    --text: oklch(0.9 0.20 290 / 1);
     --text-link: oklch(from var(--text) l c calc(120 + h) / 1);
     --text-link-hover: oklch(from var(--text-link) calc(0.8 * l) c h / 1);
     --contrast: rgb(61, 61, 61);
