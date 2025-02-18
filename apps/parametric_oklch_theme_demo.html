@@ -8,7 +8,7 @@ last_modified_at: 2025-02-14
 <h1>{{ page.title }}</h1>
 
 <p>
-The premise of this theme approach is to drive an entire color theme from a few key parameters.  The mechanism by which this operates is the CSS OkLCH color's ability to derive from another color.  
+The premise of this theme approach is to drive an entire color theme from a few key parameters.  The mechanism by which this operates is the CSS OkLCH color's ability to derive from another color.
 </p>
 <p>
 Guiding principles:
@@ -26,7 +26,7 @@ A few observations:
     <li>You should use extreme values for the lightness so that there's sufficient contrast</li>
 </ul>
 </p>
-<table>
+<table class="no-alternating-highlight">
 <tr><td>Text Hue</td><td><span style="width: 5ch; color: #000; display: inline-block; text-align: center;" id="theme_text_hue"></span><span><input class="hue" type="range" min="0" max="360" step="1" id="theme_text_hue"></span></td></tr>
 <tr><td>Text Chroma</td><td><span style="width: 5ch; color: #000; display: inline-block; text-align: center;" id="theme_text_chroma"></span><span><input class="chroma" type="range" min="0" max="1" step="0.01" id="theme_text_chroma"></span></td></tr>
 <tr><td>Text Lightness</td><td><span style="width: 5ch; color: #000; display: inline-block; text-align: center;" id="theme_text_lightness"></span><span><input class="lightness" type="range" min="0" max="1" step="0.01" id="theme_text_lightness"></span></td></tr>
@@ -62,7 +62,7 @@ let elem = {
     text_hue_code: undefined,
 }
 let oklch = {
-    l: 0.9,
+    l: 0.03,
     c: 0.20,
     h: 290
 }
@@ -74,7 +74,7 @@ window.addEventListener("load", () => {
     elem.text_lightness = one("input#theme_text_lightness")
 
     elem.text_hue_disp = one("span#theme_text_hue")
-    elem.text_lightness_disp = one("span#theme_text_lightness")    
+    elem.text_lightness_disp = one("span#theme_text_lightness")
     elem.text_chroma_disp = one("span#theme_text_chroma")
 
     elem.text_lightness_code = one("span#theme_text_lightness_code")
@@ -92,7 +92,7 @@ window.addEventListener("load", () => {
     set_color()
 })
 function set_color() {
-    elem.root.style.setProperty("--text", `oklch(${oklch.l} ${oklch.c} ${oklch.h} / 1)`);
+    elem.root.style.setProperty("--color-primary", `oklch(${oklch.l} ${oklch.c} ${oklch.h} / 1)`);
 
     set_displays(oklch.l, oklch.c, oklch.h)
 }
@@ -104,7 +104,7 @@ function set_displays(l,c,h) {
 
     elem.text_chroma_disp.textContent = c
     elem.text_chroma_code.textContent = c
-    elem.text_chroma_disp.style.setProperty("background-color", `oklch(from var(--text) 1 ${c} h / 1)`)    
+    elem.text_chroma_disp.style.setProperty("background-color", `oklch(from var(--color-primary) 1 ${c} h / 1)`)
 
     elem.text_hue_disp.textContent = h
     elem.text_hue_code.textContent = h

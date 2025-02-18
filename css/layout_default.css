@@ -1,22 +1,30 @@
 :root {
+    --color-primary: oklch(0.9 0.20 290 / 1);
+    --color-accent: oklch(from var(--color-primary) calc(1.0 - l) 0.3 calc(240 + h) / 0.8);
+
+    --color-contrast: var(--color-accent);
+    --color-contrast-inverse: var(--color-primary);
+
+    --color-background: oklch(from var(--color-primary) l c h / 0.8);
+    --color-background-header: var(--color-background);
+    --color-background-main: var(--color-background);
+    --color-background-nav: var(--color-background);
+    --color-background-footer: var(--color-background);
+
+    --color-text: var(--color-accent);
+    --color-text-link: oklch(from var(--color-text) l c calc(120 + h) / 1);
+    --color-text-link-hover: oklch(from var(--color-text-link) calc(0.8 * l) c h / 1);
+
     /* --background-color: rgba(255,255,255,0.85); */
-    /* --text: rgb(61, 61, 61); */
-    --lightness: 10%;
-    /* --text: oklch(var(--lightness) 0.9 120); */
-    --text: oklch(0.9 0.20 290 / 1);
-    --text-link: oklch(from var(--text) l c calc(120 + h) / 1);
-    --text-link-hover: oklch(from var(--text-link) calc(0.8 * l) c h / 1);
-    --contrast: rgb(61, 61, 61);
-    --contrast-inverse: beige;
+    /* --color-text: rgb(61, 61, 61); */
+    /* --color-text: oklch(var(--lightness) 0.9 120); */
+    /* --color-text: oklch(0.9 0.20 290 / 1); */
+
     --principle-padding: 1em;
 
     /* --background-color: oklch(from white l c h / 0.95); */
-    --background-color: oklch(from var(--text) calc(1.0 - l) 0.3 calc(240 + h) / 0.8);
-    --background-color-header: var(--background-color);
-    --background-color-main: var(--background-color);
-    --background-color-nav: var(--background-color);
-    --background-color-footer: var(--background-color);
-    
+    /* --background-color: oklch(from var(--color-text) calc(1.0 - l) 0.3 calc(240 + h) / 0.8); */
+
     font-family: "IBM Plex Mono", serif;
     font-weight: 600;
     font-style: normal;
@@ -24,21 +32,21 @@
 
 a, [role=link], a:visited {
     /* color: rgb(16, 149, 193); */
-    color: var(--text-link);
+    color: var(--color-text-link);
     text-decoration: none;
 }
 a:is([aria-current], :hover, :active, :focus) {
     /* color: hsl(195deg, 90%, 32%); */
-    color: var(--text-link-hover);
+    color: var(--color-text-link-hover);
     text-decoration: dotted underline;
-    background-color: var(--background-color-main);
+    background-color: var(--color-background-main);
 }
 
 header {
     --border-radius: 5px;
     border-radius: var(--border-radius);
     grid-area: head;
-    background-color: var(--background-color-header);
+    background-color: var(--color-background-header);
     div.img-profile {
         display: inline-block;
         width: 20ch;
@@ -98,7 +106,7 @@ nav {
     top: 0;
 
     grid-area: nav;
-    background-color: var(--background-color-nav);
+    background-color: var(--color-background-nav);
     li.active-nav {
         font-weight: bold;
         font-style: italic;
@@ -115,7 +123,7 @@ main {
     padding: var(--principle-padding);
     grid-area: content;
     /* background-color: darksalmon; */
-    background-color: var(--background-color-main);
+    background-color: var(--color-background-main);
     img {
         width: 100%
     }
@@ -138,8 +146,8 @@ main {
     :has(> input.lightness) {
         content: "";
         background: linear-gradient(
-            to right, 
-            oklch(0 0 0) 0%, 
+            to right,
+            oklch(0 0 0) 0%,
             oklch(1 0 0) 100%
         );
 
@@ -147,22 +155,22 @@ main {
     :has(> input.chroma) {
         content: "";
         background: linear-gradient(
-            to right, 
-            oklch(from var(--text) 1 0 h) 0%, 
-            oklch(from var(--text) 1 1 h) 100%
+            to right,
+            oklch(from var(--color-text) 1 0 h) 0%,
+            oklch(from var(--color-text) 1 1 h) 100%
         );
 
     }
     :has(> input.hue) {
         content: "";
         background: linear-gradient(
-            to right, 
-            oklch(1 1 0) 0%, 
-            oklch(1 1 60) 17%, 
-            oklch(1 1 120) 33%, 
-            oklch(1 1 180) 50%, 
-            oklch(1 1 240) 66%, 
-            oklch(1 1 300) 83%, 
+            to right,
+            oklch(1 1 0) 0%,
+            oklch(1 1 60) 17%,
+            oklch(1 1 120) 33%,
+            oklch(1 1 180) 50%,
+            oklch(1 1 240) 66%,
+            oklch(1 1 300) 83%,
             oklch(1 1 360) 100%
         );
 
@@ -181,24 +189,27 @@ footer {
     padding: 0.5em var(--principle-padding);
     grid-area: foot;
     /* background-color: bisque; */
-    background-color: var(--background-color-footer);
+    background-color: var(--color-background-footer);
 }
 
 main table {
     border-collapse: collapse;
 }
-main tr :is(th,td) {
+main table tr > :is(th,td) {
     padding: 0.25em var(--principle-padding);
 }
-main tr:has(td):nth-child(even) {
+main table:not(.no-alternating-highlight) tr:has(td):nth-child(even) {
     background-color: hsla(0,100%,100%,0.55);
 }
-main tr:has(th) {
-    background-color: var(--contrast) !important;
+main table:not(.no-alternating-highlight) tr:has(th) {
+    background-color: var(--color-contrast) !important;
+    & > th {
+        color: var(--color-contrast-inverse);
+    }
 }
-main tr:has(th) th {
-    color: var(--contrast-inverse);
-}
+/* main table:not(.no-alternating-highlight) tr:has(th) > th {
+    color: var(--color-contrast-inverse);
+} */
 
 
 html {
@@ -221,15 +232,15 @@ body::before {
 }
 body::after {
     content: "";
-    background-color: var(--background-color-main);
+    background-color: var(--color-background-main);
     grid-area: spacer;
 }
 body {
-    color: var(--text);
+    color: var(--color-text);
     display: grid;
     grid-template-columns: 20ch 120ch auto;
     grid-template-rows: auto auto auto 1fr auto;
-    grid-template-areas: 
+    grid-template-areas:
     "head head ."
     "nav content ."
     ". content ."
@@ -247,7 +258,7 @@ body {
     body{
         width: 100%;
         grid-template-columns: auto auto auto;
-        grid-template-areas: 
+        grid-template-areas:
             "head head head"
             "nav nav nav"
             "content content content"
@@ -271,7 +282,7 @@ body {
     }
 }
 @media (min-width: 100ch) and (max-width: 140ch){
-    body { 
+    body {
         grid-template-columns: 20ch 80ch auto;
     }
 }
@@ -291,7 +302,7 @@ body {
     transform: translateY(0);
     transition: transform 250ms ease-in;
   }
-  
+
   /* When it is not focused, transform its Y position by its total height, using a negative value, so it hides above the viewport */
   .skip-link:not(:focus) {
     transform: translateY(-2rem);
