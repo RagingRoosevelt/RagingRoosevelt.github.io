@@ -47,57 +47,41 @@ header {
     border-radius: var(--border-radius);
     grid-area: head;
     background-color: var(--color-background-header);
-    div.img-profile {
-        display: inline-block;
-        width: 20ch;
-        height: 20ch;
-    }
     margin-bottom: 3em;
 
-    div.img-profile {
+    & div.img-profile {
+        display: inline-block;
+        width: 20ch;
+        height: 20ch;
+    }
+    & div.img-profile {
         width: 20ch;
         height: 20ch;
         display: inline-block;
     }
-    div.img-profile>img {
+    & div.img-profile>img {
         position: absolute;
         border-radius: 1rem;
         border-top-left-radius: var(--border-radius);;
         width: 20ch;
         height: 20ch;
     }
-    div.img-profile>img:first-child {
+    & div.img-profile>img:first-child {
         z-index: 1;
     }
-    div.img-profile>img:nth-child(2) {
+    & div.img-profile>img:nth-child(2) {
         z-index: 2;
         opacity: 0;
         transition: opacity 0.5s;
     }
-    div.img-profile:is(:hover,:focus)>img:nth-child(2) {
+    & div.img-profile:is(:hover,:focus)>img:nth-child(2) {
         opacity: 1;
         transition: opacity 0.5s;
     }
 
-    a.hero-link {
+    & a.hero-link {
         font-size: 3rem;
         white-space: nowrap;
-    }
-}
-@media only screen and (
-    (orientation: portrait)
-    or (max-height: 900px)
-){
-    header {
-        margin-bottom: 0;
-        div.img-profile {
-            width: 3rem;
-            height: 3rem;
-        }
-        div.img-profile>img {
-            width: 3rem;
-            height: 3rem;
-        }
     }
 }
 
@@ -120,12 +104,14 @@ nav {
     }
 }
 main {
+    box-sizing: border-box;
     padding: var(--principle-padding);
     grid-area: content;
     /* background-color: darksalmon; */
     background-color: var(--color-background-main);
     img {
-        width: 100%
+        width: 100%;
+        object-fit: contain;
     }
     ul.pagination li {
         display: inline-block;
@@ -180,6 +166,233 @@ main {
     }
     button {
         padding: 0.5em 1em;
+    }
+    & div.side-by-side {
+        display: flex;
+        align-items: start;
+        &>* {
+            flex:1;
+            &:is([aria-current], :hover, :active, :focus) {
+                flex: 5;
+            }
+        }
+    }
+    div.highlighter-rouge div.highlight code {
+        /* token */
+        /* comment */
+        /* keyword */
+        /* name */
+        /* name.class */
+        /* name.function */
+        /* string */
+        .c, .ch, .cd, .cpf {
+            color: #75715e;
+            font-style: italic;
+          }
+          .cm {
+            color: #75715e;
+            font-style: italic;
+          }
+          .c1 {
+            color: #75715e;
+            font-style: italic;
+          }
+          .cp {
+            color: #75715e;
+            font-weight: bold;
+          }
+          .cs {
+            color: #75715e;
+            font-weight: bold;
+            font-style: italic;
+          }
+          .err {
+            color: #960050;
+            background-color: #1e0010;
+          }
+          .gi {
+            color: #ffffff;
+            background-color: #324932;
+          }
+          .gd {
+            color: #ffffff;
+            background-color: #493131;
+          }
+          .ge {
+            color: #000000;
+            font-style: italic;
+          }
+          .gr {
+            color: #aa0000;
+          }
+          .gt {
+            color: #aa0000;
+          }
+          .gh {
+            color: #999999;
+          }
+          .go {
+            color: #888888;
+          }
+          .gp {
+            color: #555555;
+          }
+          .gs {
+            font-weight: bold;
+          }
+          .gu {
+            color: #aaaaaa;
+          }
+          .k, .kv {
+            color: #66d9ef;
+            font-weight: bold;
+          }
+          .kc {
+            color: #66d9ef;
+            font-weight: bold;
+          }
+          .kd {
+            color: #66d9ef;
+            font-weight: bold;
+          }
+          .kp {
+            color: #66d9ef;
+            font-weight: bold;
+          }
+          .kr {
+            color: #66d9ef;
+            font-weight: bold;
+          }
+          .kt {
+            color: #66d9ef;
+            font-weight: bold;
+          }
+          .kn {
+            color: #f92672;
+            font-weight: bold;
+          }
+          .ow {
+            color: #f92672;
+            font-weight: bold;
+          }
+          .o {
+            color: #f92672;
+            font-weight: bold;
+          }
+          .mf {
+            color: #ae81ff;
+          }
+          .mh {
+            color: #ae81ff;
+          }
+          .il {
+            color: #ae81ff;
+          }
+          .mi {
+            color: #ae81ff;
+          }
+          .mo {
+            color: #ae81ff;
+          }
+          .m, .mb, .mx {
+            color: #ae81ff;
+          }
+          .se {
+            color: #ae81ff;
+          }
+          .sa {
+            color: #66d9ef;
+            font-weight: bold;
+          }
+          .sb {
+            color: #e6db74;
+          }
+          .sc {
+            color: #e6db74;
+          }
+          .sd {
+            color: #e6db74;
+          }
+          .s2 {
+            color: #e6db74;
+          }
+          .sh {
+            color: #e6db74;
+          }
+          .si {
+            color: #e6db74;
+          }
+          .sx {
+            color: #e6db74;
+          }
+          .sr {
+            color: #e6db74;
+          }
+          .s1 {
+            color: #e6db74;
+          }
+          .ss {
+            color: #e6db74;
+          }
+          .s, .dl {
+            color: #e6db74;
+          }
+          .na {
+            color: #a6e22e;
+          }
+          .nc {
+            color: #a6e22e;
+            font-weight: bold;
+          }
+          .nd {
+            color: #a6e22e;
+            font-weight: bold;
+          }
+          .ne {
+            color: #a6e22e;
+            font-weight: bold;
+          }
+          .nf, .fm {
+            color: #a6e22e;
+            font-weight: bold;
+          }
+          .no {
+            color: #66d9ef;
+          }
+          .bp {
+            color: #f8f8f2;
+          }
+          .nb {
+            color: #f8f8f2;
+          }
+          .ni {
+            color: #f8f8f2;
+          }
+          .nn {
+            color: #f8f8f2;
+          }
+          .vc {
+            color: #f8f8f2;
+          }
+          .vg {
+            color: #f8f8f2;
+          }
+          .vi {
+            color: #f8f8f2;
+          }
+          .nv, .vm {
+            color: #f8f8f2;
+          }
+          .w {
+            color: #f8f8f2;
+          }
+          .nl {
+            color: #f8f8f2;
+            font-weight: bold;
+          }
+          .nt {
+            color: #f92672;
+          }
     }
 }
 article {
@@ -238,7 +451,7 @@ body::after {
 body {
     color: var(--color-text);
     display: grid;
-    grid-template-columns: 20ch 120ch auto;
+    grid-template-columns: 200px fit-content(1000px);
     grid-template-rows: auto auto auto 1fr auto;
     grid-template-areas:
     "head head ."
@@ -250,60 +463,76 @@ body {
     min-height: 100%;
     position: absolute;
     margin: 0;
+    width: 100%;
 }
-@media (max-width: 100ch){
-    nav ul li {
-        display: inline-block;
-    }
+@media (max-width: 1200px){
     body{
-        width: 100%;
-        grid-template-columns: auto auto auto;
-        grid-template-areas:
-            "head head head"
-            "nav nav nav"
-            "content content content"
-            "spacer spacer spacer"
-            "foot foot foot";
-    }
-    header {
-        margin-bottom: 0;
-        a.hero-link {
-            font-size: 2rem;
-            white-space: nowrap;
-        }
-    }
-    main {
-        ul.pagination {
-            padding-left: 0;
-            a, span {
-                padding: 0.5ch 1ch !important;
+        grid-template-columns: 200px auto;
+        header {
+            margin-bottom: 0;
+            a.hero-link {
+                font-size: 2rem;
+                white-space: nowrap;
+            }
+            div.img-profile {
+                width: 3rem;
+                height: 3rem;
+            }
+            div.img-profile>img {
+                width: 3rem;
+                height: 3rem;
             }
         }
     }
 }
-@media (min-width: 100ch) and (max-width: 140ch){
+@media (max-width: 850px){
     body {
-        grid-template-columns: 20ch 80ch auto;
+        grid-template-columns: auto auto;
+        grid-template-areas:
+            "head head"
+            "nav nav"
+            "content content"
+            "spacer spacer"
+            "foot foot";
+        header {
+            margin-bottom: 0;
+            a.hero-link {
+                font-size: 2rem;
+                white-space: nowrap;
+            }
+        }
+        main {
+            ul.pagination {
+                padding-left: 0;
+                a, span {
+                    padding: 0.5ch !important;
+                }
+            }
+        }
+        nav ul li {
+            display: inline-block;
+        }
     }
 }
 
+
 /* https://www.makethingsaccessible.com/guides/creating-a-skip-to-content-link/ */
 /* Set some base styles, so it is easy to see */
-.skip-link {
-    position: absolute;
-    display: inline-block;
-    padding: .375rem .75rem;
-    right: 0;
-    line-height: 1;
-    font-size: 1.25rem;
-    background-color: rebeccapurple;
-    color: white;
-    /* Ensure the Y position is set to zero and any movement on the transform property */
-    transform: translateY(0);
-    transition: transform 250ms ease-in;
-  }
+.accessibility-skip-link {
+  position: absolute;
+  display: inline-block;
+  padding: .375rem .75rem;
+  right: 0;
+  line-height: 1;
+  font-size: 1.25rem;
+  background-color: rebeccapurple;
+  color: white;
+  /* Ensure the Y position is set to zero and any movement on the transform property */
+  transform: translateY(0);
+  transition: transform 250ms ease-in;
 
   /* When it is not focused, transform its Y position by its total height, using a negative value, so it hides above the viewport */
-  .skip-link:not(:focus) {
+  &:not(:focus) {
     transform: translateY(-2rem);
   }
+}
