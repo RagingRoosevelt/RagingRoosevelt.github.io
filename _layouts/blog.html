@@ -3,20 +3,24 @@ layout: main
 ---
 
 <h1>{{page.title}}</h1>
-<span class="blog_date">{{page.date | date: "%B %-d, %Y"}}</span>
 
-<section>
-  {{ content }}
-</section>
-
-<hr>
-
+<div>
 Categories:
 {% for category in page.categories %}
-    <a href="{{site.baseurl}}/blog/search/?category={{category|slugize}}">{{category}}</a>,
+    <a href="{{site.baseurl}}/blog/search/?category={{category|slugize}}">{{ category|replace: "_", " "}}</a>,
 {% endfor %}
 
 Tags:
 {% for tag in page.tags %}
-    <a href="{{site.baseurl}}/blog/search/?tags={{tag|slugize}}">{{tag}}</a>,
+    <a href="{{site.baseurl}}/blog/search/?tags={{tag|slugize}}">{{tag|replace: "_", " "}}</a>,
 {% endfor %}
+</div>
+
+<span class="blog_date">{{page.date | date: "%B %-d, %Y"}}</span>
+
+<article>
+  {{ content }}
+</article>
+
+<hr>
+

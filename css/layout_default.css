@@ -11,6 +11,8 @@
   --color-text: var(--color-accent);
   --color-text-link: oklch(from var(--color-text) l c calc(120 + h) / 1);
   --color-text-link-hover: oklch(from var(--color-text-link) calc(0.8 * l) c h / 1);
+
+  --color-highlight: rgb(252, 252, 138);
   /* --background-color: rgba(255,255,255,0.85); */
   /* --color-text: rgb(61, 61, 61); */
   /* --color-text: oklch(var(--lightness) 0.9 120); */
@@ -18,8 +20,11 @@
   --principle-padding: 1em;
   /* --background-color: oklch(from white l c h / 0.95); */
   /* --background-color: oklch(from var(--color-text) calc(1.0 - l) 0.3 calc(240 + h) / 0.8); */
+  --font-weight: 500;
+  --font-weight-bold: 700;
+  --font-weight-bolder: 1000;
   font-family: "IBM Plex Mono", serif;
-  font-weight: 600;
+  font-weight: var(--font-weight);
   font-style: normal;
 }
 
@@ -397,6 +402,7 @@ main table {
 }
 main table tr > :is(th,td) {
   padding: 0.25em var(--principle-padding);
+  vertical-align: top;
 }
 main table:not(.no-alternating-highlight) tr:has(td):nth-child(even) {
   background-color: hsla(0,100%,100%,0.55);
@@ -500,6 +506,94 @@ body {
       display: inline-block;
     }
   }
+}
+
+.book-review {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    padding: 1em 1rem;
+    display: grid;
+    grid-template-areas:
+        "rating title . finished"
+        "author author . series"
+        "narrator narrator . series"
+        "summary summary summary summary";
+    grid-template-columns: 30px fit-content(550px) auto auto;
+    box-shadow: 3px 3px 6px rgba(0,0,0,0.4);
+    &::before {
+      content: "⮟";
+      position: absolute;
+      transform: translate(-10px,0);
+    }
+    &:is([aria-current], :focus, :active)::before {
+      content: "⮝";
+    }
+    &:hover {
+        grid-template-rows: auto auto auto auto;
+    }
+    section {
+        display: inline-block;
+    }
+    &:is([aria-current], :focus, :active) {
+      background-color: var(--color-highlight);
+      grid-template-rows: auto auto auto auto;
+    }
+    &:not([aria-current], :focus, :active) {
+      grid-template-rows: auto 0 0 0;
+      section:is(
+        [data-author],
+        [data-series],
+        [data-summary],
+        [data-narrator],
+        [data-vibe]
+      ) {
+          display: none;
+      }
+    }
+    section[data-rating] {
+        grid-area: rating;
+        text-align: center;
+    }
+    section[data-title] {
+        grid-area: title;
+        font-weight: var(--font-weight-bolder);
+    }
+    section[data-finished] {
+        grid-area: finished;
+        font-weight: var(--font-weight-bolder);
+        text-align: end;
+    }
+    section[data-author] {
+        grid-area: author;
+        font-weight: 600;
+        margin-top: 1em;
+        &::before {
+            content: "Author: ";
+            font-style: italic;
+        }
+    }
+    section[data-series] {
+        grid-area: series;
+        text-align: end;
+        margin-top: 1em;
+    }
+    section[data-narrator] {
+        grid-area: narrator;
+        font-weight: 600;
+        &::before {
+            content: "Narrated by: ";
+            font-style: italic;
+        }
+    }
+    section[data-vibe] {
+        display: none;
+        grid-area: vibe;
+    }
+    section[data-summary] {
+        grid-area: summary;
+        max-width: 650px;
+        margin-top: 1em;
+    }
 }
 
 

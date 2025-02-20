@@ -1,0 +1,43 @@
+---
+layout: blog
+---
+
+<style>
+.rating-buttons button {
+  font-size: 1rem;
+}
+</style>
+
+<script>
+  let reviews = []
+  window.addEventListener("load", () => {
+    reviews = Array.from(all(".book-review"))
+    for (let [k, r] of reviews.entries()) {
+        r.setAttribute("tabindex", 0)
+    }
+  })
+  function handle_filter_ratings(search_rating) {
+    reviews
+    .map(elem => [elem.querySelector("[data-rating]").innerHTML, elem])
+    .forEach(([review_rating, elem]) => {
+      if (search_rating === review_rating || search_rating == "*") {
+        elem.style.display = ""
+      } else {
+        elem.style.display = "none"
+      }
+    })
+  }
+</script>
+
+<table>
+  <tr><th>(all)</th><th>Bad</th><th>Eh</th><th>Good</th><th>Amazing</th></tr>
+  <tr class="rating-buttons">
+    <td><button onclick="handle_filter_ratings('*')" aria-label="Show all">*</button></td>
+    <td><button onclick="handle_filter_ratings('👎')" aria-label="Show bad">&#128078;</button></td>
+    <td><button onclick="handle_filter_ratings('🫳')" aria-label="Show meh">&#129779;</button></td>
+    <td><button onclick="handle_filter_ratings('👍')" aria-label="Show good">&#128077;</button></td>
+    <td><button onclick="handle_filter_ratings('🤌')" aria-label="Show amazing">&#129292;</button></td>
+  </tr>
+</table>
+
+{{ content }}
