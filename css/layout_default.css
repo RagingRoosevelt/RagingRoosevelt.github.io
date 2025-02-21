@@ -508,6 +508,9 @@ body {
   }
 }
 
+.rating-buttons button {
+  font-family: "Noto Color Emoji";
+}
 .book-review {
     margin-top: 1rem;
     margin-bottom: 1rem;
@@ -521,6 +524,7 @@ body {
     grid-template-columns: 30px fit-content(550px) auto auto;
     box-shadow: 3px 3px 6px rgba(0,0,0,0.4);
     &::before {
+      font-family: "Overpass Mono";
       content: "⮟";
       position: absolute;
       transform: translate(-10px,0);
@@ -553,6 +557,7 @@ body {
     section[data-rating] {
         grid-area: rating;
         text-align: center;
+        font-family: "Noto Color Emoji";
     }
     section[data-title] {
         grid-area: title;
