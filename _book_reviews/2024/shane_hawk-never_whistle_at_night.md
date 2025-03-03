@@ -27,7 +27,7 @@ authors:
 - Richard Van Camp
 - Royce Young Wolf
 - Mathilda Zeller
-title: Never whistle at night&semi; an Indigenous dark fiction anthology
+title: Never whistle at night&colon; an Indigenous dark fiction anthology
 anthology: true
 series:
 narrators:
