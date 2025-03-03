@@ -1,7 +1,7 @@
 ---
 authors: Peter F. Hamilton
 title: The Abyss Beyond Dreams
-series: Commonwealth&semi; Chronicle of the Fallers, Book 1
+series: Commonwealth&colon; Chronicle of the Fallers, Book 1
 narrators: John Lee
 vibe:
 summary:
