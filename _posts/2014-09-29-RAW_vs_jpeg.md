@@ -3,7 +3,8 @@ layout: blog
 title: Shooting in RAW vs jpeg – Exposure experiment
 section: Blog
 last_modified_at: 2014-09-29
-categories:
+categories: Making
+tags:
 - Photography
 ---
 

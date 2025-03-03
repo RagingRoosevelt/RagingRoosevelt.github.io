@@ -14,7 +14,8 @@ group :jekyll_plugins do
    gem "jekyll-sass-converter"
    gem "jekyll-paginate"
    #gem "jekyll-feed"
-   #gem "jekyll-sitemap"
+   gem "jekyll-sitemap"
+   gem "jekyll-seo-tag"
    #gem "html-pipeline"
    gem "kramdown-parser-gfm" # Github flavored markdown parser
 end

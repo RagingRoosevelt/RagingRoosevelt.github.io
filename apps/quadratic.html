@@ -53,7 +53,7 @@ function quadratic() {
         if (isNaN(xS))
         {
             result.innerHTML = "No real solution";
-            //draw(0,0,0,0,0);
+            draw(a,b,c,null,null);
         }
         else
         {
@@ -97,8 +97,12 @@ function plotRoots(ctx, axes, color, xS, xL){
     ctx.strokeStyle = color;
 
     ctx.beginPath();
-    ctx.arc(x0+xS*scale, y0, 2, 0, 2 * Math.PI, true);
-    ctx.arc(x0+xL*scale, y0, 2, 0, 2 * Math.PI, true);
+    if (xS !== null) {
+        ctx.arc(x0+xS*scale, y0, 2, 0, 2 * Math.PI, true);
+    }
+    if (xL !== null) {
+        ctx.arc(x0+xL*scale, y0, 2, 0, 2 * Math.PI, true);
+    }
     ctx.fill();
 }
 
@@ -118,7 +122,7 @@ function plotFunction (ctx,axes,func,color,thick,a,b,c) {
     ctx.stroke();
 }
 
-function showAxes(ctx,axes) {
+function showAxes(ctx,axes,x_ticks,y_ticks) {
     var x0=axes.x0, w=ctx.canvas.width;
     var y0=axes.y0, h=ctx.canvas.height;
     var xmin = axes.doNegativeX ? 0 : x0;

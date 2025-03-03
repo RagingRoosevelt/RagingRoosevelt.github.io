@@ -23,10 +23,21 @@ office_link: "https://www.google.com/maps/place/2701 NW Vaughn St, Portland, OR 
 
 timezone: America/Los_Angeles
 
+collections:
+  - book_reviews
+
 # blog post url format
 permalink: /blog/:year/:month/:day/:title.html
 paginate: 5
 paginate_path: "/blog/page:num/"
 excerpt_separator: <!--more-->
 
-plugins: [jekyll-paginate]
+kramdown:
+  syntax_highlighter_opts:
+    line_numbers : false
+
+
+plugins:
+- jekyll-paginate
+- jekyll-sitemap
+- jekyll-seo-tag

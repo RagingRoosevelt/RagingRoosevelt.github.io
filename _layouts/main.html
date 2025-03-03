@@ -1,7 +1,7 @@
 ---
 layout: base
 ---
-<a href="#main-content" class="skip-link">Skip to main content</a>
+<a tabindex="1" href="#main-content" class="accessibility-skip-link">Skip to main content</a>
 
 <header>
   <div class="img-profile">
@@ -41,10 +41,8 @@ layout: base
 </main>
 
 <footer>
-  {% if page.title != "Blog Posts" %}
+  {% if page.last_modified_at %}
     <!--#config timefmt="%B %d, %Y" -->
     Last modified: <!--#echo var="LAST_MODIFIED"--> {{ page.last_modified_at }}
   {% endif %}
 </footer>
-
-<div class="background"></div>

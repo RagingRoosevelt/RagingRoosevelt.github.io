@@ -3,9 +3,11 @@ layout: blog
 title: Visual Alarm Clock
 section: Blog
 last_modified_at: 2014-09-02
-categories:
-- WIP
+categories: Making
+tags:
 - Arduino
+- Electronics
+- HMI
 ---
 
 It’s been a while since I last worked on my visual alarm clock project.  Since

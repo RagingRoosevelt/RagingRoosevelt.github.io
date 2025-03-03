@@ -1,0 +1,116 @@
+---
+layout: main
+title: Parametric oklch Theme Demo
+section: Applications
+last_modified_at: 2025-02-14
+---
+
+<h1>{{ page.title }}</h1>
+
+<p>
+The premise of this theme approach is to drive an entire color theme from a few key parameters.  The mechanism by which this operates is the CSS OkLCH color's ability to derive from another color.
+</p>
+<p>
+Guiding principles:
+<ul>
+<li>There should be high contrast between the text and background</li>
+<li>Use hue to denote different types of text</li>
+<li>Switching between a light and dark theme should be easy</li>
+</ul>
+</p>
+<p>
+A few observations:
+<ul>
+    <li>If lightness is very low, you probably need at least 0.25 chroma</li>
+    <li>If lightness is high, you can get away with a lot less chroma</li>
+    <li>You should use extreme values for the lightness so that there's sufficient contrast</li>
+</ul>
+</p>
+<table class="no-alternating-highlight">
+<tr><td>Primary Hue</td><td><span style="width: 5ch; color: #000; display: inline-block; text-align: center;" id="theme_hue"></span><span><input class="hue" type="range" min="0" max="360" step="1" id="theme_hue"></span></td></tr>
+<tr><td>Primary Chroma</td><td><span style="width: 5ch; color: #000; display: inline-block; text-align: center;" id="theme_chroma"></span><span><input class="chroma" type="range" min="0" max="1" step="0.01" id="theme_chroma"></span></td></tr>
+<tr><td>Primary Lightness</td><td><span style="width: 5ch; color: #000; display: inline-block; text-align: center;" id="theme_lightness"></span><span><input class="lightness" type="range" min="0" max="1" step="0.01" id="theme_lightness"></span></td></tr>
+</table>
+<p>
+For this to work, I'm using the following CSS variables
+
+<code style="white-space: pre-wrap;">
+:root {
+    --color-primary: oklch(<span id="theme_lightness_code">0.9</span> <span id="theme_chroma_code">0.20</span> <span id="theme_hue_code">290</span> / 1);
+    --color-accent: oklch(from var(--color-primary) calc(1.0 - l) 0.3 calc(240 + h) / 0.8);
+    --color-contrast: var(--color-accent);
+    --color-contrast-inverse: var(--color-primary);
+    --color-background: oklch(from var(--color-primary) l c h / 0.8);
+    --color-background-header: var(--color-background);
+    --color-background-main: var(--color-background);
+    --color-background-nav: var(--color-background);
+    --color-background-footer: var(--color-background);
+    --color-text: var(--color-accent);
+    --color-text-link: oklch(from var(--color-text) l c calc(120 + h) / 1);
+    --color-text-link-hover: oklch(from var(--color-text-link) calc(0.8 * l) c h / 1);
+}
+</code>
+</p>
+<script>
+let elem = {
+    root: undefined,
+    text_lightness: undefined,
+    text_lightness_disp: undefined,
+    text_lightness_code: undefined,
+    text_chroma: undefined,
+    text_chroma_disp: undefined,
+    text_chroma_code: undefined,
+    text_hue: undefined,
+    text_hue_disp: undefined,
+    text_hue_code: undefined,
+}
+let oklch = {
+    l: 0.03,
+    c: 0.20,
+    h: 290
+}
+window.addEventListener("load", () => {
+    elem.root = one(":root")
+
+    elem.text_hue = one("input#theme_hue")
+    elem.text_chroma = one("input#theme_chroma")
+    elem.text_lightness = one("input#theme_lightness")
+
+    elem.text_hue_disp = one("span#theme_hue")
+    elem.text_lightness_disp = one("span#theme_lightness")
+    elem.text_chroma_disp = one("span#theme_chroma")
+
+    elem.text_lightness_code = one("span#theme_lightness_code")
+    elem.text_chroma_code = one("span#theme_chroma_code")
+    elem.text_hue_code = one("span#theme_hue_code")
+
+    elem.text_hue.value = oklch.h
+    elem.text_lightness.value = oklch.l
+    elem.text_chroma.value = oklch.c
+
+    elem.text_hue.addEventListener("input", (e) => {oklch.h = e.target.value; set_color()})
+    elem.text_lightness.addEventListener("input", (e) => {oklch.l = e.target.value; set_color()})
+    elem.text_chroma.addEventListener("input", (e) => {oklch.c = e.target.value; set_color()})
+
+    set_color()
+})
+function set_color() {
+    elem.root.style.setProperty("--color-primary", `oklch(${oklch.l} ${oklch.c} ${oklch.h} / 1)`);
+
+    set_displays(oklch.l, oklch.c, oklch.h)
+}
+function set_displays(l,c,h) {
+    elem.text_lightness_disp.textContent = l
+    elem.text_lightness_code.textContent = l
+    elem.text_lightness_disp.style.setProperty("background-color", `oklch(${l} 0 0 / 1)`)
+    elem.text_lightness_disp.style.setProperty("color", `oklch(calc(1 - ${l}) 0 0 / 1)`)
+
+    elem.text_chroma_disp.textContent = c
+    elem.text_chroma_code.textContent = c
+    elem.text_chroma_disp.style.setProperty("background-color", `oklch(from var(--color-primary) 1 ${c} h / 1)`)
+
+    elem.text_hue_disp.textContent = h
+    elem.text_hue_code.textContent = h
+    elem.text_hue_disp.style.setProperty("background-color", `oklch(1 1 ${h} / 1)`)
+}
+</script>
