@@ -1,7 +1,8 @@
 ---
 authors: James S.A. Corey
 title: The Mercy of Gods
-series: Captive's War, Book 1
+series: Captive's War
+series_number: 1
 narrators: Jefferson Mays
 vibe:
 summary:

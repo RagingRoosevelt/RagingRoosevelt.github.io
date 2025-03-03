@@ -1,7 +1,8 @@
 ---
 authors: Blake Crouch
 title: The Last Town
-series: The Wayward Pines Trilogy, Book 3
+series: The Wayward Pines Trilogy
+series_number: 3
 narrators: Max Meyers
 vibe:
 summary:

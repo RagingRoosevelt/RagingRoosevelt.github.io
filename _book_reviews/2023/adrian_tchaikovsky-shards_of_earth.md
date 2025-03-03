@@ -1,7 +1,8 @@
 ---
 authors: Adrian Tchaikovsky
 title: Shards of Earth
-series: The Final Architecture, Book 1
+series: The Final Architecture
+series_number: 1
 narrators: Sophie Aldred
 vibe:
 summary:

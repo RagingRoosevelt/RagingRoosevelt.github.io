@@ -1,7 +1,8 @@
 ---
 authors: Martha Wells
 title: Rogue Protocol
-series: Murderbot Diaries, Book 3
+series: Murderbot Diaries
+series_number: 3
 narrators: Kevin R. Free
 vibe:
 summary:

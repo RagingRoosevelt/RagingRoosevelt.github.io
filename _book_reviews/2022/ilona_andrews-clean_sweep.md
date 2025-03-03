@@ -1,7 +1,8 @@
 ---
 authors: Ilona Andrews
 title: Clean Sweep
-series: Innkeeper Chronicles, Book 1
+series: Innkeeper Chronicles
+series_number: 1
 narrators: Renee Raudman
 vibe:
 summary:

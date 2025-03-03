@@ -1,7 +1,8 @@
 ---
 authors: Tamsyn Muir
 title: Gideon the Ninth
-series: The Locked Tomb Trilogy, Book 1
+series: The Locked Tomb Trilogy
+series_number: 1
 narrators: Moira Quirk
 vibe:
 summary:

@@ -1,7 +1,8 @@
 ---
 authors: Martha Wells
 title: Artificial Condition
-series: Murderbot Diaries, Book 2
+series: Murderbot Diaries
+series_number: 2
 narrators: Kevin R. Free
 vibe:
 summary:

@@ -1,7 +1,8 @@
 ---
 authors: Adrian Tchaikovsky
 title: Eyes of the Void
-series: The Final Architecture, Book 2
+series: The Final Architecture
+series_number: 2
 narrators: Sophie Aldred
 vibe:
 summary:

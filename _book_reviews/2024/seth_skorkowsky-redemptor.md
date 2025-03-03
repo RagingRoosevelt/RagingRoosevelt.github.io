@@ -1,7 +1,8 @@
 ---
 authors: Seth Skorkowsky
 title: Redemptor
-series: Valducan, Book 4
+series: Valducan
+series_number: 4
 narrators: R.C. Bray
 vibe:
 summary:

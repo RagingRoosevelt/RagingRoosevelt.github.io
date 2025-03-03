@@ -1,7 +1,8 @@
 ---
 authors: Naomi Novik
 title: A Deadly Education
-series: The Scholomance, Book 1
+series: The Scholomance
+series_number: 1
 narrators: Anisha Dadia
 vibe:
 summary:

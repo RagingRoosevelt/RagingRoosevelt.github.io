@@ -1,7 +1,8 @@
 ---
 authors: Martha Wells
 title: Network Effect
-series: Murderbot Diaries, Book 5
+series: Murderbot Diaries
+series_number: 5
 narrators: Kevin R. Free
 vibe:
 summary:

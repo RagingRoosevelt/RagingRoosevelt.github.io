@@ -1,7 +1,8 @@
 ---
 authors: Martha Wells
 title: Fugitive Telemetry
-series: Murderbot Diaries, Book 6
+series: Murderbot Diaries
+series_number: 6
 narrators: Kevin R. Free
 vibe:
 summary:
