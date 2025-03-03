@@ -1,7 +1,8 @@
 ---
 authors: Nnedi Okorafor
 title: Binti
-series: Binti, Book 1
+series: Binti
+series_number: 1
 narrators: Robin Miles
 vibe:
 summary:

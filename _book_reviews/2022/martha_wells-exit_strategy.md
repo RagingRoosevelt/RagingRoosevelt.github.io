@@ -1,7 +1,8 @@
 ---
 authors: Martha Wells
 title: Exit Strategy
-series: Murderbot Diaries, Book 4
+series: Murderbot Diaries
+series_number: 4
 narrators: Kevin R. Free
 vibe:
 summary:

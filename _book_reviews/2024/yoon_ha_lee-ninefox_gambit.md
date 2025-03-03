@@ -1,7 +1,8 @@
 ---
 authors: Yoon Ha Lee
 title: Ninefox Gambit
-series: Machineries of Empire, Book 1
+series: Machineries of Empire
+series_number: 1
 narrators: Emily Woo Zeller
 vibe:
 summary:

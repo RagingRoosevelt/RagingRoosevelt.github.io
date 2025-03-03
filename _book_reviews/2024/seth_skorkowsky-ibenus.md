@@ -1,7 +1,8 @@
 ---
 authors: Seth Skorkowsky
 title: Ibenus
-series: Valducan, Book 3
+series: Valducan
+series_number: 3
 narrators: R.C. Bray
 vibe:
 summary:

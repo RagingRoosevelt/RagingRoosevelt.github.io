@@ -1,7 +1,8 @@
 ---
 authors: Mary Robinette Kowal
 title: The Relentless Moon
-series: Lady Astronaut - Book 3
+series: Lady Astronaut
+series_number: 3
 narrators: Mary Robinette Kowal
 vibe:
 summary:

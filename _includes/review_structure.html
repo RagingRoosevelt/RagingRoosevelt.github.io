@@ -62,7 +62,7 @@
     {%endif%}
   </section>
   {% endif %}
-  <section data-series>{{review.series}}</section>
+  <section data-series>{{review.series}}{% if review.series_number %}, Book {{review.series_number}}{% endif %}</section>
   <section data-vibe>{{review.vibe}}</section>
   <section data-summary>{{review.summary}}</section>
   <section data-review>{{review.review}}</section>

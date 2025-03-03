@@ -1,7 +1,8 @@
 ---
 authors: Ken Follett
 title: The Pillars of the Earth
-series: The Kingsbridge Novels, Book 1
+series: The Kingsbridge Novels
+series_number: 1
 narrators: John Lee
 vibe:
 summary:

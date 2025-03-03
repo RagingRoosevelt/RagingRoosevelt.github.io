@@ -1,7 +1,8 @@
 ---
 authors: Naomi Novik
 title: The Golden Enclaves
-series: The Scholomance, Book 3
+series: The Scholomance
+series_number: 3
 narrators: Anisha Dadia
 vibe:
 summary:

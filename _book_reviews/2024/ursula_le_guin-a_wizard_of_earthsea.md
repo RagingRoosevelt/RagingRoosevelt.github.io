@@ -1,7 +1,8 @@
 ---
 authors: Ursula K. Le Guin
 title: A Wizard of Earthsea
-series: The Earthsea Quartet, Book 1
+series: The Earthsea Quartet
+series_number: 1
 narrators: Rob Inglis
 vibe:
 summary:

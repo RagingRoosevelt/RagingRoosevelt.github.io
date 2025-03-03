@@ -1,7 +1,8 @@
 ---
 authors: Eric Asher
 title: Steamsworn
-series: Steamborn Series, Book 3
+series: Steamborn Series
+series_number: 3
 narrators: Saskia Maarleveld
 vibe:
 summary:

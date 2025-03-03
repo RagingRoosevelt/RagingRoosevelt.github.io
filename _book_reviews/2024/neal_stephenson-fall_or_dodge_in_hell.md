@@ -1,7 +1,8 @@
 ---
 authors: Neal Stephenson
 title: Fall; or Dodge in Hell
-series: Dodge, Book 2
+series: Dodge
+series_number: 2
 narrators: Malcolm Hillgartner
 vibe:
 summary:

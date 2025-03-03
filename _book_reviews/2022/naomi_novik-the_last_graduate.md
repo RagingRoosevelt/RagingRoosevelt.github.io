@@ -1,7 +1,8 @@
 ---
 authors: Naomi Novik
 title: The Last Graduate
-series: The Scholomance, Book 2
+series: The Scholomance
+series_number: 2
 narrators: Anisha Dadia
 vibe:
 summary:

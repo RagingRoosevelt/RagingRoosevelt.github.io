@@ -1,7 +1,8 @@
 ---
 authors: Iain M. Banks
 title: Consider Phlebas
-series: Culture, Book 1
+series: Culture
+series_number: 1
 narrators: Peter Kenny
 vibe:
 summary:

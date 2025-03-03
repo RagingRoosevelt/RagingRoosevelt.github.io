@@ -1,7 +1,8 @@
 ---
 authors: Mary Robinette Kowal
 title: The Fated Sky
-series: Lady Astronaut - Book 2
+series: Lady Astronaut
+series_number: 2
 narrators: Mary Robinette Kowal
 vibe:
 rating: 👍

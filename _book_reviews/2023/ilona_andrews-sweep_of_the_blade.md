@@ -1,7 +1,8 @@
 ---
 authors: Ilona Andrews
 title: Sweep of the Blade
-series: Innkeeper Chronicles, Book 4
+series: Innkeeper Chronicles
+series_number: 4
 narrators: Natalie Naudus
 vibe:
 summary:

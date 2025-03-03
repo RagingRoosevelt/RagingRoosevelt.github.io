@@ -1,7 +1,8 @@
 ---
 authors: Peter F. Hamilton
 title: A Night Without Stars
-series: Commonwealth&colon; Chronicle of the Fallers, Book 2
+series: Commonwealth&colon; Chronicle of the Fallers
+series_number: 2
 narrators: John Lee
 vibe:
 summary:

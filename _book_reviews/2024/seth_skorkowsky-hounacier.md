@@ -1,7 +1,8 @@
 ---
 authors: Seth Skorkowsky
 title: Hounacier
-series: Valducan, Book 2
+series: Valducan
+series_number: 2
 narrators: R.C. Bray
 vibe:
 summary:

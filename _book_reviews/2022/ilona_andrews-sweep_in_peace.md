@@ -1,7 +1,8 @@
 ---
 authors: Ilona Andrews
 title: Sweep in Peace
-series: Innkeeper Chronicles, Book 2
+series: Innkeeper Chronicles
+series_number: 2
 narrators: Renee Raudman
 vibe:
 summary:

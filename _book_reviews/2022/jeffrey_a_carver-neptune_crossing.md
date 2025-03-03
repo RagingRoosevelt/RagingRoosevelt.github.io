@@ -1,7 +1,8 @@
 ---
 authors: Jeffrey A. Carver
 title: Neptune Crossing
-series: The Chaos Chronicles, Book 1
+series: The Chaos Chronicles
+series_number: 1
 narrators: Stefan Rudnicki
 vibe:
 summary:

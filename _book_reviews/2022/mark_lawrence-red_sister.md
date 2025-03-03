@@ -1,7 +1,8 @@
 ---
 authors: Mark Lawrence
 title: Red Sister
-series: Books of the Ancestor, Book 1
+series: Books of the Ancestor
+series_number: 1
 narrators: Heather O'Neill
 vibe:
 summary:

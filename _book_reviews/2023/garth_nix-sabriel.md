@@ -1,7 +1,8 @@
 ---
 authors: Garth Nix
 title: Sabriel
-series: Abhorsen/The Old Kingdom, Book 1
+series: Abhorsen/The Old Kingdom
+series_number: 1
 narrators: Tim Curry
 vibe:
 summary:
