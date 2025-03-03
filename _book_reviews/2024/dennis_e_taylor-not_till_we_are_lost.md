@@ -1,7 +1,8 @@
 ---
 authors: Dennis E. Taylor
 title: Not Till We Are Lost
-series: Bobiverse, Book 5
+series: Bobiverse
+series_number: 5
 narrators: Ray Porter
 vibe:
 summary:

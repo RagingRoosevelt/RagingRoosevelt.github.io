@@ -1,7 +1,8 @@
 ---
 authors: Jeffrey A. Carver
 title: Strange Attractors
-series: The Chaos Chronicles, Book 2
+series: The Chaos Chronicles
+series_number: 2
 narrators: Stefan Rudnicki
 vibe:
 summary:

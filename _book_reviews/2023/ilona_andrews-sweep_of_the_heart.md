@@ -1,7 +1,8 @@
 ---
 authors: Ilona Andrews
 title: Sweep of the Heart
-series: Innkeeper Chronicles, Book 6
+series: Innkeeper Chronicles
+series_number: 6
 narrators: Nora Sofyan
 vibe:
 summary:

@@ -1,7 +1,8 @@
 ---
 authors: Martha Wells
 title: System Collapse
-series: Murderbot Diaries, Book 7
+series: Murderbot Diaries
+series_number: 7
 narrators: Kevin R. Free
 vibe:
 summary:

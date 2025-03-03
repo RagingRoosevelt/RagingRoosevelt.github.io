@@ -1,7 +1,8 @@
 ---
 authors: John Gwynne
 title: The Shadow of the Gods
-series: The Bloodsworn Trilogy, Book 1
+series: The Bloodsworn Trilogy
+series_number: 1
 narrators: Colin Mace
 vibe:
 summary:

@@ -1,7 +1,8 @@
 ---
 authors: Alastair Reynolds
 title: Chasm City
-series: Revelation Space, Book 2
+series: Revelation Space
+series_number: 2
 narrators: John Lee
 vibe:
 summary:

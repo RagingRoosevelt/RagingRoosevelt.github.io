@@ -1,7 +1,8 @@
 ---
 authors: Ilona Andrews
 title: One Fell Sweep
-series: Innkeeper Chronicles, Book 3
+series: Innkeeper Chronicles
+series_number: 3
 narrators: Renee Raudman
 vibe: ""
 summary:

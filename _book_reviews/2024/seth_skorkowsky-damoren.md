@@ -1,7 +1,8 @@
 ---
 authors: Seth Skorkowsky
 title: Damoren
-series: Valducan, Book 1
+series: Valducan
+series_number: 1
 narrators: R.C. Bray
 vibe:
 summary:

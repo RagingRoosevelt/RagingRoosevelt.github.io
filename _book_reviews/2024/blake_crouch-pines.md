@@ -1,7 +1,8 @@
 ---
 authors: Blake Crouch
 title: Pines
-series: The Wayward Pines Trilogy, Book 1
+series: The Wayward Pines Trilogy
+series_number: 1
 narrators: Max Meyers
 vibe:
 summary:

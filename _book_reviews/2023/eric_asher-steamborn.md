@@ -1,7 +1,8 @@
 ---
 authors: Eric Asher
 title: Steamborn
-series: Steamborn Series, Book 1
+series: Steamborn Series
+series_number: 1
 narrators: Saskia Maarleveld
 vibe:
 summary:

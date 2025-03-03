@@ -1,7 +1,8 @@
 ---
 authors: Blake Crouch
 title: Wayward
-series: The Wayward Pines Trilogy, Book 2
+series: The Wayward Pines Trilogy
+series_number: 2
 narrators: Max Meyers
 vibe:
 summary:

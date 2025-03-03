@@ -2,6 +2,7 @@
 authors: Richard K. Morgan
 title: Broken Angels
 series: Takeshi Kovacs Trilogy
+series_number: 2
 narrators: Todd McLaren
 vibe:
 summary:

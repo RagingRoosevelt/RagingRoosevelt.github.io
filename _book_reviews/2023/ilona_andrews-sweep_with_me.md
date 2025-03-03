@@ -1,7 +1,8 @@
 ---
 authors: Ilona Andrews
 title: Sweep with Me
-series: Innkeeper Chronicles, Book 5
+series: Innkeeper Chronicles
+series_number: 5
 narrators: Natalie Naudus
 vibe:
 summary:
