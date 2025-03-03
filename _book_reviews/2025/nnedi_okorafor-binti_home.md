@@ -5,7 +5,8 @@ finished: 2025-01-03
 year: 2025
 authors: Nnedi Okorafor
 narrators: Robin Miles
-series: Binti Trilogy - Book 1
+series: Binti Trilogy
+series_number: 1
 summary:
 review:
 ---

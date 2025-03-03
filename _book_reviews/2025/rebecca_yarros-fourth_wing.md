@@ -7,7 +7,8 @@ authors: Rebecca Yarros
 narrators:
 - Rebecca Soler
 - Teddy Hamilton
-series: The Empyrean - Book 1
+series: The Empyrean
+series_number: 1
 summary:
 review:
 ---

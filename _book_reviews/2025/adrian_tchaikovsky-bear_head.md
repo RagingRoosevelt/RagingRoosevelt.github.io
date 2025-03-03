@@ -8,7 +8,8 @@ narrators:
 - Laurence Bouvard
 - Nathan Osgood
 - William Hope
-series: Dogs of War - Book 2
+series: Dogs of War
+series_number: 2
 summary: Focusing on Rex's friend Honey,
 review:
 ---

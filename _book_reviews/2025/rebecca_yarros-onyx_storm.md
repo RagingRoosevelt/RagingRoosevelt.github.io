@@ -9,7 +9,8 @@ narrators:
 - Teddy Hamilton
 - Jasmin Walker
 - Justis Bolding
-series: The Empyrean- Book 3
+series: The Empyrean
+series_number: 3
 summary:
 review:
 ---
