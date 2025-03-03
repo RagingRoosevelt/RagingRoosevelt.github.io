@@ -1,10 +1,67 @@
 {% for review in reviews %}
+{% if review.authors.first == review.authors.last%}
+  {% assign author_count = 1 %}
+{%else%}
+  {% assign author_count = review.authors.size %}
+{%endif%}
+
+{% if review.editors.first == review.editors.last%}
+  {% assign editor_count = 1 %}
+{%else%}
+  {% assign editor_count = review.editors.size %}
+{%endif%}
+
+{% if review.narrators.first == review.narrators.last%}
+  {% assign narrator_count = 1 %}
+{%else%}
+  {% assign narrator_count = review.narrators.size %}
+{%endif%}
+
+{% if review.editors and review.anthology %}
+  {% if editor_count > 1 %}
+    {% assign primary_author = review.editors.first %}
+  {% else %}
+    {% assign primary_author = review.editors %}
+  {% endif %}
+{% else %}
+  {% if author_count > 1 %}
+    {% assign primary_author = review.authors.first %}
+  {% else %}
+    {% assign primary_author = review.authors %}
+  {% endif %}
+{% endif %}
+
 <div class="book-review" id='{{review.title|slugify: "ascii"}}'>
-  <section data-title>{{review.title}}</section>
+  <section data-title>{{review.title}} ({{ primary_author|split:" "|last}}) </section>
   <section data-rating>{{review.rating}}</section>
   <section data-finished>{{review.finished| date: "%b %-d"}}</section>
-  <section data-author>{{review.authors|join:", "}}</section>
-  <section data-narrator>{{review.narrators|join:", "}}</section>
+  {% if review.authors %}
+  <section data-author data-count="{{author_count}}">
+    {% if author_count > 1 %}
+      <ul>{% for author in review.authors %}<li>{{author}}</li>{%endfor%}</ul>
+    {%else%}
+      {{review.authors|join:", "}}
+    {%endif%}
+  </section>
+  {% endif %}
+  {% if review.editors %}
+  <section data-editor data-count="{{editor_count}}">
+    {% if editor_count > 1 %}
+      <ul>{% for editor in review.editors %}<li>{{editor}}</li>{%endfor%}</ul>
+    {%else%}
+      {{review.editors|join:", "}}
+    {%endif%}
+  </section>
+  {% endif %}
+  {% if review.narrators %}
+  <section data-narrator data-count="{{narrator_count}}">
+    {% if narrator_count > 1 %}
+      <ul>{% for narrator in review.narrators %}<li>{{narrator}}</li>{%endfor%}</ul>
+    {%else%}
+      {{review.narrators|join:", "}}
+    {%endif%}
+  </section>
+  {% endif %}
   <section data-series>{{review.series}}</section>
   <section data-vibe>{{review.vibe}}</section>
   <section data-summary>{{review.summary}}</section>
