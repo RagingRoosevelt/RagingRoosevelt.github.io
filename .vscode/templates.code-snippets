@@ -25,12 +25,15 @@
 			"rating: 👎🫳👍🤌",
 			"finished: ",
 			"year: ",
+			"editors:",
+			"anthology: false",
 			"authors: ",
 			"narrators: ",
 			"series: ",
 			"summary: ",
 			"review: ",
-			"---"
+			"---",
+			""
 		]
 	}
 }
