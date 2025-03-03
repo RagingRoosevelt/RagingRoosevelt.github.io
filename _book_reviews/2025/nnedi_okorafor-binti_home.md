@@ -1,5 +1,5 @@
 ---
-title: Binti&semi; Home
+title: Binti&colon; Home
 rating: 🫳
 finished: 2025-01-03
 year: 2025
