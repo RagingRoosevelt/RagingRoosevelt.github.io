@@ -507,9 +507,31 @@ body {
     }
   }
 }
+@media (max-width: 480px) {
+  :root{
+    --principle-padding: 0.6em;
+  }
+  body {
+    & main {
+      & button {
+        padding: 0.5em 0.5em;
+      }
+    }
+  }
+}
 
 .rating-buttons button {
   font-family: "Noto Color Emoji";
+  font-size: 1rem;
+}
+table:has(.rating-buttons) th:nth-child(1)::before {
+  content: "(";
+  position: absolute;
+  transform: translate(-1ch, 0);
+}
+table:has(.rating-buttons) th:nth-child(1)::after {
+  content: ")";
+  position: absolute;
 }
 .book-review {
     margin-top: 1rem;
