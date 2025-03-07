@@ -67,6 +67,10 @@ html, body {
     /*padding: 10px;*/
     vertical-align: middle;
     line-height: 5vh;
+    & button {
+        height: 60%;
+        margin-right: 10px;
+    }
 }
 
 .card {
