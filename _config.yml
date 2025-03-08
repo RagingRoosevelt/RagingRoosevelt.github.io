@@ -26,6 +26,8 @@ timezone: America/Los_Angeles
 collections:
   - book_reviews
 
+future: false
+show_drafts: false
 # blog post url format
 permalink: /blog/:year/:month/:day/:title.html
 paginate: 5
