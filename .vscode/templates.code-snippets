@@ -18,7 +18,7 @@
 	"Book review blog post": {
 		"description": "Markdown file template for book reviews",
 		"scope": "markdown",
-		"prefix": "book review",
+		"prefix": "@book",
 		"body": [
 			"---",
 			"title: ",
@@ -34,6 +34,28 @@
 			"summary: ",
 			"review: ",
 			"---",
+			""
+		]
+	},
+	"Blog post": {
+		"scope": "markdown",
+		"prefix": "@blog",
+		"body":[
+			"---",
+			"layout: blog",
+			"title: ${1}",
+			"section: Blog",
+			"last_modified_at: $CURRENT_YEAR-$CURRENT_MONTH-$CURRENT_DATE",
+			"categories: ${2:Annual_Reading_Retrospective,Coding,Making,Musings}",
+			"tags:",
+			"- ${3}",
+			"---",
+			"",
+			"${4}",
+			"",
+			"<!--more-->",
+			"",
+			"${5}",
 			""
 		]
 	}
