@@ -588,6 +588,7 @@ table:has(.rating-buttons) th:nth-child(1)::after {
     section[data-title] {
         grid-area: title;
         font-weight: var(--font-weight-bolder);
+        user-select: all;
     }
     section[data-finished] {
         grid-area: finished;
@@ -598,6 +599,7 @@ table:has(.rating-buttons) th:nth-child(1)::after {
         grid-area: editor;
         font-weight: 600;
         margin-top: 1em;
+        user-select: all;
         &::before {
           font-style: italic;
           content: "Editors: ";
@@ -610,6 +612,7 @@ table:has(.rating-buttons) th:nth-child(1)::after {
         grid-area: author;
         font-weight: 600;
         margin-top: 1em;
+        user-select: all;
         &::before {
             content: "Authors: ";
             font-style: italic;
@@ -639,11 +642,21 @@ table:has(.rating-buttons) th:nth-child(1)::after {
         grid-area: summary;
         max-width: 650px;
         margin-top: 1em;
+        &::before {
+          content: "Summary: ";
+          font-weight: var(--font-weight-bolder);
+          font-style: italic;
+        }
     }
     section[data-review] {
         grid-area: review;
         max-width: 650px;
         margin-top: 1em;
+        &::before {
+          content: "Review: ";
+          font-weight: var(--font-weight-bolder);
+          font-style: italic;
+        }
     }
 }
 
