@@ -35,6 +35,7 @@
   <section data-title>{{review.title}} ({{ primary_author|split:" "|last}}) </section>
   <section data-rating>{{review.rating}}</section>
   <section data-finished>{{review.finished| date: "%b %-d"}}</section>
+
   {% if review.authors %}
   <section data-author data-count="{{author_count}}">
     {% if author_count > 1 %}
@@ -44,6 +45,7 @@
     {%endif%}
   </section>
   {% endif %}
+
   {% if review.editors %}
   <section data-editor data-count="{{editor_count}}">
     {% if editor_count > 1 %}
@@ -53,6 +55,7 @@
     {%endif%}
   </section>
   {% endif %}
+
   {% if review.narrators %}
   <section data-narrator data-count="{{narrator_count}}">
     {% if narrator_count > 1 %}
@@ -62,9 +65,15 @@
     {%endif%}
   </section>
   {% endif %}
+
+  {%if review.series%}
   <section data-series>{{review.series}}{% if review.series_number %}, Book {{review.series_number}}{% endif %}</section>
-  <section data-vibe>{{review.vibe}}</section>
-  <section data-summary>{{review.summary}}</section>
-  <section data-review>{{review.review}}</section>
+  {%endif%}
+
+  {% if review.vibe %}<section data-vibe>{{review.vibe}}</section>{%endif%}
+
+  {% if review.summary %}<section data-summary>{{review.summary}}</section>{% endif %}
+
+  {% if review.review %}<section data-review>{{review.review}}</section>{% endif %}
 </div>
 {% endfor %}
