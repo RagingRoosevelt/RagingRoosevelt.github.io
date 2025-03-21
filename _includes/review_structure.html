@@ -31,11 +31,13 @@
   {% endif %}
 {% endif %}
 
-<div class="book-review" id='{{review.title|slugify: "ascii"}}'>
-  <section data-title>{{review.title}} ({{ primary_author|split:" "|last}}) </section>
+<details class="book-review" id='{{review.title|slugify: "ascii"}}'>
+  <summary>
   <section data-rating>{{review.rating}}</section>
+  <section data-title>{{review.title}} ({{ primary_author|split:" "|last}}) </section>
   <section data-finished>{{review.finished| date: "%b %-d"}}</section>
-
+  </summary>
+  <div class="details-info">
   {% if review.authors %}
   <section data-author data-count="{{author_count}}">
     {% if author_count > 1 %}
@@ -74,6 +76,16 @@
 
   {% if review.summary %}<section data-summary>{{review.summary}}</section>{% endif %}
 
-  {% if review.review %}<section data-review>{{review.review}}</section>{% endif %}
-</div>
+  {% if review.review %}<section data-review><p>{{review.review|join:"</p><p>"}}</p></section>{% endif %}
+
+  {% if review.links %}
+  <section data-links>
+    {% if review.links.powells %}<a href="{{review.links.powells}}" target="_blank"><img alt="{{review.title}} on Powell's City of Books" src="/assets/icons/powells-28.png" /></a>{%endif%}
+    {% if review.links.openlibrary %}<a href="{{review.links.openlibrary}}" target="_blank"><img alt="{{review.title}} on Open Library" src="/assets/icons/openlibrary-28.png" /></a>{%endif%}
+    {% if review.links.audible %}<a href="{{review.links.audible}}" target="_blank"><img alt="{{review.title}} on Audible" src="/assets/icons/audible-28.png" /></a>{%endif%}
+    {% if review.links.goodreads %}<a href="{{review.links.goodreads}}" target="_blank"><img alt="{{review.title}} on GoodReads" src="/assets/icons/goodreads-28.png" /></a>{%endif%}
+  </section>
+  {% endif %}
+  </div>
+</details>
 {% endfor %}
