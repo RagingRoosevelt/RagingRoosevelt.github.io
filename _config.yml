@@ -24,7 +24,8 @@ office_link: "https://www.google.com/maps/place/2701 NW Vaughn St, Portland, OR 
 timezone: America/Los_Angeles
 
 collections:
-  - book_reviews
+  book_reviews:
+    output: true
 
 future: false
 show_drafts: false

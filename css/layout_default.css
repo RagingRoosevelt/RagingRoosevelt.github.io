@@ -536,128 +536,137 @@ table:has(.rating-buttons) th:nth-child(1)::after {
 .book-review {
     margin-top: 1rem;
     margin-bottom: 1rem;
-    padding: 1em 1rem;
-    display: grid;
-    grid-template-areas:
-        "rating title . finished"
-        "editor editor . series"
-        "author author . series"
-        "narrator narrator . series"
-        "summary summary summary summary"
-        "review review review review";
-    grid-template-columns: 30px fit-content(550px) auto auto;
     box-shadow: 3px 3px 6px rgba(0,0,0,0.4);
-    &::before {
-      font-family: "Overpass Mono";
-      content: "⮟";
-      position: absolute;
-      transform: translate(-10px,0);
+    border-radius: 5px;
+    section {
+      display: inline-block;
     }
-    &:is([aria-current], :focus, :active)::before {
+    & summary::before {
+      content: "⮟";
+      font-family: "Noto Color Emoji", sans-serif;
+      font-weight: 400;
+      font-style: normal;
+    }
+    &[open] summary::before {
       content: "⮝";
     }
-    &:hover {
-        grid-template-rows: auto auto auto auto;
+    summary {
+      grid-area: summary;
+      background-color: rgba(255,255,255,0.2);
+      padding: 1em;
+      box-sizing: border-box;
+      list-style-type: none;
+      display: grid;
+      grid-template-columns: 1.5em auto 1fr auto; /* first element is the ::before psudo-element */
+      section[data-rating] {
+          /* grid-area: rating; */
+          text-align: center;
+          font-family: "Noto Color Emoji";
+      }
+      section[data-title] {
+          /* grid-area: title; */
+          font-weight: var(--font-weight-bolder);
+          user-select: all;
+          margin-right: 1em;
+      }
+      section[data-finished] {
+          /* grid-area: finished; */
+          font-weight: var(--font-weight-bolder);
+          text-align: end;
+      }
     }
-    section {
-        display: inline-block;
+    & .details-info {
+      padding: 1em;
+      display: grid;
+      grid-template-areas:
+          "editor editor . series"
+          "author author . series"
+          "narrator narrator . series"
+          "summary summary summary summary"
+          "review review review review"
+          "links links links links";
+      grid-template-columns: 30px fit-content(550px) auto auto;
+
+      section[data-editor] {
+          grid-area: editor;
+          font-weight: 600;
+          margin-top: 1em;
+          user-select: all;
+          &::before {
+            font-style: italic;
+            content: "Editors: ";
+          }
+          &[data-count="1"]::before {
+              content: "Editor: ";
+          }
+      }
+      section[data-author] {
+          grid-area: author;
+          font-weight: 600;
+          margin-top: 1em;
+          user-select: all;
+          &::before {
+              content: "Authors: ";
+              font-style: italic;
+          }
+          &[data-count="1"]::before {
+              content: "Author: ";
+          }
+      }
+      section[data-series] {
+          grid-area: series;
+          text-align: end;
+          margin-top: 1em;
+      }
+      section[data-narrator] {
+          grid-area: narrator;
+          font-weight: 600;
+          &::before {
+              content: "Narrated by: ";
+              font-style: italic;
+          }
+      }
+      section[data-vibe] {
+          display: none;
+          grid-area: vibe;
+      }
+      section[data-summary] {
+          grid-area: summary;
+          max-width: 650px;
+          margin-top: 1em;
+          &::before {
+            content: "Summary: ";
+            font-weight: var(--font-weight-bolder);
+            font-style: italic;
+          }
+      }
+      section[data-review] {
+          grid-area: review;
+          max-width: 650px;
+          margin-top: 1em;
+          &::before {
+            content: "Review: ";
+            font-weight: var(--font-weight-bolder);
+            font-style: italic;
+          }
+      }
+      section[data-links] {
+        grid-area: links;
+        margin-top: 1em;
+        a {
+          display: inline-block;
+          img {
+            border-radius: 5px;
+            height: 28px;
+            width: 28px;
+          }
+        }
+      }
     }
     &:is([aria-current], :focus, :active) {
       background-color: var(--color-highlight);
-      grid-template-rows: auto auto auto auto auto;
     }
-    &:not([aria-current], :focus, :active) {
-      grid-template-rows: auto 0 0 0 0;
-      section:is(
-        [data-editor],
-        [data-author],
-        [data-series],
-        [data-summary],
-        [data-review],
-        [data-narrator],
-        [data-vibe]
-      ) {
-          display: none;
-      }
-    }
-    section[data-rating] {
-        grid-area: rating;
-        text-align: center;
-        font-family: "Noto Color Emoji";
-    }
-    section[data-title] {
-        grid-area: title;
-        font-weight: var(--font-weight-bolder);
-        user-select: all;
-    }
-    section[data-finished] {
-        grid-area: finished;
-        font-weight: var(--font-weight-bolder);
-        text-align: end;
-    }
-    section[data-editor] {
-        grid-area: editor;
-        font-weight: 600;
-        margin-top: 1em;
-        user-select: all;
-        &::before {
-          font-style: italic;
-          content: "Editors: ";
-        }
-        &[data-count="1"]::before {
-            content: "Editor: ";
-        }
-    }
-    section[data-author] {
-        grid-area: author;
-        font-weight: 600;
-        margin-top: 1em;
-        user-select: all;
-        &::before {
-            content: "Authors: ";
-            font-style: italic;
-        }
-        &[data-count="1"]::before {
-            content: "Author: ";
-        }
-    }
-    section[data-series] {
-        grid-area: series;
-        text-align: end;
-        margin-top: 1em;
-    }
-    section[data-narrator] {
-        grid-area: narrator;
-        font-weight: 600;
-        &::before {
-            content: "Narrated by: ";
-            font-style: italic;
-        }
-    }
-    section[data-vibe] {
-        display: none;
-        grid-area: vibe;
-    }
-    section[data-summary] {
-        grid-area: summary;
-        max-width: 650px;
-        margin-top: 1em;
-        &::before {
-          content: "Summary: ";
-          font-weight: var(--font-weight-bolder);
-          font-style: italic;
-        }
-    }
-    section[data-review] {
-        grid-area: review;
-        max-width: 650px;
-        margin-top: 1em;
-        &::before {
-          content: "Review: ";
-          font-weight: var(--font-weight-bolder);
-          font-style: italic;
-        }
-    }
+
 }
 
 
