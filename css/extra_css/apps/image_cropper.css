@@ -1,0 +1,116 @@
+  /* Container that fills parent element */
+  .crop-tool-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    font-family: Arial, sans-serif;
+}
+
+/* Control panel for buttons and options */
+.control-panel {
+    padding: 10px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Image workspace area */
+.image-workspace {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    background-color: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Hide file input and use label as button */
+#file-input {
+    display: none;
+}
+
+/* Button styling */
+button, label.button {
+    padding: 8px 16px;
+    background-color: #4285f4;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Disabled button styling */
+button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+/* Dropdown styling */
+select {
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+/* Image container */
+.image-container {
+    position: relative;
+    display: inline-block;
+}
+
+/* Image styling */
+#preview-image {
+    max-width: 100%;
+    max-height: 100%;
+    display: none;
+}
+
+/* Crop overlay rectangle */
+.crop-rect {
+    position: absolute;
+    border: 2px dashed #fff;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5);
+    box-sizing: border-box;
+    cursor: move;
+    display: none;
+}
+
+/* Corner handles for resizing */
+.corner-handle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: white;
+    border: 1px solid #333;
+    border-radius: 50%;
+}
+
+/* Positioning for each corner handle */
+.corner-nw {
+    top: -5px;
+    left: -5px;
+    cursor: nw-resize;
+}
+.corner-ne {
+    top: -5px;
+    right: -5px;
+    cursor: ne-resize;
+}
+.corner-sw {
+    bottom: -5px;
+    left: -5px;
+    cursor: sw-resize;
+}
+.corner-se {
+    bottom: -5px;
+    right: -5px;
+    cursor: se-resize;
+}
+
+/* Instructions for empty state */
+.empty-state {
+    text-align: center;
+    color: #666;
+}
