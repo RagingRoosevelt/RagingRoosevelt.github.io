@@ -1,0 +1,595 @@
+---
+layout: main
+title: Image Cropper Tool
+section: Applications
+last_modified_at: 2025-05-03
+extra_css: extra_css/apps/image_cropper.css
+---
+<!--From `image_ops_6.html`-->
+
+<div class="crop-tool-container">
+  <div class="control-panel">
+      <input type="file" id="file-input" accept="image/*">
+      <label for="file-input" class="button" id="open-button">Open Image</label>
+      <button id="save-button" disabled>Save Image</button>
+      <button id="copy-button" disabled>Copy to Clipboard</button>
+      <button id="reset-button">New Project</button>
+
+      <select id="aspect-ratio" disabled>
+          <option value="free">Freeform</option>
+          <option value="1:1">1:1</option>
+          <optgroup label="Photography">
+              <option value="2:3">2:3</option>
+              <option value="3:2">3:2</option>
+              <option value="3:4">3:4</option>
+              <option value="4:3">4:3</option>
+              <option value="4:5">4:5</option>
+              <option value="5:4">5:4</option>
+              <option value="4:6">4:6</option>
+              <option value="6:4">6:4</option>
+              <option value="5:7">5:7</option>
+              <option value="7:5">7:5</option>
+          </optgroup>
+          <optgroup label="Desktop Background">
+              <option value="16:9">16:9</option>
+              <option value="9:16">9:16</option>
+              <option value="16:10">16:10</option>
+              <option value="10:16">10:16</option>
+              <option value="21:9">21:9</option>
+              <option value="9:21">9:21</option>
+          </optgroup>
+      </select>
+  </div>
+
+  <div class="image-workspace">
+      <div class="empty-state">
+          <p>Open an image file or paste from clipboard (Ctrl+V/Cmd+V)</p>
+      </div>
+
+      <div class="image-container">
+          <img id="preview-image" alt="Preview">
+          <div class="crop-rect">
+              <div class="corner-handle corner-nw"></div>
+              <div class="corner-handle corner-ne"></div>
+              <div class="corner-handle corner-sw"></div>
+              <div class="corner-handle corner-se"></div>
+          </div>
+      </div>
+  </div>
+</div>
+
+<script>
+  // Get references to DOM elements
+  const fileInput = document.getElementById('file-input');
+  const openButton = document.getElementById('open-button');
+  const saveButton = document.getElementById('save-button');
+  const copyButton = document.getElementById('copy-button');
+  const resetButton = document.getElementById('reset-button');
+  const aspectRatioSelect = document.getElementById('aspect-ratio');
+  const previewImage = document.getElementById('preview-image');
+  const cropRect = document.querySelector('.crop-rect');
+  const imageContainer = document.querySelector('.image-container');
+  const imageWorkspace = document.querySelector('.image-workspace');
+  const emptyState = document.querySelector('.empty-state');
+
+  // Store original image data
+  let originalImage = null;
+  let originalFilename = '';
+
+  // Crop rectangle state
+  let cropState = {
+      x: 0,
+      y: 0,
+      width: 0,
+      height: 0,
+      aspectRatio: 'free',
+      dragging: false,
+      resizing: false,
+      resizeHandle: null,
+      startX: 0,
+      startY: 0,
+      startWidth: 0,
+      startHeight: 0
+  };
+
+  // Triggered when a file is selected through the file input
+  fileInput.addEventListener('change', function(e) {
+      if (fileInput.files && fileInput.files[0]) {
+          loadImageFromFile(fileInput.files[0]);
+      }
+  });
+
+  // Triggered when the user clicks the reset button
+  resetButton.addEventListener('click', function() {
+      resetCropTool();
+  });
+
+  // Triggered when the user clicks the save button
+  saveButton.addEventListener('click', function() {
+      saveCroppedImage();
+  });
+
+  // Triggered when the user clicks the copy button
+  copyButton.addEventListener('click', function() {
+      copyToClipboard();
+  });
+
+  // Triggered when the user changes the aspect ratio dropdown
+  aspectRatioSelect.addEventListener('change', function() {
+      cropState.aspectRatio = aspectRatioSelect.value;
+
+      // Adjust crop rectangle to maintain the new aspect ratio
+      if (cropState.aspectRatio !== 'free') {
+          const [width, height] = cropState.aspectRatio.split(':').map(Number);
+          const ratio = width / height;
+
+          // Calculate new dimensions while maintaining center point
+          const centerX = cropState.x + cropState.width / 2;
+          const centerY = cropState.y + cropState.height / 2;
+
+          // Adjust width or height based on current dimensions to match ratio
+          if (cropState.width / cropState.height > ratio) {
+              // Current is wider than target ratio, adjust width
+              cropState.width = cropState.height * ratio;
+          } else {
+              // Current is taller than target ratio, adjust height
+              cropState.height = cropState.width / ratio;
+          }
+
+          // Recenter the crop rectangle
+          cropState.x = centerX - cropState.width / 2;
+          cropState.y = centerY - cropState.height / 2;
+
+          // Make sure crop rect stays in bounds
+          constrainCropRect();
+      }
+
+      updateCropRectUI();
+  });
+
+  // Triggered when the page loads to set up paste event listeners
+  document.addEventListener('DOMContentLoaded', function() {
+      // Listen for paste events on the document
+      document.addEventListener('paste', handlePaste);
+  });
+
+  // Handle paste events to capture clipboard images
+  function handlePaste(e) {
+      if (e.clipboardData && e.clipboardData.items) {
+          const items = e.clipboardData.items;
+
+          for (let i = 0; i < items.length; i++) {
+              if (items[i].type.indexOf('image') !== -1) {
+                  const blob = items[i].getAsFile();
+                  loadImageFromFile(blob, true);
+                  break;
+              }
+          }
+      }
+  }
+
+  // Load image from a file object
+  function loadImageFromFile(file, isClipboard = false) {
+      const reader = new FileReader();
+
+      reader.onload = function(e) {
+          // Create a new image to get dimensions
+          const img = new Image();
+          img.onload = function() {
+              // Store the original image
+              originalImage = img;
+              originalFilename = isClipboard ? 'clipboard_image' : file.name.split('.')[0];
+
+              // Show the image
+              previewImage.src = e.target.result;
+              previewImage.style.display = 'block';
+              emptyState.style.display = 'none';
+
+              // Set initial crop rectangle to cover the whole image
+              cropState.x = 0;
+              cropState.y = 0;
+              cropState.width = img.width;
+              cropState.height = img.height;
+
+              // Update UI
+              updateCropRectUI();
+
+              // Enable/disable controls
+              openButton.disabled = true;
+              saveButton.disabled = false;
+              copyButton.disabled = false;
+              aspectRatioSelect.disabled = false;
+
+              // Set up crop rectangle event handlers
+              setupCropRectHandlers();
+          };
+          img.src = e.target.result;
+      };
+
+      reader.readAsDataURL(file);
+  }
+
+  // Reset the crop tool to its initial state
+  function resetCropTool() {
+      // Reset image and state
+      previewImage.style.display = 'none';
+      cropRect.style.display = 'none';
+      emptyState.style.display = 'block';
+
+      // Reset original data
+      originalImage = null;
+      originalFilename = '';
+
+      // Reset form controls
+      fileInput.value = '';
+      openButton.disabled = false;
+      saveButton.disabled = true;
+      copyButton.disabled = true;
+      aspectRatioSelect.disabled = true;
+      aspectRatioSelect.value = 'free';
+
+      // Reset crop state
+      cropState = {
+          x: 0,
+          y: 0,
+          width: 0,
+          height: 0,
+          aspectRatio: 'free',
+          dragging: false,
+          resizing: false,
+          resizeHandle: null,
+          startX: 0,
+          startY: 0,
+          startWidth: 0,
+          startHeight: 0
+      };
+  }
+
+  // Update the crop rectangle UI based on current state
+  function updateCropRectUI() {
+      if (!originalImage) return;
+
+      // Calculate scale factor between original image and displayed image
+      const scaleX = previewImage.offsetWidth / originalImage.width;
+      const scaleY = previewImage.offsetHeight / originalImage.height;
+
+      // Get image position
+      const imageRect = previewImage.getBoundingClientRect();
+      const containerRect = imageContainer.getBoundingClientRect();
+
+      // Set crop rectangle position and size
+      cropRect.style.left = (cropState.x * scaleX) + 'px';
+      cropRect.style.top = (cropState.y * scaleY) + 'px';
+      cropRect.style.width = (cropState.width * scaleX) + 'px';
+      cropRect.style.height = (cropState.height * scaleY) + 'px';
+      cropRect.style.display = 'block';
+  }
+
+  // Setup event handlers for crop rectangle dragging and resizing
+  function setupCropRectHandlers() {
+      // Mouse/touch events for dragging the crop rectangle
+      cropRect.addEventListener('mousedown', startDrag);
+      cropRect.addEventListener('touchstart', startDrag);
+
+      // Mouse/touch events for resizing from corners
+      document.querySelectorAll('.corner-handle').forEach(handle => {
+          handle.addEventListener('mousedown', startResize);
+          handle.addEventListener('touchstart', startResize);
+      });
+
+      // Add global mouse/touch move and up handlers
+      document.addEventListener('mousemove', moveHandler);
+      document.addEventListener('touchmove', moveHandler);
+      document.addEventListener('mouseup', endDragResize);
+      document.addEventListener('touchend', endDragResize);
+  }
+
+  // Start dragging the crop rectangle
+  function startDrag(e) {
+      // Prevent default to avoid selection behavior
+      e.preventDefault();
+
+      // Only handle primary mouse button or touch
+      if (e.type === 'mousedown' && e.button !== 0) return;
+
+      // Don't start drag if clicking on a corner handle
+      if (e.target.classList.contains('corner-handle')) return;
+
+      // Get appropriate coordinates
+      const coords = getEventCoordinates(e);
+
+      // Calculate scale factor between original image and displayed image
+      const scaleX = previewImage.offsetWidth / originalImage.width;
+      const scaleY = previewImage.offsetHeight / originalImage.height;
+
+      // Get image position
+      const imageRect = previewImage.getBoundingClientRect();
+
+      // Update crop state
+      cropState.dragging = true;
+      cropState.startX = coords.x - imageRect.left;
+      cropState.startY = coords.y - imageRect.top;
+
+      // Store original position for calculating delta
+      cropState.startCropX = cropState.x;
+      cropState.startCropY = cropState.y;
+  }
+
+  // Start resizing the crop rectangle from a corner
+  function startResize(e) {
+      // Prevent default to avoid selection behavior
+      e.preventDefault();
+
+      // Only handle primary mouse button or touch
+      if (e.type === 'mousedown' && e.button !== 0) return;
+
+      // Get appropriate coordinates
+      const coords = getEventCoordinates(e);
+
+      // Update crop state
+      cropState.resizing = true;
+      cropState.resizeHandle = e.target.classList[1]; // corner-xx class
+
+      // Calculate scale factor between original image and displayed image
+      const scaleX = previewImage.offsetWidth / originalImage.width;
+      const scaleY = previewImage.offsetHeight / originalImage.height;
+
+      // Get image position
+      const imageRect = previewImage.getBoundingClientRect();
+
+      // Store start coordinates
+      cropState.startX = coords.x - imageRect.left;
+      cropState.startY = coords.y - imageRect.top;
+
+      // Store original dimensions for calculating delta
+      cropState.startWidth = cropState.width;
+      cropState.startHeight = cropState.height;
+      cropState.startCropX = cropState.x;
+      cropState.startCropY = cropState.y;
+  }
+
+  // Handle move events for both drag and resize
+  function moveHandler(e) {
+      if (!cropState.dragging && !cropState.resizing) return;
+
+      // Prevent default to avoid selection behavior
+      e.preventDefault();
+
+      // Get appropriate coordinates
+      const coords = getEventCoordinates(e);
+
+      // Calculate scale factor between original image and displayed image
+      const scaleX = previewImage.offsetWidth / originalImage.width;
+      const scaleY = previewImage.offsetHeight / originalImage.height;
+
+      // Get image position
+      const imageRect = previewImage.getBoundingClientRect();
+
+      // Calculate current position relative to image
+      const currentX = (coords.x - imageRect.left) / scaleX;
+      const currentY = (coords.y - imageRect.top) / scaleY;
+      const startX = cropState.startX / scaleX;
+      const startY = cropState.startY / scaleY;
+
+      // Handle drag operation
+      if (cropState.dragging) {
+          // Calculate delta from start position
+          const deltaX = currentX - startX;
+          const deltaY = currentY - startY;
+
+          // Update crop rectangle position
+          cropState.x = cropState.startCropX + deltaX;
+          cropState.y = cropState.startCropY + deltaY;
+
+          // Make sure crop rect stays in bounds
+          constrainCropRect();
+
+          // Update UI
+          updateCropRectUI();
+      }
+
+      // Handle resize operation
+      if (cropState.resizing) {
+          // Calculate delta from start position
+          const deltaX = currentX - startX;
+          const deltaY = currentY - startY;
+
+          // Parse aspect ratio if set
+          let ratio = null;
+          if (cropState.aspectRatio !== 'free') {
+              const [width, height] = cropState.aspectRatio.split(':').map(Number);
+              ratio = width / height;
+          }
+
+          // Handle different corner handles
+          if (cropState.resizeHandle === 'corner-se') {
+              // Southeast (bottom right) corner
+              cropState.width = cropState.startWidth + deltaX;
+
+              if (ratio !== null) {
+                  cropState.height = cropState.width / ratio;
+              } else {
+                  cropState.height = cropState.startHeight + deltaY;
+              }
+          } else if (cropState.resizeHandle === 'corner-sw') {
+              // Southwest (bottom left) corner
+              const newWidth = cropState.startWidth - deltaX;
+
+              if (newWidth > 0) {
+                  cropState.width = newWidth;
+                  cropState.x = cropState.startCropX + deltaX;
+
+                  if (ratio !== null) {
+                      cropState.height = cropState.width / ratio;
+                  } else {
+                      cropState.height = cropState.startHeight + deltaY;
+                  }
+              }
+          } else if (cropState.resizeHandle === 'corner-ne') {
+              // Northeast (top right) corner
+              cropState.width = cropState.startWidth + deltaX;
+
+              if (ratio !== null) {
+                  const newHeight = cropState.width / ratio;
+                  const heightDelta = newHeight - cropState.startHeight;
+                  cropState.height = newHeight;
+                  cropState.y = cropState.startCropY - heightDelta;
+              } else {
+                  const newHeight = cropState.startHeight - deltaY;
+                  if (newHeight > 0) {
+                      cropState.height = newHeight;
+                      cropState.y = cropState.startCropY + deltaY;
+                  }
+              }
+          } else if (cropState.resizeHandle === 'corner-nw') {
+              // Northwest (top left) corner
+              const newWidth = cropState.startWidth - deltaX;
+
+              if (newWidth > 0) {
+                  cropState.width = newWidth;
+                  cropState.x = cropState.startCropX + deltaX;
+
+                  if (ratio !== null) {
+                      const newHeight = cropState.width / ratio;
+                      const heightDelta = newHeight - cropState.startHeight;
+                      cropState.height = newHeight;
+                      cropState.y = cropState.startCropY - heightDelta;
+                  } else {
+                      const newHeight = cropState.startHeight - deltaY;
+                      if (newHeight > 0) {
+                          cropState.height = newHeight;
+                          cropState.y = cropState.startCropY + deltaY;
+                      }
+                  }
+              }
+          }
+
+          // Ensure minimum size
+          const minSize = 10;
+          if (cropState.width < minSize) cropState.width = minSize;
+          if (cropState.height < minSize) cropState.height = minSize;
+
+          // Make sure crop rect stays in bounds
+          constrainCropRect();
+
+          // Update UI
+          updateCropRectUI();
+      }
+  }
+
+  // End drag or resize operation
+  function endDragResize() {
+      cropState.dragging = false;
+      cropState.resizing = false;
+      cropState.resizeHandle = null;
+  }
+
+  // Ensure crop rectangle stays within image bounds
+  function constrainCropRect() {
+      // Constrain width and height to image dimensions
+      if (cropState.width > originalImage.width) {
+          cropState.width = originalImage.width;
+      }
+
+      if (cropState.height > originalImage.height) {
+          cropState.height = originalImage.height;
+      }
+
+      // Constrain position to keep crop rect within image bounds
+      if (cropState.x < 0) cropState.x = 0;
+      if (cropState.y < 0) cropState.y = 0;
+
+      if (cropState.x + cropState.width > originalImage.width) {
+          cropState.x = originalImage.width - cropState.width;
+      }
+
+      if (cropState.y + cropState.height > originalImage.height) {
+          cropState.y = originalImage.height - cropState.height;
+      }
+  }
+
+  // Helper function to get coordinates from both mouse and touch events
+  function getEventCoordinates(e) {
+      let x, y;
+
+      if (e.type.includes('touch')) {
+          // Touch event
+          const touch = e.touches[0] || e.changedTouches[0];
+          x = touch.clientX;
+          y = touch.clientY;
+      } else {
+          // Mouse event
+          x = e.clientX;
+          y = e.clientY;
+      }
+
+      return { x, y };
+  }
+
+  // Create a cropped version of the image and save it
+  function saveCroppedImage() {
+      if (!originalImage) return;
+
+      // Create a canvas with the crop dimensions
+      const canvas = document.createElement('canvas');
+      canvas.width = cropState.width;
+      canvas.height = cropState.height;
+
+      // Draw the cropped portion of the image
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(
+          originalImage,
+          cropState.x, cropState.y, cropState.width, cropState.height,
+          0, 0, cropState.width, cropState.height
+      );
+
+      // Convert to blob
+      canvas.toBlob(function(blob) {
+          // Create download link
+          const link = document.createElement('a');
+          link.download = `${originalFilename}-cropped.png`;
+          link.href = URL.createObjectURL(blob);
+          link.click();
+
+          // Clean up
+          URL.revokeObjectURL(link.href);
+      }, 'image/png');
+  }
+
+  // Copy the cropped image to clipboard
+  function copyToClipboard() {
+      if (!originalImage) return;
+
+      // Create a canvas with the crop dimensions
+      const canvas = document.createElement('canvas');
+      canvas.width = cropState.width;
+      canvas.height = cropState.height;
+
+      // Draw the cropped portion of the image
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(
+          originalImage,
+          cropState.x, cropState.y, cropState.width, cropState.height,
+          0, 0, cropState.width, cropState.height
+      );
+
+      // Convert to blob then copy to clipboard
+      canvas.toBlob(async function(blob) {
+          try {
+              // Check if clipboard API is available
+              if (navigator.clipboard && navigator.clipboard.write) {
+                  const clipboardItem = new ClipboardItem({
+                      'image/png': blob
+                  });
+                  await navigator.clipboard.write([clipboardItem]);
+                  alert('Image copied to clipboard');
+              } else {
+                  alert('Clipboard API not supported in this browser');
+              }
+          } catch (err) {
+              console.error('Failed to copy: ', err);
+              alert('Failed to copy image to clipboard');
+          }
+      }, 'image/png');
+  }
+</script>

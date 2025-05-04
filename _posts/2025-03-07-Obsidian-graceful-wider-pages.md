@@ -2,7 +2,7 @@
 layout: blog
 title: Graceful page widening in Obsidian
 section: Blog
-last_modified_at: 2025-03-07
+last_modified_at: 2025-05-03
 categories: Coding
 tags:
 - Obsidian
@@ -40,22 +40,22 @@ and on desktop as you resize the page's pane.
   container-name: custom-css;
 }
 @container custom-css (min-width: 900px) {
-  div.cm-sizer {
+  div:is(.cm-sizer,.markdown-preview-sizer) {
     --file-line-width: 900px;
   }
 }
 @container custom-css (min-width: 1000px) {
-  div.cm-sizer {
+  div:is(.cm-sizer,.markdown-preview-sizer) {
     --file-line-width: 1000px;
   }
 }
 @container custom-css (min-width: 1100px) {
-  div.cm-sizer {
+  div:is(.cm-sizer,.markdown-preview-sizer) {
     --file-line-width: 1100px;
   }
 }
 @container custom-css (min-width: 1200px) {
-  div.cm-sizer {
+  div:is(.cm-sizer,.markdown-preview-sizer) {
     --file-line-width: 1200px;
   }
 }
