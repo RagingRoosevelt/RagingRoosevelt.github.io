@@ -2,12 +2,6 @@
 layout: blog
 ---
 
-<style>
-.rating-buttons button {
-  font-size: 1rem;
-}
-</style>
-
 <script>
   let reviews = []
   window.addEventListener("load", () => {
@@ -30,7 +24,7 @@ layout: blog
 </script>
 
 <table>
-  <tr><th>(all)</th><th>Bad</th><th>Eh</th><th>Good</th><th>Amazing</th></tr>
+  <tr><th>all</th><th>Bad</th><th>Eh</th><th>Good</th><th>Amazing</th></tr>
   <tr class="rating-buttons">
     <td><button onclick="handle_filter_ratings('*')" aria-label="Show all">*</button></td>
     <td><button onclick="handle_filter_ratings('👎')" aria-label="Show bad">&#128078;</button></td>

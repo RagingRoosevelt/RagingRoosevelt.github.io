@@ -37,31 +37,23 @@ a:is([aria-current], :hover, :active, :focus) {
   /* color: hsl(195deg, 90%, 32%); */
   color: var(--color-text-link-hover);
   text-decoration: dotted underline;
-  background-color: var(--color-background-main);
 }
 
 header {
-  --border-radius: 5px;
   border-radius: var(--border-radius);
   grid-area: head;
   background-color: var(--color-background-header);
-  margin-bottom: 3em;
+  margin-bottom: var(--header-margin);
   & div.img-profile {
     display: inline-block;
-    width: 20ch;
-    height: 20ch;
-  }
-  & div.img-profile {
-    width: 20ch;
-    height: 20ch;
-    display: inline-block;
+    width: var(--header-height);
+    height: var(--header-height);
   }
   & div.img-profile>img {
     position: absolute;
-    border-radius: 1rem;
-    border-top-left-radius: var(--border-radius);;
-    width: 20ch;
-    height: 20ch;
+    border-radius: var(--border-radius) 1rem 1rem var(--border-radius);
+    width: var(--header-height);
+    height: var(--header-height);
   }
   & div.img-profile>img:first-child {
     z-index: 1;
@@ -78,10 +70,12 @@ header {
   & a.hero-link {
     font-size: 3rem;
     white-space: nowrap;
+    vertical-align: bottom;
   }
 }
 
 nav {
+  border-radius: var(--border-radius) 0 0 var(--border-radius);
   position:sticky;
   top: 0;
   grid-area: nav;
@@ -100,6 +94,7 @@ nav {
 }
 main {
   box-sizing: border-box;
+  border-top-right-radius: var(--border-radius);
   padding: var(--principle-padding);
   grid-area: content;
   /* background-color: darksalmon; */
@@ -442,10 +437,13 @@ body::after {
   grid-area: spacer;
 }
 body {
+  --border-radius: 5px;
+  --header-height: 164px;
+  --header-margin: 36px;
   color: var(--color-text);
   display: grid;
   grid-template-columns: 200px fit-content(1000px);
-  grid-template-rows: auto auto auto 1fr auto;
+  grid-template-rows: calc(var(--header-height) + var(--header-margin)) auto auto 1fr auto;
   grid-template-areas:
   "head head ."
   "nav content ."
@@ -460,9 +458,11 @@ body {
 }
 @media (max-width: 1200px){
   body{
+    --border-radius: 0px;
+    --header-height: 48px;
+    --header-margin: 0px;
     grid-template-columns: 200px auto;
     header {
-      margin-bottom: 0;
       a.hero-link {
         font-size: 2rem;
         white-space: nowrap;
@@ -490,7 +490,7 @@ body {
     header {
       margin-bottom: 0;
       a.hero-link {
-        font-size: 2rem;
+        font-size: 1.5rem;
         white-space: nowrap;
       }
     }
@@ -507,122 +507,166 @@ body {
     }
   }
 }
+@media (max-width: 480px) {
+  :root{
+    --principle-padding: 0.6em;
+  }
+  body {
+    & main {
+      & button {
+        padding: 0.5em 0.5em;
+      }
+    }
+  }
+}
 
 .rating-buttons button {
   font-family: "Noto Color Emoji";
+  font-size: 1rem;
+}
+table:has(.rating-buttons) th:nth-child(1)::before {
+  content: "(";
+  position: absolute;
+  transform: translate(-1ch, 0);
+}
+table:has(.rating-buttons) th:nth-child(1)::after {
+  content: ")";
+  position: absolute;
 }
 .book-review {
     margin-top: 1rem;
     margin-bottom: 1rem;
-    padding: 1em 1rem;
-    display: grid;
-    grid-template-areas:
-        "rating title . finished"
-        "editor editor . series"
-        "author author . series"
-        "narrator narrator . series"
-        "summary summary summary summary"
-        "review review review review";
-    grid-template-columns: 30px fit-content(550px) auto auto;
     box-shadow: 3px 3px 6px rgba(0,0,0,0.4);
-    &::before {
-      font-family: "Overpass Mono";
-      content: "⮟";
-      position: absolute;
-      transform: translate(-10px,0);
+    border-radius: 5px;
+    section {
+      display: inline-block;
     }
-    &:is([aria-current], :focus, :active)::before {
+    & summary::before {
+      content: "⮟";
+      font-family: "Noto Color Emoji", sans-serif;
+      font-weight: 400;
+      font-style: normal;
+    }
+    &[open] summary::before {
       content: "⮝";
     }
-    &:hover {
-        grid-template-rows: auto auto auto auto;
+    summary {
+      grid-area: summary;
+      background-color: rgba(255,255,255,0.2);
+      padding: 1em;
+      box-sizing: border-box;
+      list-style-type: none;
+      display: grid;
+      grid-template-columns: 1.5em auto 1fr auto; /* first element is the ::before psudo-element */
+      section[data-rating] {
+          /* grid-area: rating; */
+          text-align: center;
+          font-family: "Noto Color Emoji";
+      }
+      section[data-title] {
+          /* grid-area: title; */
+          font-weight: var(--font-weight-bolder);
+          user-select: all;
+          margin-right: 1em;
+      }
+      section[data-finished] {
+          /* grid-area: finished; */
+          font-weight: var(--font-weight-bolder);
+          text-align: end;
+      }
     }
-    section {
-        display: inline-block;
+    & .details-info {
+      padding: 1em;
+      display: grid;
+      grid-template-areas:
+          "editor editor . series"
+          "author author . series"
+          "narrator narrator . series"
+          "summary summary summary summary"
+          "review review review review"
+          "links links links links";
+      grid-template-columns: 30px fit-content(550px) auto auto;
+
+      section[data-editor] {
+          grid-area: editor;
+          font-weight: 600;
+          margin-top: 1em;
+          user-select: all;
+          &::before {
+            font-style: italic;
+            content: "Editors: ";
+          }
+          &[data-count="1"]::before {
+              content: "Editor: ";
+          }
+      }
+      section[data-author] {
+          grid-area: author;
+          font-weight: 600;
+          margin-top: 1em;
+          user-select: all;
+          &::before {
+              content: "Authors: ";
+              font-style: italic;
+          }
+          &[data-count="1"]::before {
+              content: "Author: ";
+          }
+      }
+      section[data-series] {
+          grid-area: series;
+          text-align: end;
+          margin-top: 1em;
+      }
+      section[data-narrator] {
+          grid-area: narrator;
+          font-weight: 600;
+          &::before {
+              content: "Narrated by: ";
+              font-style: italic;
+          }
+      }
+      section[data-vibe] {
+          display: none;
+          grid-area: vibe;
+      }
+      section[data-summary] {
+          grid-area: summary;
+          max-width: 650px;
+          margin-top: 1em;
+          &::before {
+            content: "Summary: ";
+            font-weight: var(--font-weight-bolder);
+            font-style: italic;
+          }
+      }
+      section[data-review] {
+          grid-area: review;
+          max-width: 650px;
+          margin-top: 1em;
+          &::before {
+            content: "Review: ";
+            font-weight: var(--font-weight-bolder);
+            font-style: italic;
+          }
+      }
+      section[data-links] {
+        grid-area: links;
+        margin-top: 1em;
+        a {
+          display: inline-block;
+          img {
+            border-radius: 5px;
+            height: 28px;
+            width: 28px;
+          }
+        }
+      }
     }
     &:is([aria-current], :focus, :active) {
       background-color: var(--color-highlight);
-      grid-template-rows: auto auto auto auto auto;
     }
-    &:not([aria-current], :focus, :active) {
-      grid-template-rows: auto 0 0 0 0;
-      section:is(
-        [data-editor],
-        [data-author],
-        [data-series],
-        [data-summary],
-        [data-review],
-        [data-narrator],
-        [data-vibe]
-      ) {
-          display: none;
-      }
-    }
-    section[data-rating] {
-        grid-area: rating;
-        text-align: center;
-        font-family: "Noto Color Emoji";
-    }
-    section[data-title] {
-        grid-area: title;
-        font-weight: var(--font-weight-bolder);
-    }
-    section[data-finished] {
-        grid-area: finished;
-        font-weight: var(--font-weight-bolder);
-        text-align: end;
-    }
-    section[data-editor] {
-        grid-area: editor;
-        font-weight: 600;
-        margin-top: 1em;
-        &::before {
-          font-style: italic;
-          content: "Editors: ";
-        }
-        &[data-count="1"]::before {
-            content: "Editor: ";
-        }
-    }
-    section[data-author] {
-        grid-area: author;
-        font-weight: 600;
-        margin-top: 1em;
-        &::before {
-            content: "Authors: ";
-            font-style: italic;
-        }
-        &[data-count="1"]::before {
-            content: "Author: ";
-        }
-    }
-    section[data-series] {
-        grid-area: series;
-        text-align: end;
-        margin-top: 1em;
-    }
-    section[data-narrator] {
-        grid-area: narrator;
-        font-weight: 600;
-        &::before {
-            content: "Narrated by: ";
-            font-style: italic;
-        }
-    }
-    section[data-vibe] {
-        display: none;
-        grid-area: vibe;
-    }
-    section[data-summary] {
-        grid-area: summary;
-        max-width: 650px;
-        margin-top: 1em;
-    }
-    section[data-review] {
-        grid-area: review;
-        max-width: 650px;
-        margin-top: 1em;
-    }
+
 }
 
 

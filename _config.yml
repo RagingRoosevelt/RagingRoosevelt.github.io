@@ -6,6 +6,7 @@ name: Theodore S. Lindsey
 url: "http://theodorelindsey.io" # the base hostname & protocol for your site
 description: > # this means to ignore newlines until "baseurl:"
   Personal and professional website for Theodore S. Lindsey.
+repository: RagingRoosevelt/RagingRoosevelt.github.io
 
 # usernames
 username_twitter: RagingRoosevelt
@@ -24,8 +25,11 @@ office_link: "https://www.google.com/maps/place/2701 NW Vaughn St, Portland, OR 
 timezone: America/Los_Angeles
 
 collections:
-  - book_reviews
+  book_reviews:
+    output: true
 
+future: false
+show_drafts: false
 # blog post url format
 permalink: /blog/:year/:month/:day/:title.html
 paginate: 5
