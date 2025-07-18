@@ -178,18 +178,18 @@ extra_css: extra_css/apps/image_cropper.css
           img.onload = function() {
               // Store the original image
               originalImage = img;
-              originalFilename = isClipboard ? 'clipboard_image' : file.name.split('.')[0];
+              originalFilename = isClipboard ? 'clipboard_image' : file.name.substring(0, file.name.lastIndexOf('.')) || file.name;
+
+              // Reset file input to allow selecting the same file again and clear any previous selection
+              fileInput.value = '';
 
               // Show the image
               previewImage.src = e.target.result;
               previewImage.style.display = 'block';
               emptyState.style.display = 'none';
 
-              // Set initial crop rectangle to cover the whole image
-              cropState.x = 0;
-              cropState.y = 0;
-              cropState.width = img.width;
-              cropState.height = img.height;
+              // Set initial crop rectangle intelligently
+              initializeCropRectangle(img);
 
               // Update UI
               updateCropRectUI();
@@ -243,6 +243,48 @@ extra_css: extra_css/apps/image_cropper.css
           startWidth: 0,
           startHeight: 0
       };
+  }
+
+  // Initialize crop rectangle based on image size and current aspect ratio
+  function initializeCropRectangle(img) {
+      // Check if this is the same size as the previous image
+      const isSameSize = originalImage && 
+                        originalImage.width === img.width && 
+                        originalImage.height === img.height;
+
+      if (isSameSize && cropState.width > 0 && cropState.height > 0) {
+          // Preserve existing crop coordinates for same-sized images
+          // Just ensure they're still within bounds
+          constrainCropRect();
+      } else {
+          // For different-sized images, create optimal crop rectangle
+          if (cropState.aspectRatio === 'free') {
+              // No aspect ratio constraint - use full image
+              cropState.x = 0;
+              cropState.y = 0;
+              cropState.width = img.width;
+              cropState.height = img.height;
+          } else {
+              // Respect aspect ratio and maximize size
+              const [ratioWidth, ratioHeight] = cropState.aspectRatio.split(':').map(Number);
+              const targetRatio = ratioWidth / ratioHeight;
+              const imageRatio = img.width / img.height;
+
+              if (imageRatio > targetRatio) {
+                  // Image is wider than target ratio - fit to height
+                  cropState.height = img.height;
+                  cropState.width = img.height * targetRatio;
+                  cropState.x = (img.width - cropState.width) / 2;
+                  cropState.y = 0;
+              } else {
+                  // Image is taller than target ratio - fit to width
+                  cropState.width = img.width;
+                  cropState.height = img.width / targetRatio;
+                  cropState.x = 0;
+                  cropState.y = (img.height - cropState.height) / 2;
+              }
+          }
+      }
   }
 
   // Update the crop rectangle UI based on current state
