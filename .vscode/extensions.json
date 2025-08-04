@@ -5,6 +5,8 @@
         "ginfuru.ginfuru-vscode-jekyll-syntax",
         "vscode-icons-team.vscode-icons",
         "Gruntfuggly.todo-tree",
-        "ms-azuretools.vscode-docker"
+        "ms-azuretools.vscode-docker",
+        "TaoXin.vanjs-importtag",
+        "mhutchie.git-graph",
     ]
 }
