@@ -261,7 +261,17 @@ Use this to to
         const offsetX = col * tileWidth;
         // Apply column offset: each subsequent column is offset in Y direction
         const columnYOffset = col * columnOffset * tileHeight;
-        const offsetY = row * tileHeight + columnYOffset;
+        let offsetY = row * tileHeight + columnYOffset;
+        
+        // Wrap tile position if it would be outside the viewBox
+        // Calculate the effective column height (total height minus max offset)
+        const effectiveColumnHeight = totalHeight - Math.abs(columnOffset) * tileHeight * (repeatX - 1);
+        while (offsetY >= effectiveColumnHeight) {
+          offsetY -= effectiveColumnHeight;
+        }
+        while (offsetY < 0) {
+          offsetY += effectiveColumnHeight;
+        }
 
         // Create group for this tile
         const tileGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
