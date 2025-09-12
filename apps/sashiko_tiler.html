@@ -1,46 +1,51 @@
 ---
 layout: main
-title: Image Cropper Tool
+title: Sashiko Pattern Tiling Tool
 section: Applications
 last_modified_at: 2025-05-03
-extra_css: extra_css/apps/image_cropper.css
+extra_css: extra_css/apps/sashiko_tiler.css
 ---
 
 
 <div id="app-info">
-Use this to to
+Use this tool to try out tiling ideas for your sashiko project.  Use <kbd>shift</kbd>+<kbd>drag</kbd> to add a line.
+Use <kbd>ctrl</kbd>+<kbd>click</kbd> to delete a line.  Drag a line to move it.  Drag an endpoint to move just the
+endpoint.
 </div>
 <div id="tiler-tool-container">
-  <div id="tool-selector">
-    <label for="cfg_snap_to_grid">Snap to Grid</label><input checked type="checkbox" class="switch" name="cfg_snap_to_grid" />
-    <label for="cfg_show_grid">Show Grid</label><input checked type="checkbox" class="switch" name="cfg_show_grid" />
-    <label for="cfg_grid_size">Grid Size</label><input value="10" type="number" step="1" pattern="\d+" name="cfg_grid_size" />
-    <label for="cfg_driving_svg_aspect_ratio">Aspect Ratio</label><select name="cfg_driving_svg_aspect_ratio">
-      <option value="1">1:1</option>
-      <optgroup label="Landscape">
-        <option value="1.5">3:2</option>
-        <option value="2">2:1</option>
-      </optgroup>
-      <optgroup label="Portrait">
-        <option value="0.6666667">2:3</option>
-        <option value="0.5">1:2</option>
-      </optgroup>
-    </select>
-    <button id="btn_load_definition">Load Definition</button>
-    <button id="btn_save_definition">Save Definition</button>
-  </div>
+  <hr />
   <div id="container-driving-svg">
-    <svg style="border: 1px solid black;" viewBox="0 0 200 200" height="100%" width="100%" preserveAspectRatio="meet"  xmlns="http://www.w3.org/2000/svg">
+    <div id="driving-design-cfg">
+      <label for="cfg_snap_to_grid">Snap to Grid <input checked type="checkbox" class="switch" name="cfg_snap_to_grid" /></label>
+      <label for="cfg_show_grid">Show Grid <input checked type="checkbox" class="switch" name="cfg_show_grid" /></label>
+      <label for="cfg_grid_size">Grid Size <input value="10" type="number" step="1" pattern="\d+" name="cfg_grid_size" /></label>
+      <label for="cfg_driving_svg_aspect_ratio">Aspect Ratio
+      <select name="cfg_driving_svg_aspect_ratio">
+        <option value="1">1:1</option>
+        <optgroup label="Landscape">
+          <option value="1.5">3:2</option>
+          <option value="2">2:1</option>
+        </optgroup>
+        <optgroup label="Portrait">
+          <option value="0.6666667">2:3</option>
+          <option value="0.5">1:2</option>
+        </optgroup>
+      </select></label>
+      <button id="btn_load_definition">Load Definition</button>
+      <button id="btn_save_definition">Save Definition</button>
+    </div>
+    <svg viewBox="0 0 200 200" preserveAspectRatio="meet"  xmlns="http://www.w3.org/2000/svg">
     </svg>
   </div>
-  <div id="tiling-cfg">
-    <label for="cfg_tiling_repeat_x">X-repetition</label><input type="number" steps="1" pattern="\d+" value="4" name="cfg_tiling_repeat_x" />
-    <label for="cfg_tiling_repeat_y">y-repetition</label><input type="number" steps="1" pattern="\d+" value="4" name="cfg_tiling_repeat_y" />
-    <label for="cfg_tiling_subsequent_column_offset">Column Offset</label><input type="number" step="0.25" max="1" min="-1" value="0" pattern="(?:0\.\d+)|(?:1\.0)" name="cfg_tiling_subsequent_column_offset" />
-    <button id="btn_download_pattern">Download Pattern</button>
-  </div>
+  <hr />
   <div id="container-pattern-svg">
-    <svg viewbox="0 0 1000 1000" height="100%" width="100%" preserveAspectRatio="meet"  xmlns="http://www.w3.org/2000/svg">
+    <div id="tiling-cfg">
+      <label for="cfg_tiling_repeat_x">X-repetition</label><input type="number" steps="1" pattern="\d+" value="4" name="cfg_tiling_repeat_x" />
+      <label for="cfg_tiling_repeat_y">Y-repetition</label><input type="number" steps="1" pattern="\d+" value="4" name="cfg_tiling_repeat_y" />
+      <label for="cfg_tiling_subsequent_column_offset">Column Offset</label><input type="number" step="0.25" max="1" min="-1" value="0" pattern="(?:0\.\d+)|(?:1\.0)" name="cfg_tiling_subsequent_column_offset" />
+      <button id="btn_download_pattern">Download Pattern</button>
+    </div>
+    <svg viewbox="0 0 1000 1000" preserveAspectRatio="meet"  xmlns="http://www.w3.org/2000/svg">
     </svg>
   </div>
 </div>
@@ -183,11 +188,11 @@ Use this to to
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
     fileInput.accept = '.svg,image/svg+xml';
-    
+
     fileInput.addEventListener('change', (event) => {
       const file = event.target.files[0];
       if (!file) return;
-      
+
       const reader = new FileReader();
       reader.onload = (e) => {
         try {
@@ -195,40 +200,40 @@ Use this to to
           const parser = new DOMParser();
           const svgDoc = parser.parseFromString(e.target.result, 'image/svg+xml');
           const loadedSvg = svgDoc.querySelector('svg');
-          
+
           if (!loadedSvg) {
             alert('Invalid SVG file');
             return;
           }
-          
+
           // Clear current lines array
           lines.length = 0;
-          
+
           // Get the viewBox from loaded SVG
           const loadedViewBox = loadedSvg.getAttribute('viewBox');
           if (loadedViewBox) {
             svg.setAttribute('viewBox', loadedViewBox);
           }
-          
+
           // Restore metadata settings
           const gridSize = loadedSvg.getAttribute('data-grid-size');
           if (gridSize) {
             gridSizeInput.value = gridSize;
           }
-          
+
           const snapToGrid = loadedSvg.getAttribute('data-snap-to-grid');
           if (snapToGrid !== null) {
             snapToGridCheckbox.checked = snapToGrid === 'true';
           }
-          
+
           const aspectRatio = loadedSvg.getAttribute('data-aspect-ratio');
           if (aspectRatio) {
             aspectRatioSelect.value = aspectRatio;
           }
-          
+
           // Clear current SVG content
           svg.innerHTML = '';
-          
+
           // Copy all content from loaded SVG to current SVG (excluding any existing grid)
           Array.from(loadedSvg.children).forEach(child => {
             // Skip any grid elements - we'll redraw the grid fresh
@@ -237,19 +242,19 @@ Use this to to
               svg.appendChild(clonedChild);
             }
           });
-          
+
           // Rebuild lines array from loaded content
           const loadedUserLines = svg.querySelectorAll('g.user-line');
           loadedUserLines.forEach(lineGroup => {
             const line = lineGroup.querySelector('line');
             const startPoint = lineGroup.querySelector('circle[r="3"]:first-of-type');
             const endPoint = lineGroup.querySelector('circle[r="3"]:last-of-type');
-            
+
             if (line && startPoint && endPoint) {
               // Re-add event listeners for interaction
               line.addEventListener('mousedown', (e) => {
                 e.stopPropagation();
-                
+
                 if (e.ctrlKey) {
                   const lineData = lines.find(l => l.line === line);
                   if (lineData) {
@@ -257,7 +262,7 @@ Use this to to
                   }
                   return;
                 }
-                
+
                 isDragging = true;
                 const point = getSVGPoint(e);
                 draggedLine = {
@@ -266,12 +271,12 @@ Use this to to
                   offsetY: point.y - parseFloat(line.getAttribute('y1'))
                 };
               });
-              
+
               // Re-add endpoint event listeners
               [startPoint, endPoint].forEach((circle, index) => {
                 circle.addEventListener('mousedown', (e) => {
                   e.stopPropagation();
-                  
+
                   if (e.ctrlKey) {
                     const lineData = lines.find(l => l.line === line);
                     if (lineData) {
@@ -279,29 +284,29 @@ Use this to to
                     }
                     return;
                   }
-                  
+
                   isDragging = true;
                   draggedPoint = { circle, line, isStart: index === 0 };
                 });
               });
-              
+
               // Add to lines array
               lines.push({ line, startPoint, endPoint, group: lineGroup });
             }
           });
-          
+
           // Update grid and pattern (this will redraw the grid with current settings)
           drawGrid();
           updatePattern();
-          
+
         } catch (error) {
           alert('Error loading SVG file: ' + error.message);
         }
       };
-      
+
       reader.readAsText(file);
     });
-    
+
     // Trigger file selection
     fileInput.click();
   }
@@ -398,7 +403,7 @@ Use this to to
         // Apply column offset: each subsequent column is offset in Y direction
         const columnYOffset = col * columnOffset * tileHeight;
         let offsetY = row * tileHeight + columnYOffset;
-        
+
         // Wrap tile position if it would be outside the viewBox
         // Calculate the effective column height (total height minus max offset)
         const effectiveColumnHeight = totalHeight - Math.abs(columnOffset) * tileHeight * (repeatX - 1);
