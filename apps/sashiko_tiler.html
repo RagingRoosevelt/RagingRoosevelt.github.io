@@ -65,6 +65,7 @@ Use this to to
   const aspectRatioSelect = document.querySelector('select[name="cfg_driving_svg_aspect_ratio"]');
   const downloadDefinitionBtn = document.querySelector('#btn_save_definition');
   const downloadPatternBtn = document.querySelector('#btn_download_pattern');
+  const loadDefinitionBtn = document.querySelector('#btn_load_definition');
   let gridGroup = null;
 
   // Grid functionality
@@ -128,6 +129,11 @@ Use this to to
     // Clone the entire SVG (including grid, lines, and endpoints)
     const svgClone = svg.cloneNode(true);
 
+    // Add metadata as custom attributes
+    svgClone.setAttribute('data-grid-size', gridSizeInput.value);
+    svgClone.setAttribute('data-snap-to-grid', snapToGridCheckbox.checked);
+    svgClone.setAttribute('data-aspect-ratio', aspectRatioSelect.value);
+
     // Get the SVG content as string
     const svgData = new XMLSerializer().serializeToString(svgClone);
     const svgBlob = new Blob([svgData], { type: 'image/svg+xml' });
@@ -171,9 +177,139 @@ Use this to to
     URL.revokeObjectURL(downloadUrl);
   }
 
-  // Download button event listeners
+  // Load definition functionality
+  function loadDefinition() {
+    // Create file input element
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = '.svg,image/svg+xml';
+    
+    fileInput.addEventListener('change', (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+      
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          // Parse the SVG content
+          const parser = new DOMParser();
+          const svgDoc = parser.parseFromString(e.target.result, 'image/svg+xml');
+          const loadedSvg = svgDoc.querySelector('svg');
+          
+          if (!loadedSvg) {
+            alert('Invalid SVG file');
+            return;
+          }
+          
+          // Clear current lines array
+          lines.length = 0;
+          
+          // Get the viewBox from loaded SVG
+          const loadedViewBox = loadedSvg.getAttribute('viewBox');
+          if (loadedViewBox) {
+            svg.setAttribute('viewBox', loadedViewBox);
+          }
+          
+          // Restore metadata settings
+          const gridSize = loadedSvg.getAttribute('data-grid-size');
+          if (gridSize) {
+            gridSizeInput.value = gridSize;
+          }
+          
+          const snapToGrid = loadedSvg.getAttribute('data-snap-to-grid');
+          if (snapToGrid !== null) {
+            snapToGridCheckbox.checked = snapToGrid === 'true';
+          }
+          
+          const aspectRatio = loadedSvg.getAttribute('data-aspect-ratio');
+          if (aspectRatio) {
+            aspectRatioSelect.value = aspectRatio;
+          }
+          
+          // Clear current SVG content
+          svg.innerHTML = '';
+          
+          // Copy all content from loaded SVG to current SVG (excluding any existing grid)
+          Array.from(loadedSvg.children).forEach(child => {
+            // Skip any grid elements - we'll redraw the grid fresh
+            if (child.getAttribute('class') !== 'grid') {
+              const clonedChild = child.cloneNode(true);
+              svg.appendChild(clonedChild);
+            }
+          });
+          
+          // Rebuild lines array from loaded content
+          const loadedUserLines = svg.querySelectorAll('g.user-line');
+          loadedUserLines.forEach(lineGroup => {
+            const line = lineGroup.querySelector('line');
+            const startPoint = lineGroup.querySelector('circle[r="3"]:first-of-type');
+            const endPoint = lineGroup.querySelector('circle[r="3"]:last-of-type');
+            
+            if (line && startPoint && endPoint) {
+              // Re-add event listeners for interaction
+              line.addEventListener('mousedown', (e) => {
+                e.stopPropagation();
+                
+                if (e.ctrlKey) {
+                  const lineData = lines.find(l => l.line === line);
+                  if (lineData) {
+                    deleteLine(lineData);
+                  }
+                  return;
+                }
+                
+                isDragging = true;
+                const point = getSVGPoint(e);
+                draggedLine = {
+                  lineData: { line, startPoint, endPoint, group: lineGroup },
+                  offsetX: point.x - parseFloat(line.getAttribute('x1')),
+                  offsetY: point.y - parseFloat(line.getAttribute('y1'))
+                };
+              });
+              
+              // Re-add endpoint event listeners
+              [startPoint, endPoint].forEach((circle, index) => {
+                circle.addEventListener('mousedown', (e) => {
+                  e.stopPropagation();
+                  
+                  if (e.ctrlKey) {
+                    const lineData = lines.find(l => l.line === line);
+                    if (lineData) {
+                      deleteLine(lineData);
+                    }
+                    return;
+                  }
+                  
+                  isDragging = true;
+                  draggedPoint = { circle, line, isStart: index === 0 };
+                });
+              });
+              
+              // Add to lines array
+              lines.push({ line, startPoint, endPoint, group: lineGroup });
+            }
+          });
+          
+          // Update grid and pattern (this will redraw the grid with current settings)
+          drawGrid();
+          updatePattern();
+          
+        } catch (error) {
+          alert('Error loading SVG file: ' + error.message);
+        }
+      };
+      
+      reader.readAsText(file);
+    });
+    
+    // Trigger file selection
+    fileInput.click();
+  }
+
+  // Download and load button event listeners
   downloadDefinitionBtn.addEventListener('click', downloadDefinition);
   downloadPatternBtn.addEventListener('click', downloadPattern);
+  loadDefinitionBtn.addEventListener('click', loadDefinition);
 
   // Initialize grid and pattern
   drawGrid();
