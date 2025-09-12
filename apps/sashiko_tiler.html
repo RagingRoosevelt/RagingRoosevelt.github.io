@@ -6,48 +6,64 @@ last_modified_at: 2025-05-03
 extra_css: extra_css/apps/sashiko_tiler.css
 ---
 
+<h1>Sashiko Pattern Tiling Tool</h1>
 
 <div id="app-info">
 Use this tool to try out tiling ideas for your sashiko project.  Use <kbd>shift</kbd>+<kbd>drag</kbd> to add a line.
 Use <kbd>ctrl</kbd>+<kbd>click</kbd> to delete a line.  Drag a line to move it.  Drag an endpoint to move just the
-endpoint.
+endpoint. <kbd>Right-click</kbd> a line to change its color.
 </div>
 <div id="tiler-tool-container">
-  <hr />
   <div id="container-driving-svg">
     <div id="driving-design-cfg">
       <label for="cfg_snap_to_grid">Snap to Grid <input checked type="checkbox" class="switch" name="cfg_snap_to_grid" /></label>
       <label for="cfg_show_grid">Show Grid <input checked type="checkbox" class="switch" name="cfg_show_grid" /></label>
       <label for="cfg_grid_size">Grid Size <input value="10" type="number" step="1" pattern="\d+" name="cfg_grid_size" /></label>
+      <label for="cfg_line_color">Line Color <div class="color-box" data-color="#FFAA00" style="background-color: #FFAA00;" name="cfg_line_color"></div></label>
       <label for="cfg_driving_svg_aspect_ratio">Aspect Ratio
-      <select name="cfg_driving_svg_aspect_ratio">
-        <option value="1">1:1</option>
-        <optgroup label="Landscape">
-          <option value="1.5">3:2</option>
-          <option value="2">2:1</option>
-        </optgroup>
-        <optgroup label="Portrait">
-          <option value="0.6666667">2:3</option>
-          <option value="0.5">1:2</option>
-        </optgroup>
-      </select></label>
+        <select name="cfg_driving_svg_aspect_ratio">
+          <option value="1">1:1</option>
+          <optgroup label="Landscape">
+            <option value="1.5">3:2</option>
+            <option value="2">2:1</option>
+          </optgroup>
+          <optgroup label="Portrait">
+            <option value="0.6666667">2:3</option>
+            <option value="0.5">1:2</option>
+          </optgroup>
+        </select>
+      </label>
       <button id="btn_load_definition">Load Definition</button>
       <button id="btn_save_definition">Save Definition</button>
+      <button id="btn_clear_definition">Clear Definition</button>
     </div>
-    <svg viewBox="0 0 200 200" preserveAspectRatio="meet"  xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 200 200" preserveAspectRatio="xMinYMin meet"  xmlns="http://www.w3.org/2000/svg">
     </svg>
   </div>
-  <hr />
   <div id="container-pattern-svg">
     <div id="tiling-cfg">
-      <label for="cfg_tiling_repeat_x">X-repetition</label><input type="number" steps="1" pattern="\d+" value="4" name="cfg_tiling_repeat_x" />
-      <label for="cfg_tiling_repeat_y">Y-repetition</label><input type="number" steps="1" pattern="\d+" value="4" name="cfg_tiling_repeat_y" />
-      <label for="cfg_tiling_subsequent_column_offset">Column Offset</label><input type="number" step="0.25" max="1" min="-1" value="0" pattern="(?:0\.\d+)|(?:1\.0)" name="cfg_tiling_subsequent_column_offset" />
+      <label for="cfg_tiling_repeat_x">X-repetition <input type="number" steps="1" pattern="\d+" value="4" name="cfg_tiling_repeat_x" /></label>
+      <label for="cfg_tiling_repeat_y">Y-repetition <input type="number" steps="1" pattern="\d+" value="4" name="cfg_tiling_repeat_y" /></label>
+      <label for="cfg_tiling_subsequent_column_offset">Column Offset <input type="number" step="0.25" max="1" min="-1" value="0" pattern="(?:0\.\d+)|(?:1\.0)" name="cfg_tiling_subsequent_column_offset" /></label>
       <button id="btn_download_pattern">Download Pattern</button>
     </div>
-    <svg viewbox="0 0 1000 1000" preserveAspectRatio="meet"  xmlns="http://www.w3.org/2000/svg">
+    <svg viewbox="0 0 1000 1000" preserveAspectRatio="xMinYMin meet"  xmlns="http://www.w3.org/2000/svg">
     </svg>
   </div>
+</div>
+
+<!-- Color picker context menu -->
+<div id="color-context-menu" class="color-context-menu" style="display: none;">
+  <div class="color-box" data-color="#333333" style="background-color: #333333;" title="Default Gray"></div>
+  <div class="color-box" data-color="#FF0000" style="background-color: #FF0000;" title="Red"></div>
+  <div class="color-box" data-color="#00AA00" style="background-color: #00AA00;" title="Green"></div>
+  <div class="color-box" data-color="#0000FF" style="background-color: #0000FF;" title="Blue"></div>
+  <div class="color-box" data-color="#FF8800" style="background-color: #FF8800;" title="Orange"></div>
+  <div class="color-box" data-color="#AA00AA" style="background-color: #AA00AA;" title="Purple"></div>
+  <div class="color-box" data-color="#00AAAA" style="background-color: #00AAAA;" title="Cyan"></div>
+  <div class="color-box" data-color="#FFAA00" style="background-color: #FFAA00;" title="Yellow"></div>
+  <div class="color-box" data-color="#AA0000" style="background-color: #AA0000;" title="Dark Red"></div>
+  <div class="color-box" data-color="#000000" style="background-color: #000000;" title="Black"></div>
 </div>
 
 <script type="module">
@@ -58,6 +74,7 @@ endpoint.
   let isShiftDragging = false;
   let shiftDragStart = null;
   let lines = [];
+  let contextMenu = null;
 
   const svg = document.querySelector('#container-driving-svg svg');
   const patternSvg = document.querySelector('#container-pattern-svg svg');
@@ -68,10 +85,90 @@ endpoint.
   const tilingRepeatYInput = document.querySelector('input[name="cfg_tiling_repeat_y"]');
   const columnOffsetInput = document.querySelector('input[name="cfg_tiling_subsequent_column_offset"]');
   const aspectRatioSelect = document.querySelector('select[name="cfg_driving_svg_aspect_ratio"]');
+  const lineColorConfig = document.querySelector('div[name="cfg_line_color"]');
   const downloadDefinitionBtn = document.querySelector('#btn_save_definition');
   const downloadPatternBtn = document.querySelector('#btn_download_pattern');
   const loadDefinitionBtn = document.querySelector('#btn_load_definition');
+  const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim();
   let gridGroup = null;
+
+  // Get reference to the existing HTML context menu
+  contextMenu = document.getElementById('color-context-menu');
+  let currentLineData = null;
+
+  // Show color picker context menu
+  function showColorContextMenu(x, y, lineData) {
+    // Store reference to current line for color changes
+    currentLineData = lineData;
+
+    // Show the menu temporarily to measure dimensions
+    contextMenu.style.display = 'grid';
+    contextMenu.style.visibility = 'hidden';
+
+    // Get menu dimensions and viewport dimensions
+    const menuRect = contextMenu.getBoundingClientRect();
+    const viewportWidth = window.innerWidth;
+
+    // Position menu based on cursor location
+    let menuX = x;
+    let menuY = y;
+
+    // If cursor is on right half of viewport, position menu to the left of cursor
+    if (x > viewportWidth / 2) {
+      menuX = x - menuRect.width;
+    }
+
+    // Ensure menu doesn't go off screen edges
+    if (menuX < 0) {
+      menuX = 0;
+    } else if (menuX + menuRect.width > viewportWidth) {
+      menuX = viewportWidth - menuRect.width;
+    }
+
+    if (menuY + menuRect.height > window.innerHeight) {
+      menuY = window.innerHeight - menuRect.height;
+    }
+    if (menuY < 0) {
+      menuY = 0;
+    }
+
+    // Apply final position and make visible
+    contextMenu.style.left = menuX + 'px';
+    contextMenu.style.top = menuY + 'px';
+    contextMenu.style.visibility = 'visible';
+
+    // Close menu when clicking elsewhere
+    setTimeout(() => {
+      document.addEventListener('click', closeContextMenu);
+      document.addEventListener('contextmenu', closeContextMenu);
+    }, 10);
+  }
+
+  // Close context menu
+  function closeContextMenu() {
+    contextMenu.style.display = 'none';
+    currentLineData = null;
+    document.removeEventListener('click', closeContextMenu);
+    document.removeEventListener('contextmenu', closeContextMenu);
+  }
+
+  // Update the default line color config
+  function updateLineColorConfig(color) {
+    lineColorConfig.style.backgroundColor = color;
+    lineColorConfig.setAttribute('data-color', color);
+  }
+
+  // Change line color (for existing lines)
+  function changeLineColor(lineData, color) {
+    if (lineData) {
+      lineData.line.setAttribute('stroke', color);
+      lineData.color = color; // Store color for pattern rendering
+      updatePattern();
+    }
+
+    // Always update the default line color config
+    updateLineColorConfig(color);
+  }
 
   // Grid functionality
   function drawGrid() {
@@ -129,8 +226,16 @@ endpoint.
   // Aspect ratio event listener
   aspectRatioSelect.addEventListener('change', updateAspectRatio);
 
+  // Line color config event listener
+  lineColorConfig.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const rect = lineColorConfig.getBoundingClientRect();
+    // Position menu near the color box
+    showColorContextMenu(rect.right + 5, rect.top, null);
+  });
+
   // Download definition functionality
-  function downloadDefinition() {
+  async function downloadDefinition() {
     // Clone the entire SVG (including grid, lines, and endpoints)
     const svgClone = svg.cloneNode(true);
 
@@ -138,48 +243,92 @@ endpoint.
     svgClone.setAttribute('data-grid-size', gridSizeInput.value);
     svgClone.setAttribute('data-snap-to-grid', snapToGridCheckbox.checked);
     svgClone.setAttribute('data-aspect-ratio', aspectRatioSelect.value);
+    svgClone.setAttribute('data-column-offset', columnOffsetInput.value);
+    svgClone.setAttribute('data-line-color', lineColorConfig.getAttribute('data-color') || '#FFAA00');
 
     // Get the SVG content as string
     const svgData = new XMLSerializer().serializeToString(svgClone);
-    const svgBlob = new Blob([svgData], { type: 'image/svg+xml' });
 
-    // Create download link
-    const downloadUrl = URL.createObjectURL(svgBlob);
-    const downloadLink = document.createElement('a');
-    downloadLink.href = downloadUrl;
-    downloadLink.download = 'sashiko-definition.svg';
+    try {
+      // Use File System Access API if available
+      if ('showSaveFilePicker' in window) {
+        const fileHandle = await window.showSaveFilePicker({
+          suggestedName: 'sashiko-definition.svg',
+          types: [
+            {
+              description: 'SVG files',
+              accept: { 'image/svg+xml': ['.svg'] },
+            },
+          ],
+        });
 
-    // Trigger download
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
+        const writable = await fileHandle.createWritable();
+        await writable.write(svgData);
+        await writable.close();
+      } else {
+        // Fallback for browsers that don't support File System Access API
+        const svgBlob = new Blob([svgData], { type: 'image/svg+xml' });
+        const downloadUrl = URL.createObjectURL(svgBlob);
+        const downloadLink = document.createElement('a');
+        downloadLink.href = downloadUrl;
+        downloadLink.download = 'sashiko-definition.svg';
 
-    // Clean up
-    URL.revokeObjectURL(downloadUrl);
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+
+        URL.revokeObjectURL(downloadUrl);
+      }
+    } catch (error) {
+      if (error.name !== 'AbortError') {
+        alert('Error saving file: ' + error.message);
+      }
+    }
   }
 
   // Download pattern functionality
-  function downloadPattern() {
+  async function downloadPattern() {
     // Clone the entire pattern SVG
     const patternClone = patternSvg.cloneNode(true);
 
     // Get the SVG content as string
     const svgData = new XMLSerializer().serializeToString(patternClone);
-    const svgBlob = new Blob([svgData], { type: 'image/svg+xml' });
 
-    // Create download link
-    const downloadUrl = URL.createObjectURL(svgBlob);
-    const downloadLink = document.createElement('a');
-    downloadLink.href = downloadUrl;
-    downloadLink.download = 'sashiko-pattern.svg';
+    try {
+      // Use File System Access API if available
+      if ('showSaveFilePicker' in window) {
+        const fileHandle = await window.showSaveFilePicker({
+          suggestedName: 'sashiko-pattern.svg',
+          types: [
+            {
+              description: 'SVG files',
+              accept: { 'image/svg+xml': ['.svg'] },
+            },
+          ],
+        });
 
-    // Trigger download
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
+        const writable = await fileHandle.createWritable();
+        await writable.write(svgData);
+        await writable.close();
+      } else {
+        // Fallback for browsers that don't support File System Access API
+        const svgBlob = new Blob([svgData], { type: 'image/svg+xml' });
+        const downloadUrl = URL.createObjectURL(svgBlob);
+        const downloadLink = document.createElement('a');
+        downloadLink.href = downloadUrl;
+        downloadLink.download = 'sashiko-pattern.svg';
 
-    // Clean up
-    URL.revokeObjectURL(downloadUrl);
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+
+        URL.revokeObjectURL(downloadUrl);
+      }
+    } catch (error) {
+      if (error.name !== 'AbortError') {
+        alert('Error saving file: ' + error.message);
+      }
+    }
   }
 
   // Load definition functionality
@@ -231,6 +380,16 @@ endpoint.
             aspectRatioSelect.value = aspectRatio;
           }
 
+          const columnOffset = loadedSvg.getAttribute('data-column-offset');
+          if (columnOffset) {
+            columnOffsetInput.value = columnOffset;
+          }
+
+          const lineColor = loadedSvg.getAttribute('data-line-color');
+          if (lineColor) {
+            updateLineColorConfig(lineColor);
+          }
+
           // Clear current SVG content
           svg.innerHTML = '';
 
@@ -272,6 +431,16 @@ endpoint.
                 };
               });
 
+              // Re-add right-click context menu for color changes
+              line.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const lineData = lines.find(l => l.line === line);
+                if (lineData) {
+                  showColorContextMenu(e.clientX, e.clientY, lineData);
+                }
+              });
+
               // Re-add endpoint event listeners
               [startPoint, endPoint].forEach((circle, index) => {
                 circle.addEventListener('mousedown', (e) => {
@@ -290,8 +459,9 @@ endpoint.
                 });
               });
 
-              // Add to lines array
-              lines.push({ line, startPoint, endPoint, group: lineGroup });
+              // Add to lines array with color information
+              const lineColor = line.getAttribute('stroke') || '#333';
+              lines.push({ line, startPoint, endPoint, group: lineGroup, color: lineColor });
             }
           });
 
@@ -315,6 +485,19 @@ endpoint.
   downloadDefinitionBtn.addEventListener('click', downloadDefinition);
   downloadPatternBtn.addEventListener('click', downloadPattern);
   loadDefinitionBtn.addEventListener('click', loadDefinition);
+
+  // Add event listeners to color boxes
+  const colorBoxes = contextMenu.querySelectorAll('.color-box');
+  colorBoxes.forEach(colorBox => {
+    colorBox.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const color = colorBox.getAttribute('data-color');
+      if (color) {
+        changeLineColor(currentLineData, color);
+        closeContextMenu();
+      }
+    });
+  });
 
   // Initialize grid and pattern
   drawGrid();
@@ -429,6 +612,15 @@ endpoint.
             const clonedLine = lineElement.cloneNode(true);
             // Remove cursor styling from pattern
             clonedLine.style.cursor = '';
+            // Increase stroke width for pattern visibility
+            clonedLine.setAttribute('stroke-width', '5');
+            // Add rounded caps for better appearance
+            clonedLine.setAttribute('stroke-linecap', 'round');
+            // Preserve the line color from the original
+            const originalColor = lineElement.getAttribute('stroke');
+            if (originalColor) {
+              clonedLine.setAttribute('stroke', originalColor);
+            }
             clonedGroup.appendChild(clonedLine);
           }
 
@@ -452,14 +644,16 @@ endpoint.
 
   // Get SVG coordinates from mouse event
   function getSVGPoint(evt) {
-    const rect = svg.getBoundingClientRect();
-    const viewBox = svg.viewBox.baseVal;
-    const scaleX = viewBox.width / rect.width;
-    const scaleY = viewBox.height / rect.height;
+    const point = svg.createSVGPoint();
+    point.x = evt.clientX;
+    point.y = evt.clientY;
+
+    // Transform screen coordinates to SVG coordinates
+    const svgPoint = point.matrixTransform(svg.getScreenCTM().inverse());
 
     return {
-      x: (evt.clientX - rect.left) * scaleX + viewBox.x,
-      y: (evt.clientY - rect.top) * scaleY + viewBox.y
+      x: svgPoint.x,
+      y: svgPoint.y
     };
   }
 
@@ -469,7 +663,7 @@ endpoint.
     circle.setAttribute('cx', x);
     circle.setAttribute('cy', y);
     circle.setAttribute('r', '3');
-    circle.setAttribute('fill', '#007bff');
+    circle.setAttribute('fill', primaryColor || '#007bff');
     circle.setAttribute('stroke', '#fff');
     circle.setAttribute('stroke-width', '1');
     circle.style.cursor = 'move';
@@ -500,8 +694,12 @@ endpoint.
     line.setAttribute('y1', y1);
     line.setAttribute('x2', x2);
     line.setAttribute('y2', y2);
-    line.setAttribute('stroke', '#333');
+
+    // Use current line color config
+    const currentColor = lineColorConfig.getAttribute('data-color') || '#333';
+    line.setAttribute('stroke', currentColor);
     line.setAttribute('stroke-width', '2');
+    line.setAttribute('stroke-linecap', 'round');
     line.style.cursor = 'move';
 
     const startPoint = createEndpoint(x1, y1, line, true);
@@ -511,7 +709,7 @@ endpoint.
     const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
     group.setAttribute('class', 'user-line');
 
-    const lineData = { line, startPoint, endPoint, group };
+    const lineData = { line, startPoint, endPoint, group, color: currentColor };
     lines.push(lineData);
 
     // Add line interaction functionality
@@ -531,6 +729,13 @@ endpoint.
         offsetX: point.x - parseFloat(line.getAttribute('x1')),
         offsetY: point.y - parseFloat(line.getAttribute('y1'))
       };
+    });
+
+    // Add right-click context menu for color changes
+    line.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      showColorContextMenu(e.clientX, e.clientY, lineData);
     });
 
     // Append line and endpoints to group

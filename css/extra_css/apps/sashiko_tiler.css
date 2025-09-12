@@ -11,27 +11,69 @@ kbd {
   white-space: nowrap;
 }
 
-#container-pattern-svg, #container-driving-svg {
+#tiler-tool-container {
   display: flex;
-  flex-direction: column;
-  & svg {
-    border: 1px solid black;
-    height:100%;
-    width:100%;
-  }
-  #tiling-cfg, #driving-design-cfg {
-    display: flex;
+  gap: 10px;
+  margin: 20px 0;
 
-    & label, & button, & select {
-      padding: 5px;
+  #container-pattern-svg, #container-driving-svg {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    & svg {
+      margin: 10px 0;
+      height:100%;
+      width:100%;
     }
-    & label {
+    #tiling-cfg, #driving-design-cfg {
       display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+
+      & label, & button {
+        padding: 5px;
+        flex-shrink: 1;
+      }
+      & label {
+        display: flex;
+      }
+      & input {
+        max-width: 8ch;
+      }
     }
+  }
+
+}
+
+@media (max-width: 900px) {
+  #tiler-tool-container {
+    flex-direction: column;
   }
 }
-/* @media (max-device-height: 900) {
-  #container-pattern-svg, #container-driving-svg {
-    width:50%;
-  }
-} */
+
+/* Color context menu styles */
+.color-context-menu {
+  position: fixed;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  z-index: 1000;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+}
+
+.color-box {
+  width: 20px;
+  height: 20px;
+  border: 1px solid #ddd;
+  cursor: pointer;
+  border-radius: 2px;
+}
+
+.color-box:hover {
+  border-color: #999;
+  transform: scale(1.1);
+}
