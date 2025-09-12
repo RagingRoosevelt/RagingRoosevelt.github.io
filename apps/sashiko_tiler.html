@@ -16,10 +16,12 @@ endpoint. <kbd>Right-click</kbd> a line to change its color.
 <div id="tiler-tool-container">
   <div id="container-driving-svg">
     <div id="driving-design-cfg">
+      <button id="btn_load_definition">Load Definition</button>
+      <button id="btn_save_definition">Save Definition</button>
+      <button id="btn_clear_definition">Clear Definition</button>
       <label for="cfg_snap_to_grid">Snap to Grid <input checked type="checkbox" class="switch" name="cfg_snap_to_grid" /></label>
       <label for="cfg_show_grid">Show Grid <input checked type="checkbox" class="switch" name="cfg_show_grid" /></label>
       <label for="cfg_grid_size">Grid Size <input value="10" type="number" step="1" pattern="\d+" name="cfg_grid_size" /></label>
-      <label for="cfg_line_color">Line Color <div class="color-box" data-color="#FFAA00" style="background-color: #FFAA00;" name="cfg_line_color"></div></label>
       <label for="cfg_driving_svg_aspect_ratio">Aspect Ratio
         <select name="cfg_driving_svg_aspect_ratio">
           <option value="1">1:1</option>
@@ -32,10 +34,8 @@ endpoint. <kbd>Right-click</kbd> a line to change its color.
             <option value="0.5">1:2</option>
           </optgroup>
         </select>
+        <label for="cfg_line_color">Line Color <div class="color-box" data-color="#444444" style="background-color: #444444;" name="cfg_line_color"></div></label>
       </label>
-      <button id="btn_load_definition">Load Definition</button>
-      <button id="btn_save_definition">Save Definition</button>
-      <button id="btn_clear_definition">Clear Definition</button>
     </div>
     <svg viewBox="0 0 200 200" preserveAspectRatio="xMinYMin meet"  xmlns="http://www.w3.org/2000/svg">
     </svg>
@@ -54,16 +54,16 @@ endpoint. <kbd>Right-click</kbd> a line to change its color.
 
 <!-- Color picker context menu -->
 <div id="color-context-menu" class="color-context-menu" style="display: none;">
-  <div class="color-box" data-color="#333333" style="background-color: #333333;" title="Default Gray"></div>
-  <div class="color-box" data-color="#FF0000" style="background-color: #FF0000;" title="Red"></div>
-  <div class="color-box" data-color="#00AA00" style="background-color: #00AA00;" title="Green"></div>
-  <div class="color-box" data-color="#0000FF" style="background-color: #0000FF;" title="Blue"></div>
-  <div class="color-box" data-color="#FF8800" style="background-color: #FF8800;" title="Orange"></div>
-  <div class="color-box" data-color="#AA00AA" style="background-color: #AA00AA;" title="Purple"></div>
-  <div class="color-box" data-color="#00AAAA" style="background-color: #00AAAA;" title="Cyan"></div>
-  <div class="color-box" data-color="#FFAA00" style="background-color: #FFAA00;" title="Yellow"></div>
-  <div class="color-box" data-color="#AA0000" style="background-color: #AA0000;" title="Dark Red"></div>
   <div class="color-box" data-color="#000000" style="background-color: #000000;" title="Black"></div>
+  <div class="color-box" data-color="#333333" style="background-color: #444444;" title="Gray"></div>
+  <div class="color-box" data-color="#AA0000" style="background-color: #AA0000;" title="Dark Red"></div>
+  <div class="color-box" data-color="#FF0000" style="background-color: #FF0000;" title="Red"></div>
+  <div class="color-box" data-color="#FF8800" style="background-color: #FF8800;" title="Orange"></div>
+  <div class="color-box" data-color="#FFAA00" style="background-color: #FFAA00;" title="Yellow"></div>
+  <div class="color-box" data-color="#00AA00" style="background-color: #00AA00;" title="Green"></div>
+  <div class="color-box" data-color="#00AAAA" style="background-color: #00AAAA;" title="Cyan"></div>
+  <div class="color-box" data-color="#0000FF" style="background-color: #0000FF;" title="Blue"></div>
+  <div class="color-box" data-color="#AA00AA" style="background-color: #AA00AA;" title="Purple"></div>
 </div>
 
 <script type="module">
@@ -89,6 +89,7 @@ endpoint. <kbd>Right-click</kbd> a line to change its color.
   const downloadDefinitionBtn = document.querySelector('#btn_save_definition');
   const downloadPatternBtn = document.querySelector('#btn_download_pattern');
   const loadDefinitionBtn = document.querySelector('#btn_load_definition');
+  const clearDefinitionBtn = document.querySelector('#btn_clear_definition');
   const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim();
   let gridGroup = null;
 
@@ -331,6 +332,34 @@ endpoint. <kbd>Right-click</kbd> a line to change its color.
     }
   }
 
+  // Clear definition functionality
+  function clearDefinition() {
+    // Clear all lines
+    lines.length = 0;
+
+    // Clear SVG content
+    svg.innerHTML = '';
+
+    // Reset all config values to defaults
+    gridSizeInput.value = '10';
+    snapToGridCheckbox.checked = true;
+    showGridCheckbox.checked = true;
+    aspectRatioSelect.value = '1';
+    tilingRepeatXInput.value = '4';
+    tilingRepeatYInput.value = '4';
+    columnOffsetInput.value = '0';
+
+    // Reset line color to default
+    updateLineColorConfig('#FFAA00');
+
+    // Reset SVG viewBox to default
+    svg.setAttribute('viewBox', '0 0 200 200');
+
+    // Redraw grid and update pattern
+    drawGrid();
+    updatePattern();
+  }
+
   // Load definition functionality
   function loadDefinition() {
     // Create file input element
@@ -481,10 +510,11 @@ endpoint. <kbd>Right-click</kbd> a line to change its color.
     fileInput.click();
   }
 
-  // Download and load button event listeners
+  // Download, load, and clear button event listeners
   downloadDefinitionBtn.addEventListener('click', downloadDefinition);
   downloadPatternBtn.addEventListener('click', downloadPattern);
   loadDefinitionBtn.addEventListener('click', loadDefinition);
+  clearDefinitionBtn.addEventListener('click', clearDefinition);
 
   // Add event listeners to color boxes
   const colorBoxes = contextMenu.querySelectorAll('.color-box');
@@ -696,7 +726,7 @@ endpoint. <kbd>Right-click</kbd> a line to change its color.
     line.setAttribute('y2', y2);
 
     // Use current line color config
-    const currentColor = lineColorConfig.getAttribute('data-color') || '#333';
+    const currentColor = lineColorConfig.getAttribute('data-color') || '#444444';
     line.setAttribute('stroke', currentColor);
     line.setAttribute('stroke-width', '2');
     line.setAttribute('stroke-linecap', 'round');
