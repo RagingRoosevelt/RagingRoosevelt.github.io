@@ -1,0 +1,516 @@
+---
+layout: main
+title: Image Cropper Tool
+section: Applications
+last_modified_at: 2025-05-03
+extra_css: extra_css/apps/image_cropper.css
+---
+
+
+<div id="app-info">
+Use this to to
+</div>
+<div id="tiler-tool-container">
+  <div id="tool-selector">
+    <label for="cfg_snap_to_grid">Snap to Grid</label><input checked type="checkbox" class="switch" name="cfg_snap_to_grid" />
+    <label for="cfg_show_grid">Show Grid</label><input checked type="checkbox" class="switch" name="cfg_show_grid" />
+    <label for="cfg_grid_size">Grid Size</label><input value="10" type="number" step="1" pattern="\d+" name="cfg_grid_size" />
+    <label for="cfg_driving_svg_aspect_ratio">Aspect Ratio</label><select name="cfg_driving_svg_aspect_ratio">
+      <option value="1">1:1</option>
+      <optgroup label="Landscape">
+        <option value="1.5">3:2</option>
+        <option value="2">2:1</option>
+      </optgroup>
+      <optgroup label="Portrait">
+        <option value="0.6666667">2:3</option>
+        <option value="0.5">1:2</option>
+      </optgroup>
+    </select>
+    <button id="btn_load_definition">Load Definition</button>
+    <button id="btn_save_definition">Save Definition</button>
+  </div>
+  <div id="container-driving-svg">
+    <svg style="border: 1px solid black;" viewBox="0 0 200 200" height="100%" width="100%" preserveAspectRatio="meet"  xmlns="http://www.w3.org/2000/svg">
+    </svg>
+  </div>
+  <div id="tiling-cfg">
+    <label for="cfg_tiling_repeat_x">X-repetition</label><input type="number" steps="1" pattern="\d+" value="4" name="cfg_tiling_repeat_x" />
+    <label for="cfg_tiling_repeat_y">y-repetition</label><input type="number" steps="1" pattern="\d+" value="4" name="cfg_tiling_repeat_y" />
+    <label for="cfg_tiling_subsequent_column_offset">Column Offset</label><input type="number" step="0.25" max="1" min="-1" value="0" pattern="(?:0\.\d+)|(?:1\.0)" name="cfg_tiling_subsequent_column_offset" />
+    <button id="btn_download_pattern">Download Pattern</button>
+  </div>
+  <div id="container-pattern-svg">
+    <svg viewbox="0 0 1000 1000" height="100%" width="100%" preserveAspectRatio="meet"  xmlns="http://www.w3.org/2000/svg">
+    </svg>
+  </div>
+</div>
+
+<script type="module">
+  let isAddingLine = false;
+  let currentLine = null;
+  let draggedPoint = null;
+  let draggedLine = null;
+  let isShiftDragging = false;
+  let shiftDragStart = null;
+  let lines = [];
+
+  const svg = document.querySelector('#container-driving-svg svg');
+  const patternSvg = document.querySelector('#container-pattern-svg svg');
+  const showGridCheckbox = document.querySelector('input[name="cfg_show_grid"]');
+  const snapToGridCheckbox = document.querySelector('input[name="cfg_snap_to_grid"]');
+  const gridSizeInput = document.querySelector('input[name="cfg_grid_size"]');
+  const tilingRepeatXInput = document.querySelector('input[name="cfg_tiling_repeat_x"]');
+  const tilingRepeatYInput = document.querySelector('input[name="cfg_tiling_repeat_y"]');
+  const columnOffsetInput = document.querySelector('input[name="cfg_tiling_subsequent_column_offset"]');
+  const aspectRatioSelect = document.querySelector('select[name="cfg_driving_svg_aspect_ratio"]');
+  const downloadDefinitionBtn = document.querySelector('#btn_save_definition');
+  const downloadPatternBtn = document.querySelector('#btn_download_pattern');
+  let gridGroup = null;
+
+  // Grid functionality
+  function drawGrid() {
+    // Remove existing grid
+    if (gridGroup) {
+      gridGroup.remove();
+      gridGroup = null;
+    }
+
+    if (!showGridCheckbox.checked) return;
+
+    const gridSize = parseInt(gridSizeInput.value) || 10;
+    const viewBox = svg.viewBox.baseVal;
+
+    gridGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    gridGroup.setAttribute('class', 'grid');
+
+    // Draw vertical lines
+    for (let x = 0; x <= viewBox.width; x += gridSize) {
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', x);
+      line.setAttribute('y1', 0);
+      line.setAttribute('x2', x);
+      line.setAttribute('y2', viewBox.height);
+      line.setAttribute('stroke', '#cccccc');
+      line.setAttribute('stroke-width', '0.5');
+      gridGroup.appendChild(line);
+    }
+
+    // Draw horizontal lines
+    for (let y = 0; y <= viewBox.height; y += gridSize) {
+      const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      line.setAttribute('x1', 0);
+      line.setAttribute('y1', y);
+      line.setAttribute('x2', viewBox.width);
+      line.setAttribute('y2', y);
+      line.setAttribute('stroke', '#cccccc');
+      line.setAttribute('stroke-width', '0.5');
+      gridGroup.appendChild(line);
+    }
+
+    // Insert grid as first element so it appears behind user lines
+    svg.insertBefore(gridGroup, svg.firstChild);
+  }
+
+  // Grid event listeners
+  showGridCheckbox.addEventListener('change', drawGrid);
+  gridSizeInput.addEventListener('input', drawGrid);
+
+  // Tiling event listeners
+  tilingRepeatXInput.addEventListener('input', updatePattern);
+  tilingRepeatYInput.addEventListener('input', updatePattern);
+  columnOffsetInput.addEventListener('input', updatePattern);
+
+  // Aspect ratio event listener
+  aspectRatioSelect.addEventListener('change', updateAspectRatio);
+
+  // Download definition functionality
+  function downloadDefinition() {
+    // Clone the entire SVG (including grid, lines, and endpoints)
+    const svgClone = svg.cloneNode(true);
+
+    // Get the SVG content as string
+    const svgData = new XMLSerializer().serializeToString(svgClone);
+    const svgBlob = new Blob([svgData], { type: 'image/svg+xml' });
+
+    // Create download link
+    const downloadUrl = URL.createObjectURL(svgBlob);
+    const downloadLink = document.createElement('a');
+    downloadLink.href = downloadUrl;
+    downloadLink.download = 'sashiko-definition.svg';
+
+    // Trigger download
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+
+    // Clean up
+    URL.revokeObjectURL(downloadUrl);
+  }
+
+  // Download pattern functionality
+  function downloadPattern() {
+    // Clone the entire pattern SVG
+    const patternClone = patternSvg.cloneNode(true);
+
+    // Get the SVG content as string
+    const svgData = new XMLSerializer().serializeToString(patternClone);
+    const svgBlob = new Blob([svgData], { type: 'image/svg+xml' });
+
+    // Create download link
+    const downloadUrl = URL.createObjectURL(svgBlob);
+    const downloadLink = document.createElement('a');
+    downloadLink.href = downloadUrl;
+    downloadLink.download = 'sashiko-pattern.svg';
+
+    // Trigger download
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
+    document.body.removeChild(downloadLink);
+
+    // Clean up
+    URL.revokeObjectURL(downloadUrl);
+  }
+
+  // Download button event listeners
+  downloadDefinitionBtn.addEventListener('click', downloadDefinition);
+  downloadPatternBtn.addEventListener('click', downloadPattern);
+
+  // Initialize grid and pattern
+  drawGrid();
+  updatePattern();
+
+  // Snap to grid function
+  function snapToGrid(point) {
+    if (!snapToGridCheckbox.checked) return point;
+
+    const gridSize = parseInt(gridSizeInput.value) || 10;
+    return {
+      x: Math.round(point.x / gridSize) * gridSize,
+      y: Math.round(point.y / gridSize) * gridSize
+    };
+  }
+
+  // Update driving SVG aspect ratio
+  function updateAspectRatio() {
+    const aspectRatio = parseFloat(aspectRatioSelect.value) || 1;
+    const currentViewBox = svg.viewBox.baseVal;
+    const currentWidth = currentViewBox.width;
+    const currentHeight = currentViewBox.height;
+
+    // Keep width unchanged, calculate new height based on aspect ratio
+    const newWidth = currentWidth;
+    const newHeight = newWidth / aspectRatio;
+
+    // Scale factor for Y coordinates only
+    const scaleY = newHeight / currentHeight;
+
+    // Update existing lines coordinates (only Y coordinates)
+    lines.forEach(lineData => {
+      const { line, startPoint, endPoint } = lineData;
+
+      // Scale Y coordinates only
+      const x1 = parseFloat(line.getAttribute('x1')); // unchanged
+      const y1 = parseFloat(line.getAttribute('y1')) * scaleY;
+      const x2 = parseFloat(line.getAttribute('x2')); // unchanged
+      const y2 = parseFloat(line.getAttribute('y2')) * scaleY;
+
+      // Update line
+      line.setAttribute('x1', x1);
+      line.setAttribute('y1', y1);
+      line.setAttribute('x2', x2);
+      line.setAttribute('y2', y2);
+
+      // Update endpoints
+      startPoint.setAttribute('cx', x1);
+      startPoint.setAttribute('cy', y1);
+      endPoint.setAttribute('cx', x2);
+      endPoint.setAttribute('cy', y2);
+    });
+
+    // Update SVG viewBox
+    svg.setAttribute('viewBox', `0 0 ${newWidth} ${newHeight}`);
+
+    // Redraw grid and update pattern
+    drawGrid();
+    updatePattern();
+  }
+
+  // Update pattern tiling
+  function updatePattern() {
+    // Clear existing pattern
+    patternSvg.innerHTML = '';
+
+    const repeatX = parseInt(tilingRepeatXInput.value) || 1;
+    const repeatY = parseInt(tilingRepeatYInput.value) || 1;
+    const columnOffset = parseFloat(columnOffsetInput.value) || 0;
+
+    const sourceViewBox = svg.viewBox.baseVal;
+    const tileWidth = sourceViewBox.width;
+    const tileHeight = sourceViewBox.height;
+
+    // Calculate total dimensions considering column offset
+    const maxColumnOffset = Math.abs(columnOffset) * tileHeight * (repeatX - 1);
+    const totalWidth = tileWidth * repeatX;
+    const totalHeight = tileHeight * repeatY + maxColumnOffset;
+
+    patternSvg.setAttribute('viewBox', `0 0 ${totalWidth} ${totalHeight}`);
+
+    // Create tiled pattern
+    for (let row = 0; row < repeatY; row++) {
+      for (let col = 0; col < repeatX; col++) {
+        const offsetX = col * tileWidth;
+        // Apply column offset: each subsequent column is offset in Y direction
+        const columnYOffset = col * columnOffset * tileHeight;
+        const offsetY = row * tileHeight + columnYOffset;
+
+        // Create group for this tile
+        const tileGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        tileGroup.setAttribute('transform', `translate(${offsetX}, ${offsetY})`);
+
+        // Clone all user lines from the source SVG (excluding grid and endpoints)
+        const userLines = svg.querySelectorAll('g.user-line');
+        userLines.forEach(lineGroup => {
+          const clonedGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+
+          // Only clone the line element, not the endpoint circles
+          const lineElement = lineGroup.querySelector('line');
+          if (lineElement) {
+            const clonedLine = lineElement.cloneNode(true);
+            // Remove cursor styling from pattern
+            clonedLine.style.cursor = '';
+            clonedGroup.appendChild(clonedLine);
+          }
+
+          tileGroup.appendChild(clonedGroup);
+        });
+
+        patternSvg.appendChild(tileGroup);
+      }
+    }
+  }
+
+  // Delete a line
+  function deleteLine(lineData) {
+    const index = lines.indexOf(lineData);
+    if (index > -1) {
+      lines.splice(index, 1);
+      lineData.group.remove();
+      updatePattern();
+    }
+  }
+
+  // Get SVG coordinates from mouse event
+  function getSVGPoint(evt) {
+    const rect = svg.getBoundingClientRect();
+    const viewBox = svg.viewBox.baseVal;
+    const scaleX = viewBox.width / rect.width;
+    const scaleY = viewBox.height / rect.height;
+
+    return {
+      x: (evt.clientX - rect.left) * scaleX + viewBox.x,
+      y: (evt.clientY - rect.top) * scaleY + viewBox.y
+    };
+  }
+
+  // Create draggable endpoint
+  function createEndpoint(x, y, line, isStart = true) {
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('cx', x);
+    circle.setAttribute('cy', y);
+    circle.setAttribute('r', '3');
+    circle.setAttribute('fill', '#007bff');
+    circle.setAttribute('stroke', '#fff');
+    circle.setAttribute('stroke-width', '1');
+    circle.style.cursor = 'move';
+
+    circle.addEventListener('mousedown', (e) => {
+      e.stopPropagation();
+
+      // Ctrl+click to delete the line
+      if (e.ctrlKey) {
+        const lineData = lines.find(l => l.line === line);
+        if (lineData) {
+          deleteLine(lineData);
+        }
+        return;
+      }
+
+      isDragging = true;
+      draggedPoint = { circle, line, isStart };
+    });
+
+    return circle;
+  }
+
+  // Create line with endpoints
+  function createLine(x1, y1, x2, y2) {
+    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('x1', x1);
+    line.setAttribute('y1', y1);
+    line.setAttribute('x2', x2);
+    line.setAttribute('y2', y2);
+    line.setAttribute('stroke', '#333');
+    line.setAttribute('stroke-width', '2');
+    line.style.cursor = 'move';
+
+    const startPoint = createEndpoint(x1, y1, line, true);
+    const endPoint = createEndpoint(x2, y2, line, false);
+
+    // Create group element to contain line and endpoints
+    const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+    group.setAttribute('class', 'user-line');
+
+    const lineData = { line, startPoint, endPoint, group };
+    lines.push(lineData);
+
+    // Add line interaction functionality
+    line.addEventListener('mousedown', (e) => {
+      e.stopPropagation();
+
+      // Ctrl+click to delete
+      if (e.ctrlKey) {
+        deleteLine(lineData);
+        return;
+      }
+
+      isDragging = true;
+      const point = getSVGPoint(e);
+      draggedLine = {
+        lineData,
+        offsetX: point.x - parseFloat(line.getAttribute('x1')),
+        offsetY: point.y - parseFloat(line.getAttribute('y1'))
+      };
+    });
+
+    // Append line and endpoints to group
+    group.appendChild(line);
+    group.appendChild(startPoint);
+    group.appendChild(endPoint);
+
+    // Append group to SVG
+    svg.appendChild(group);
+
+    // Update pattern after adding line
+    updatePattern();
+
+    return lineData;
+  }
+
+  // Track if we're dragging to prevent click events
+  let isDragging = false;
+
+  // Handle SVG mousedown for shift+drag and regular clicks
+  svg.addEventListener('mousedown', (e) => {
+    if (e.shiftKey) {
+      e.preventDefault();
+      isShiftDragging = true;
+      const rawPoint = getSVGPoint(e);
+      shiftDragStart = snapToGrid(rawPoint);
+      isDragging = true;
+      return;
+    }
+  });
+
+  // Handle SVG clicks to add lines
+  svg.addEventListener('click', (e) => {
+    if (!isAddingLine || isDragging || isShiftDragging) return;
+
+    const rawPoint = getSVGPoint(e);
+    const point = snapToGrid(rawPoint);
+
+    if (!currentLine) {
+      // Start new line
+      currentLine = { x1: point.x, y1: point.y };
+    } else {
+      // Complete line
+      createLine(currentLine.x1, currentLine.y1, point.x, point.y);
+      currentLine = null;
+    }
+  });
+
+  // Handle dragging
+  svg.addEventListener('mousemove', (e) => {
+    const rawPoint = getSVGPoint(e);
+
+    // Handle endpoint dragging
+    if (draggedPoint) {
+      const { circle, line, isStart } = draggedPoint;
+      const point = snapToGrid(rawPoint);
+
+      circle.setAttribute('cx', point.x);
+      circle.setAttribute('cy', point.y);
+
+      if (isStart) {
+        line.setAttribute('x1', point.x);
+        line.setAttribute('y1', point.y);
+      } else {
+        line.setAttribute('x2', point.x);
+        line.setAttribute('y2', point.y);
+      }
+    }
+
+    // Handle line dragging
+    if (draggedLine) {
+      const { lineData, offsetX, offsetY } = draggedLine;
+      const { line, startPoint, endPoint } = lineData;
+
+      const newPoint = snapToGrid({ x: rawPoint.x - offsetX, y: rawPoint.y - offsetY });
+      const deltaX = newPoint.x - parseFloat(line.getAttribute('x1'));
+      const deltaY = newPoint.y - parseFloat(line.getAttribute('y1'));
+
+      const newX2 = parseFloat(line.getAttribute('x2')) + deltaX;
+      const newY2 = parseFloat(line.getAttribute('y2')) + deltaY;
+
+      // Update line
+      line.setAttribute('x1', newPoint.x);
+      line.setAttribute('y1', newPoint.y);
+      line.setAttribute('x2', newX2);
+      line.setAttribute('y2', newY2);
+
+      // Update endpoints
+      startPoint.setAttribute('cx', newPoint.x);
+      startPoint.setAttribute('cy', newPoint.y);
+      endPoint.setAttribute('cx', newX2);
+      endPoint.setAttribute('cy', newY2);
+    }
+  });
+
+  // Stop dragging
+  document.addEventListener('mouseup', (e) => {
+    // Handle shift+drag line creation
+    if (isShiftDragging && shiftDragStart) {
+      const rawPoint = getSVGPoint(e);
+      const endPoint = snapToGrid(rawPoint);
+
+      // Only create line if there's actual movement
+      if (Math.abs(endPoint.x - shiftDragStart.x) > 1 || Math.abs(endPoint.y - shiftDragStart.y) > 1) {
+        createLine(shiftDragStart.x, shiftDragStart.y, endPoint.x, endPoint.y);
+      }
+
+      isShiftDragging = false;
+      shiftDragStart = null;
+      setTimeout(() => {
+        isDragging = false;
+      }, 10);
+      return;
+    }
+
+    if (draggedPoint || draggedLine) {
+      // Small delay to prevent click event from firing after drag
+      setTimeout(() => {
+        isDragging = false;
+      }, 10);
+      // Update pattern after dragging
+      updatePattern();
+    }
+    draggedPoint = null;
+    draggedLine = null;
+  });
+
+  // Cancel current line on escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      currentLine = null;
+    }
+  });
+</script>
