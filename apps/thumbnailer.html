@@ -1,0 +1,678 @@
+---
+layout: main
+title: Thumbnail Maker
+section: Applications
+last_modified_at: 2026-09-03
+extra_css: extra_css/apps/thumbnailer.css
+---
+<!--From `image_ops_6.html`-->
+
+<div class="thumbnail-tool-container">
+  <div class="tt-panel">
+    <div class="tt-group">
+      <div class="tt-row">
+        <input type="file" id="file-input" accept="image/*">
+        <label for="file-input" class="button">Open Image</label>
+        <button id="add-text-button" disabled>Add Text</button>
+        <button id="system-fonts-button" hidden>Use System Fonts</button>
+      </div>
+      <div class="tt-row">
+        <button id="export-project-button" disabled>Save Project</button>
+        <label for="project-input" class="button">Load Project</label>
+        <input type="file" id="project-input" accept="application/json,.json" hidden>
+      </div>
+      <datalist id="font-list"></datalist>
+    </div>
+
+    <div class="tt-group">
+      <h3>Crop Regions</h3>
+      <div class="tt-row">
+        <label><input type="checkbox" id="show-landscape" checked> Landscape</label>
+        <select id="ratio-landscape">
+          <option value="16:9">16:9</option>
+          <option value="3:2">3:2</option>
+          <option value="4:3" selected>4:3</option>
+          <option value="5:4">5:4</option>
+          <option value="1:1">1:1</option>
+        </select>
+        <button id="download-landscape" disabled>Download</button>
+      </div>
+      <div class="tt-row">
+        <label><input type="checkbox" id="show-portrait" checked> Portrait</label>
+        <select id="ratio-portrait">
+          <option value="9:16">9:16</option>
+          <option value="2:3">2:3</option>
+          <option value="3:4" selected>3:4</option>
+          <option value="4:5">4:5</option>
+          <option value="1:1">1:1</option>
+        </select>
+        <button id="download-portrait" disabled>Download</button>
+      </div>
+      <div class="tt-row">
+        <button id="download-full" disabled>Download Full Image</button>
+      </div>
+    </div>
+
+    <div class="tt-group">
+      <h3>Text Boxes</h3>
+      <div id="text-list"></div>
+    </div>
+  </div>
+
+  <div class="tt-workspace">
+    <div class="tt-empty">Open an image to get started. Drag text and crop corners on the preview.</div>
+    <canvas id="preview-canvas"></canvas>
+  </div>
+</div>
+
+<script>
+  // Get references to DOM elements
+  const fileInput = document.getElementById('file-input');
+  const addTextButton = document.getElementById('add-text-button');
+  const canvas = document.getElementById('preview-canvas');
+  const ctx = canvas.getContext('2d');
+  const emptyState = document.querySelector('.tt-empty');
+  const workspace = document.querySelector('.tt-workspace');
+  const textList = document.getElementById('text-list');
+
+  // Project file schema. Bump the major when the shape stops being readable as-is.
+  const SCHEMA_VERSION = '1.1.0';
+
+  // Store original image data
+  let originalImage = null;
+  let originalFilename = '';
+  let imageDataURL = '';
+
+  // Every text property, so imported files can be missing fields and still load
+  const TEXT_DEFAULTS = {
+    text: '',
+    font: 'Impact',
+    size: 48,
+    bold: false,
+    italic: false,
+    align: 'left',
+    color: '#ffffff',
+    shadow: 0,
+    shadowOpacity: 100,
+    shadowColor: '#000000',
+    x: 0,
+    y: 0,
+    w: 0,
+    h: 0
+  };
+
+  // Preview scale: image pixels -> canvas pixels
+  let scale = 1;
+
+  // Text boxes, positioned and sized in image pixel coordinates
+  const FONT_FALLBACK = 'sans-serif';
+  let FONTS = ['Arial', 'Impact', 'Georgia', 'Times New Roman', 'Courier New',
+               'Verdana', 'Trebuchet MS', 'Comic Sans MS'];
+  let texts = [];
+  let selected = -1;
+
+  // Crop rectangle state, one rect per orientation
+  const crops = [
+    { key: 'landscape', label: 'Landscape', ratio: 4 / 3, show: true, x: 0, y: 0, w: 0, h: 0 },
+    { key: 'portrait', label: 'Portrait', ratio: 3 / 4, show: true, x: 0, y: 0, w: 0, h: 0 }
+  ];
+
+  // What the pointer is currently dragging, if anything
+  let drag = null;
+
+  // Largest rect of the given aspect ratio, centred in the image
+  function fitRect(imgW, imgH, ratio) {
+    let w = imgW, h = w / ratio;
+    if (h > imgH) { h = imgH; w = h * ratio; }
+    return { x: (imgW - w) / 2, y: (imgH - h) / 2, w: w, h: h };
+  }
+
+  function clamp(v, lo, hi) {
+    return Math.min(Math.max(v, lo), hi);
+  }
+
+  // How far a line shifts inside its block, given the block's widest line
+  function alignOffset(blockWidth, lineWidth, align) {
+    const slack = blockWidth - lineWidth;
+    return align === 'center' ? slack / 2 : align === 'right' ? slack : 0;
+  }
+
+  // <input type="color"> only gives 6-digit hex, so the alpha rides in separately
+  function hexToRgba(hex, alpha) {
+    const n = parseInt(hex.slice(1), 16);
+    return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + alpha + ')';
+  }
+
+  function parseRatio(str) {
+    const parts = str.split(':');
+    return parts[0] / parts[1];
+  }
+
+  // Triggered when a file is selected through the file input
+  fileInput.addEventListener('change', function () {
+    if (fileInput.files && fileInput.files[0]) {
+      loadImageFromFile(fileInput.files[0]);
+    }
+  });
+
+  function loadImageFromFile(file) {
+    if (!file.type.startsWith('image/')) return;
+    const name = file.name.replace(/\.[^.]+$/, '') || 'thumbnail';
+    const reader = new FileReader();
+    reader.onload = function () {
+      setImage(reader.result, name, function () {
+        texts = [];
+        selected = -1;
+        crops.forEach(function (c) {
+          Object.assign(c, fitRect(originalImage.width, originalImage.height, c.ratio));
+        });
+      });
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // Single entry point for "we now have an image": `after` seeds the project state
+  // (fresh defaults, or whatever an imported file said) before the first draw.
+  function setImage(dataURL, name, after) {
+    const img = new Image();
+    img.onload = function () {
+      originalImage = img;
+      imageDataURL = dataURL;
+      originalFilename = name;
+      after();
+      document.querySelectorAll('button[disabled]').forEach(function (b) { b.disabled = false; });
+      emptyState.style.display = 'none';
+      canvas.style.display = 'block';
+      renderTextList();
+      resize();
+    };
+    img.onerror = function () { alert('Could not read the image data in that file.'); };
+    img.src = dataURL;
+  }
+
+  // Size the preview canvas to fit the workspace without upscaling
+  function resize() {
+    if (!originalImage) return;
+    const boxW = workspace.clientWidth - 20;
+    const boxH = Math.max(240, window.innerHeight * 0.7);
+    scale = Math.min(boxW / originalImage.width, boxH / originalImage.height, 1);
+    canvas.width = Math.round(originalImage.width * scale);
+    canvas.height = Math.round(originalImage.height * scale);
+    draw();
+  }
+  window.addEventListener('resize', resize);
+
+  // Family names come from typed input and imported files, so keep quotes out of the
+  // CSS font shorthand we build from them
+  function cleanFamily(family) {
+    return String(family || '').replace(/["\\]/g, '').trim();
+  }
+
+  function fontString(t) {
+    return (t.italic ? 'italic ' : '') + (t.bold ? 'bold ' : '') +
+           t.size + 'px "' + cleanFamily(t.font) + '", ' + FONT_FALLBACK;
+  }
+
+  // document.fonts.check() reports true for any unknown family, so measure instead:
+  // an unavailable family renders as the generic it falls back to, matching its width.
+  const fontAvailableCache = {};
+  function fontAvailable(family) {
+    const name = cleanFamily(family);
+    if (!name) return false;
+    if (name in fontAvailableCache) return fontAvailableCache[name];
+    const probe = document.createElement('canvas').getContext('2d');
+    const sample = 'mmmmmmmmmmlliWWWW@';
+    const available = ['monospace', 'serif', 'sans-serif'].some(function (generic) {
+      probe.font = '72px ' + generic;
+      const base = probe.measureText(sample).width;
+      probe.font = '72px "' + name + '", ' + generic;
+      return probe.measureText(sample).width !== base;
+    });
+    fontAvailableCache[name] = available;
+    return available;
+  }
+
+  // Names every font the project asks for that this machine cannot render
+  function missingFonts(list) {
+    const seen = {};
+    list.forEach(function (t) {
+      const name = cleanFamily(t.font);
+      if (name && !fontAvailable(name)) seen[name] = true;
+    });
+    return Object.keys(seen);
+  }
+
+  // Draws image + text at the given scale. Used for both the preview and the export,
+  // so what you see is what you download.
+  function drawScene(c, s) {
+    c.save();
+    c.scale(s, s);
+    c.drawImage(originalImage, 0, 0);
+    c.textBaseline = 'top';
+    texts.forEach(function (t) {
+      c.save();
+      c.font = fontString(t);
+      c.fillStyle = t.color;
+      // Shadow blur ignores the transform matrix, so scale it by hand to match the export
+      const shadowOn = t.shadow > 0 && t.shadowOpacity > 0;
+      c.shadowColor = shadowOn ? hexToRgba(t.shadowColor, t.shadowOpacity / 100) : 'transparent';
+      c.shadowBlur = t.shadow * s;
+      // ponytail: newlines only, no auto-wrap. Add wrapping when a fixed box width is wanted.
+      const lines = t.text.split('\n');
+      const lineHeight = t.size * 1.2;
+      const widths = lines.map(function (line) { return c.measureText(line).width; });
+      const width = Math.max.apply(null, widths);
+      lines.forEach(function (line, i) {
+        // t.x stays the left edge of the block, alignment only shifts lines within it
+        c.fillText(line, t.x + alignOffset(width, widths[i], t.align), t.y + i * lineHeight);
+      });
+      // Cache the bounding box (image coords) for hit testing and the selection outline
+      t.w = width;
+      t.h = lines.length * lineHeight;
+      c.restore();
+    });
+    c.restore();
+  }
+
+  // Preview = scene + crop outlines + selection outline
+  function draw() {
+    if (!originalImage) return;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawScene(ctx, scale);
+
+    crops.forEach(function (crop) {
+      if (!crop.show) return;
+      ctx.save();
+      ctx.strokeStyle = crop.key === 'portrait' ? '#ff4081' : '#00e5ff';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([6, 4]);
+      ctx.strokeRect(crop.x * scale, crop.y * scale, crop.w * scale, crop.h * scale);
+      ctx.setLineDash([]);
+      ctx.fillStyle = ctx.strokeStyle;
+      corners(crop).forEach(function (p) {
+        ctx.fillRect(p.x * scale - 5, p.y * scale - 5, 10, 10);
+      });
+      ctx.restore();
+    });
+
+    if (selected >= 0 && texts[selected]) {
+      const t = texts[selected];
+      ctx.save();
+      ctx.strokeStyle = '#4285f4';
+      ctx.setLineDash([4, 3]);
+      ctx.strokeRect(t.x * scale, t.y * scale, t.w * scale, t.h * scale);
+      ctx.restore();
+    }
+  }
+
+  function corners(crop) {
+    return [
+      { x: crop.x, y: crop.y, ax: crop.x + crop.w, ay: crop.y + crop.h },
+      { x: crop.x + crop.w, y: crop.y, ax: crop.x, ay: crop.y + crop.h },
+      { x: crop.x, y: crop.y + crop.h, ax: crop.x + crop.w, ay: crop.y },
+      { x: crop.x + crop.w, y: crop.y + crop.h, ax: crop.x, ay: crop.y }
+    ];
+  }
+
+  // Pointer position in image coordinates
+  function imagePos(e) {
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: (e.clientX - rect.left) * (canvas.width / rect.width) / scale,
+      y: (e.clientY - rect.top) * (canvas.height / rect.height) / scale
+    };
+  }
+
+  canvas.addEventListener('pointerdown', function (e) {
+    const p = imagePos(e);
+    const tol = 8 / scale;
+
+    // Crop handles win over everything else, they are small targets
+    for (const crop of crops) {
+      if (!crop.show) continue;
+      for (const c of corners(crop)) {
+        if (Math.abs(p.x - c.x) < tol && Math.abs(p.y - c.y) < tol) {
+          drag = { type: 'resize', crop: crop, ax: c.ax, ay: c.ay };
+          canvas.setPointerCapture(e.pointerId);
+          return;
+        }
+      }
+    }
+
+    // Then text boxes, topmost first
+    for (let i = texts.length - 1; i >= 0; i--) {
+      const t = texts[i];
+      if (p.x >= t.x && p.x <= t.x + t.w && p.y >= t.y && p.y <= t.y + t.h) {
+        selected = i;
+        markSelected();
+        drag = { type: 'text', text: t, dx: p.x - t.x, dy: p.y - t.y };
+        canvas.setPointerCapture(e.pointerId);
+        draw();
+        return;
+      }
+    }
+
+    // Then moving a crop region
+    for (const crop of crops) {
+      if (!crop.show) continue;
+      if (p.x >= crop.x && p.x <= crop.x + crop.w && p.y >= crop.y && p.y <= crop.y + crop.h) {
+        drag = { type: 'move', crop: crop, dx: p.x - crop.x, dy: p.y - crop.y };
+        canvas.setPointerCapture(e.pointerId);
+        return;
+      }
+    }
+
+    selected = -1;
+    markSelected();
+    draw();
+  });
+
+  canvas.addEventListener('pointermove', function (e) {
+    if (!drag) return;
+    const p = imagePos(e);
+    const iw = originalImage.width, ih = originalImage.height;
+
+    if (drag.type === 'text') {
+      drag.text.x = p.x - drag.dx;
+      drag.text.y = p.y - drag.dy;
+    } else if (drag.type === 'move') {
+      drag.crop.x = clamp(p.x - drag.dx, 0, iw - drag.crop.w);
+      drag.crop.y = clamp(p.y - drag.dy, 0, ih - drag.crop.h);
+    } else if (drag.type === 'resize') {
+      const crop = drag.crop;
+      // Grow from the opposite corner, aspect locked, clipped to the image edges
+      const maxW = p.x < drag.ax ? drag.ax : iw - drag.ax;
+      const maxH = p.y < drag.ay ? drag.ay : ih - drag.ay;
+      let w = Math.max(Math.abs(p.x - drag.ax), Math.abs(p.y - drag.ay) * crop.ratio);
+      w = clamp(w, 20, Math.min(maxW, maxH * crop.ratio));
+      crop.w = w;
+      crop.h = w / crop.ratio;
+      crop.x = p.x < drag.ax ? drag.ax - crop.w : drag.ax;
+      crop.y = p.y < drag.ay ? drag.ay - crop.h : drag.ay;
+    }
+    draw();
+  });
+
+  canvas.addEventListener('pointerup', function () { drag = null; });
+  canvas.addEventListener('pointercancel', function () { drag = null; });
+
+  // Text box list ------------------------------------------------------------
+
+  addTextButton.addEventListener('click', function () {
+    texts.push(Object.assign({}, TEXT_DEFAULTS, {
+      text: 'Your text here',
+      size: Math.round(originalImage.height / 10),
+      shadow: Math.round(originalImage.height / 60),
+      x: originalImage.width * 0.1,
+      y: originalImage.height * 0.1
+    }));
+    selected = texts.length - 1;
+    renderTextList();
+    draw();
+  });
+
+  function escapeHTML(s) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function renderTextList() {
+    textList.innerHTML = texts.map(function (t, i) {
+      return '<div class="text-item' + (i === selected ? ' selected' : '') + '" data-i="' + i + '">' +
+        '<div class="ti-head"><span>Text ' + (i + 1) + '</span><button data-act="del" title="Delete">&times;</button></div>' +
+        '<textarea data-field="text" rows="2">' + escapeHTML(t.text) + '</textarea>' +
+        '<div class="ti-warn"' + (fontAvailable(t.font) ? ' hidden' : '') + '>' +
+          'Font not installed &mdash; showing ' + FONT_FALLBACK + '</div>' +
+        '<div class="ti-row"><input data-field="font" list="font-list" value="' + escapeHTML(t.font) + '">' +
+        '<label>Size<input type="number" data-field="size" min="4" value="' + t.size + '"></label>' +
+        '<select data-field="align" title="Alignment">' +
+          ['left', 'center', 'right'].map(function (a) {
+            return '<option' + (a === t.align ? ' selected' : '') + '>' + a + '</option>';
+          }).join('') +
+        '</select></div>' +
+        '<div class="ti-row">' +
+          '<label><input type="checkbox" data-field="bold"' + (t.bold ? ' checked' : '') + '> Bold</label>' +
+          '<label><input type="checkbox" data-field="italic"' + (t.italic ? ' checked' : '') + '> Italic</label>' +
+          '<label>Color<input type="color" data-field="color" value="' + t.color + '"></label>' +
+        '</div>' +
+        '<div class="ti-row">' +
+          '<label>Shadow radius<input type="number" data-field="shadow" min="0" value="' + t.shadow + '"></label>' +
+          '<label>Opacity %<input type="number" data-field="shadowOpacity" min="0" max="100" value="' + t.shadowOpacity + '"></label>' +
+          '<label>Color<input type="color" data-field="shadowColor" value="' + t.shadowColor + '"></label>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  // Only toggle the highlight class, rebuilding the list would steal focus mid-edit
+  function markSelected() {
+    Array.prototype.forEach.call(textList.children, function (el, i) {
+      el.classList.toggle('selected', i === selected);
+    });
+  }
+
+  function syncField(e) {
+    const item = e.target.closest('.text-item');
+    const field = e.target.dataset.field;
+    if (!item || !field) return;
+    const t = texts[+item.dataset.i];
+    t[field] = e.target.type === 'checkbox' ? e.target.checked
+             : e.target.type === 'number' ? +e.target.value
+             : e.target.value;
+    if (field === 'font') item.querySelector('.ti-warn').hidden = fontAvailable(t.font);
+    draw();
+  }
+
+  // Both events: colour pickers on some browsers only fire 'change' when the native
+  // dialog closes, which left the swatch updated but the state stale.
+  textList.addEventListener('input', syncField);
+  textList.addEventListener('change', syncField);
+
+  textList.addEventListener('click', function (e) {
+    const item = e.target.closest('.text-item');
+    if (!item) return;
+    const i = +item.dataset.i;
+    if (e.target.dataset.act === 'del') {
+      texts.splice(i, 1);
+      selected = -1;
+      renderTextList();
+    } else {
+      selected = i;
+      markSelected();
+    }
+    draw();
+  });
+
+  // Font list ----------------------------------------------------------------
+
+  const fontDatalist = document.getElementById('font-list');
+  const systemFontsButton = document.getElementById('system-fonts-button');
+
+  function renderFontList() {
+    fontDatalist.innerHTML = FONTS.map(function (f) {
+      return '<option value="' + escapeHTML(f) + '">';
+    }).join('');
+  }
+  renderFontList();
+
+  // Local Font Access API is Chromium-only and needs a user gesture, so it lives
+  // behind a button that hides itself where the API is missing. Typing any installed
+  // family name into the font box works regardless.
+  if (window.queryLocalFonts) {
+    systemFontsButton.hidden = false;
+    systemFontsButton.addEventListener('click', function () {
+      window.queryLocalFonts().then(function (fonts) {
+        const families = fonts.map(function (f) { return f.family; });
+        FONTS = Array.from(new Set(FONTS.concat(families))).sort();
+        renderFontList();
+        systemFontsButton.textContent = FONTS.length + ' Fonts Available';
+      }).catch(function () {
+        systemFontsButton.textContent = 'Font Access Denied';
+      });
+    });
+  }
+
+  // Crop controls and export -------------------------------------------------
+
+  crops.forEach(function (crop) {
+    document.getElementById('show-' + crop.key).addEventListener('change', function (e) {
+      crop.show = e.target.checked;
+      draw();
+    });
+    document.getElementById('ratio-' + crop.key).addEventListener('change', function (e) {
+      crop.ratio = parseRatio(e.target.value);
+      Object.assign(crop, fitRect(originalImage.width, originalImage.height, crop.ratio));
+      draw();
+    });
+    document.getElementById('download-' + crop.key).addEventListener('click', function () {
+      exportRegion(crop, crop.key);
+    });
+  });
+
+  document.getElementById('download-full').addEventListener('click', function () {
+    exportRegion({ x: 0, y: 0, w: originalImage.width, h: originalImage.height }, 'full');
+  });
+
+  function downloadBlob(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    // Revoking straight after click() can beat the download to the blob and kill it
+    setTimeout(function () { URL.revokeObjectURL(url); }, 30000);
+  }
+
+  // Re-renders the scene at full resolution, offset so the crop lands at the origin
+  function exportRegion(region, suffix) {
+    const out = document.createElement('canvas');
+    out.width = Math.round(region.w);
+    out.height = Math.round(region.h);
+    const octx = out.getContext('2d');
+    octx.translate(-region.x, -region.y);
+    drawScene(octx, 1);
+    out.toBlob(function (blob) {
+      downloadBlob(blob, originalFilename + '-' + suffix + '.png');
+    });
+  }
+
+  // Project files ------------------------------------------------------------
+
+  const projectInput = document.getElementById('project-input');
+
+  document.getElementById('export-project-button').addEventListener('click', function () {
+    const name = prompt('Save project as', originalFilename + '.json');
+    if (name === null) return;
+    const project = {
+      schema: SCHEMA_VERSION,
+      name: originalFilename,
+      image: imageDataURL,
+      fonts: Object.keys(texts.reduce(function (acc, t) {
+        const name = cleanFamily(t.font);
+        if (name) acc[name] = true;
+        return acc;
+      }, {})),
+      texts: texts,
+      crops: crops.map(function (c) {
+        return {
+          key: c.key,
+          ratio: document.getElementById('ratio-' + c.key).value,
+          show: c.show,
+          x: c.x, y: c.y, w: c.w, h: c.h
+        };
+      })
+    };
+    const blob = new Blob([JSON.stringify(project, null, 2)], { type: 'application/json' });
+    downloadBlob(blob, /\.json$/i.test(name) ? name : name + '.json');
+  });
+
+  projectInput.addEventListener('change', function () {
+    const file = projectInput.files && projectInput.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function () {
+      try {
+        loadProject(migrate(JSON.parse(reader.result)));
+      } catch (err) {
+        alert('Could not load project: ' + err.message);
+      }
+    };
+    reader.readAsText(file);
+    // Let the same file be picked again after a failed load
+    projectInput.value = '';
+  });
+
+  // Validates a parsed project file and brings it up to the current shape.
+  // ponytail: only v1.x exists so far, so there is nothing to convert yet. When the
+  // shape changes, bump SCHEMA_VERSION's major and convert older majors here.
+  function migrate(data) {
+    if (!data || typeof data.schema !== 'string' || typeof data.image !== 'string') {
+      throw new Error('not a thumbnailer project file');
+    }
+    const major = parseInt(data.schema.split('.')[0], 10);
+    if (!(major >= 1)) throw new Error('unrecognised schema "' + data.schema + '"');
+    if (major > 1) throw new Error('schema ' + data.schema + ' needs a newer version of this tool');
+    return data;
+  }
+
+  function loadProject(data) {
+    setImage(data.image, data.name || 'thumbnail', function () {
+      // Merge over the defaults so files written by older versions still open
+      texts = (Array.isArray(data.texts) ? data.texts : []).map(function (t) {
+        return Object.assign({}, TEXT_DEFAULTS, t);
+      });
+      selected = -1;
+      const missing = missingFonts(texts);
+      if (missing.length) {
+        alert('This project uses fonts that are not installed here:\n\n' +
+              missing.join('\n') + '\n\nThey will render in ' + FONT_FALLBACK + '.');
+      }
+      (Array.isArray(data.crops) ? data.crops : []).forEach(function (saved) {
+        const crop = crops.filter(function (c) { return c.key === saved.key; })[0];
+        if (!crop) return;
+        const select = document.getElementById('ratio-' + crop.key);
+        const known = Array.prototype.some.call(select.options, function (o) {
+          return o.value === saved.ratio;
+        });
+        if (known) select.value = saved.ratio;
+        crop.ratio = parseRatio(select.value);
+        crop.show = saved.show !== false;
+        document.getElementById('show-' + crop.key).checked = crop.show;
+        ['x', 'y', 'w', 'h'].forEach(function (k) {
+          if (typeof saved[k] === 'number') crop[k] = saved[k];
+        });
+      });
+    });
+  }
+
+  // Self-check for the geometry helpers: /apps/thumbnailer.html?selftest
+  if (location.search.includes('selftest')) {
+    const a = fitRect(1000, 500, 16 / 9);
+    console.assert(Math.abs(a.w / a.h - 16 / 9) < 1e-9 && a.w <= 1000 && a.h <= 500, 'fitRect landscape');
+    const b = fitRect(1000, 500, 9 / 16);
+    console.assert(Math.abs(b.h - 500) < 1e-9 && Math.abs(b.x - (1000 - b.w) / 2) < 1e-9, 'fitRect portrait fills height');
+    console.assert(clamp(5, 0, 3) === 3 && clamp(-1, 0, 3) === 0, 'clamp');
+    console.assert(Math.abs(parseRatio('16:9') - 16 / 9) < 1e-9, 'parseRatio');
+    console.assert(alignOffset(100, 40, 'left') === 0, 'align left');
+    console.assert(alignOffset(100, 40, 'center') === 30, 'align center');
+    console.assert(alignOffset(100, 40, 'right') === 60, 'align right');
+    console.assert(alignOffset(100, 100, 'center') === 0, 'align widest line never moves');
+    console.assert(hexToRgba('#000000', 1) === 'rgba(0,0,0,1)', 'hexToRgba black');
+    console.assert(hexToRgba('#ffffff', 0.5) === 'rgba(255,255,255,0.5)', 'hexToRgba white');
+    console.assert(hexToRgba('#4285f4', 0.2) === 'rgba(66,133,244,0.2)', 'hexToRgba channels');
+    const ok = { schema: '1.0.0', image: 'data:image/png;base64,x' };
+    console.assert(migrate(ok) === ok, 'migrate accepts current schema');
+    console.assert(migrate({ schema: '1.7.2', image: 'x' }), 'migrate accepts later v1 minors');
+    [{}, { schema: '1.0.0' }, { schema: 'nope', image: 'x' }, { schema: '2.0.0', image: 'x' }]
+      .forEach(function (bad, i) {
+        let threw = false;
+        try { migrate(bad); } catch (e) { threw = true; }
+        console.assert(threw, 'migrate rejects bad input ' + i);
+      });
+    console.assert(cleanFamily('  Impact  ') === 'Impact', 'cleanFamily trims');
+    console.assert(cleanFamily('Ev"il\\') === 'Evil', 'cleanFamily strips quotes and backslashes');
+    console.assert(cleanFamily(undefined) === '', 'cleanFamily handles missing');
+    console.log('thumbnailer selftest done');
+  }
+</script>
