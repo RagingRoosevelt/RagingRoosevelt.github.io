@@ -1,0 +1,171 @@
+/* Two-column shell: controls on the left, canvas workspace on the right */
+.thumbnail-tool-container {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    font-family: Arial, sans-serif;
+}
+
+/* Left sidebar */
+.tt-panel {
+    flex: 0 0 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Workspace holding the preview canvas */
+.tt-workspace {
+    flex: 1 1 420px;
+    min-width: 320px;
+    background-color: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    min-height: 240px;
+}
+
+#preview-canvas {
+    display: none;
+    max-width: 100%;
+    cursor: crosshair;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+.tt-empty {
+    color: #666;
+    text-align: center;
+}
+
+/* Grouped control blocks */
+.tt-group {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.tt-group h3 {
+    margin: 0;
+    font-size: 1em;
+}
+
+.tt-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.tt-row label {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    font-size: 0.85em;
+}
+
+#file-input {
+    display: none;
+}
+
+button, label.button {
+    padding: 8px 16px;
+    background-color: #4285f4;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+select, input[type="number"], textarea {
+    padding: 4px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    font-family: inherit;
+}
+
+input[type="number"] {
+    width: 5em;
+}
+
+/* Text box list */
+.text-item {
+    border: 1px solid #ddd;
+    border-left: 4px solid #ddd;
+    border-radius: 4px;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.text-item.selected {
+    border-left-color: #4285f4;
+    background-color: #f5f9ff;
+}
+
+.text-item textarea {
+    width: 100%;
+    box-sizing: border-box;
+    resize: vertical;
+}
+
+.ti-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+.ti-head button {
+    padding: 0 8px;
+    background-color: #d33;
+    line-height: 1.4;
+}
+
+.ti-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+    font-size: 0.85em;
+}
+
+.ti-row select {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Font name box, free text backed by a datalist of known + system families */
+.ti-row input[list] {
+    flex: 1;
+    min-width: 6em;
+    padding: 4px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+}
+
+/* Project file picker, driven by its label like the image input */
+#project-input {
+    display: none;
+}
+
+/* Missing-font notice inside a text box's controls */
+.ti-warn {
+    font-size: 0.8em;
+    color: #8a6d00;
+    background-color: #fff8e1;
+    border: 1px solid #ffe082;
+    border-radius: 3px;
+    padding: 3px 6px;
+}
