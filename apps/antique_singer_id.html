@@ -4,6 +4,10 @@ title: Antique Singer ID
 section: Applications
 last_modified_at: 2026-10-28
 extra_css: extra_css/apps/antique_singer_id.css
+favicon: /assets/apps/antique_singer_id/icon.svg
+pwa_manifest: /apps/antique_singer_id.webmanifest
+pwa_theme_color: "#14161a"
+pwa_apple_touch_icon: /assets/apps/antique_singer_id/icon-192.png
 ---
 
 <div id="antique-singer-id">
@@ -238,4 +242,8 @@ function fitMobile() {
 addEventListener('resize', fitMobile);
 addEventListener('load', fitMobile);
 fitMobile();
+
+// Installable app: offline cache limited to this page.
+if ('serviceWorker' in navigator)
+  navigator.serviceWorker.register('/apps/antique_singer_id-sw.js', { scope: '/apps/antique_singer_id' });
 </script>
