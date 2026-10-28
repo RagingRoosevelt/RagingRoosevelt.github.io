@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 226"><style>.o{fill:rgba(128,128,128,.16);stroke:#8a8f98;stroke-width:2.5;stroke-linejoin:round}.ctx{fill:none;stroke:#8a8f98;stroke-width:2;opacity:.55}.edge{fill:none;stroke:#e5484d;stroke-width:4.5;stroke-linecap:round}</style>
+<path class="o" d="M90 34C115 34 125 52 145 52C165 52 175 36 200 36C225 36 235 52 255 52C275 52 285 34 310 34C352 34 370 70 370 113C370 156 352 192 310 192C285 192 275 174 255 174C235 174 225 190 200 190C175 190 165 174 145 174C125 174 115 192 90 192C48 192 30 156 30 113C30 70 48 34 90 34Z"/>
+<rect class="ctx" x="66" y="96" width="40" height="34" rx="6"/><rect class="ctx" x="282" y="84" width="60" height="58" rx="10"/>
+<path class="edge" d="M90 34C115 34 125 52 145 52C165 52 175 36 200 36C225 36 235 52 255 52C275 52 285 34 310 34M310 192C285 192 275 174 255 174C235 174 225 190 200 190C175 190 165 174 145 174C125 174 115 192 90 192"/>
+</svg>

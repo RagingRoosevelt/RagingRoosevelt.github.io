@@ -1,0 +1,103 @@
+/* Antique Singer ID: built on the site theme variables from layout_default.css */
+#antique-singer-id {
+  --panel: rgba(255, 255, 255, 0.2);
+  --field: rgba(255, 255, 255, 0.35);
+  --line: oklch(from var(--color-text) l c h / 0.3);
+  --muted: oklch(from var(--color-text) l c h / 0.75);
+  --pick: var(--color-text-link);
+  --tile: oklch(from var(--color-accent) l c h / 0.9);  /* dark tint so drawings/photos stay readable */
+  --glow: oklch(from var(--color-primary) 0.62 0.22 calc(h - 240));  /* complement of the site hue, mid lightness for contrast on the light panels */
+  --impact: 0;
+
+  & * { box-sizing: border-box; }
+
+  .layout { display: grid; grid-template-columns: 1fr 1fr; gap: calc(var(--principle-padding) * 1.5); }
+  /* Mobile: one screen tall, options (2/3) over results (1/3), each scrolls on its own */
+  @media (max-width: 760px) {
+    .layout { grid-template-columns: 1fr; grid-template-rows: minmax(0, 2fr) minmax(0, 1fr); height: 100dvh; gap: 0.75em; }  /* height refined by fitMobile() */
+    .layout > section { min-height: 0; overflow-y: auto; padding: 8px; }  /* padding keeps the glow from being clipped */
+  }
+
+  h1 { margin: 0 0 0.25em; }
+  h2 { margin: 0 0 0.75em; }
+  p.sub { color: var(--muted); margin: 0 0 1em; }
+
+  button {
+    background: var(--field);
+    color: var(--color-text);
+    border: 1px solid var(--line);
+    border-radius: var(--border-radius);
+    font: inherit;
+    cursor: pointer;
+    &:is(:hover, :focus-visible) { border-color: var(--pick); }
+  }
+  #reset { margin-bottom: 1em; }
+
+  /* Picker cards: glow opacity and size grow with --impact (0..1, set by the script). */
+  .picker {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: var(--border-radius);
+    padding: 0.6em 0.8em;
+    margin-bottom: 1em;
+    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4),
+      0 0 calc(6px + 20px * var(--impact)) calc(1px + 5px * var(--impact))
+      oklch(from var(--glow) l c h / calc(min(100 * var(--impact), 0.15) + 0.85 * var(--impact)));  /* no glow at 0 impact */
+    transition: box-shadow 0.25s;
+    &.chosen { border-color: var(--pick); box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4); }
+    .lbl { display: flex; justify-content: space-between; gap: 0.5em; font-weight: var(--font-weight-bold); margin-bottom: 0.4em; }
+    /* fixed width so titles wrap the same with or without the text */
+    .impact { font-weight: var(--font-weight); color: var(--muted); font-size: 0.8em; flex: 0 0 13ch; text-align: right; white-space: nowrap; }
+    .hint { color: var(--muted); font-size: 0.8em; margin-top: 0.3em; }
+  }
+
+  select {
+    width: 100%;
+    padding: 0.3em;
+    background: var(--field);
+    color: var(--color-text);
+    border: 1px solid var(--line);
+    border-radius: var(--border-radius);
+    font: inherit;
+  }
+
+  .row { display: flex; gap: 0.5em; }
+  .row .imgs { flex: 1; margin-top: 0; }
+  .btns { display: flex; flex-direction: column; gap: 0.4em; }
+  .row button.clear { align-self: flex-start; padding: 0.3em 0.8em; }
+
+  /* Image tiles, two per row */
+  .imgs { display: flex; flex-wrap: wrap; gap: 0.5em; margin-top: 0.5em; }
+  .imgs button, .chosen-img > div {
+    flex: 0 0 calc(50% - 0.25em);
+    padding: 4px;
+    background: var(--tile);
+    color: var(--color-primary);
+    border: 2px solid transparent;
+    border-radius: var(--border-radius);
+    font-size: 0.8em;
+  }
+  .imgs button.on, .chosen-img > div { border-color: var(--color-highlight); }
+  .imgs img { width: 100%; display: block; }
+
+  /* Collapsible card: the whole card is the <summary> */
+  summary { cursor: pointer; list-style: none; }
+  summary::-webkit-details-marker { display: none; }
+  .more { color: var(--color-text-link); margin-top: 0.4em; font-size: 0.9em; }
+  .more::before { content: 'Show all ⮟'; }
+  details[open] .more::before { content: 'Hide ⮝'; }
+
+  /* Results */
+  .count { color: var(--color-text-link); }
+  ul { list-style: none; padding: 0; margin: 0; }
+  li.model {
+    background: var(--panel);
+    border-radius: var(--border-radius);
+    box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
+    padding: 0.5em 0.8em;
+    margin-bottom: 0.5em;
+  }
+  li.model b { font-weight: var(--font-weight-bolder); }
+  .note { color: var(--muted); font-size: 0.8em; }
+  .unk { color: var(--muted); font-size: 0.8em; font-style: italic; }
+}
