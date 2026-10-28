@@ -2,7 +2,7 @@
 layout: main
 title: Applications
 section: Applications
-last_modified_at: 2023-01-22
+last_modified_at: 2026-10-28
 ---
 
 ## Games
@@ -14,6 +14,7 @@ last_modified_at: 2023-01-22
 Each of these projects were something that I put together when teaching myself something new.  I
 tried to make something useful for each one so I figured I'd post them.
 
+- [Antique Singer ID](./antique_singer_id.html)
 - [Sashiko Pattern Tiling tool](./sashiko_tiler.html)
 - [Image cropping tool](./image_cropper.html)
 - [Parametric OkLCH Color Theme Demo](./parametric_oklch_theme_demo.html)

@@ -1,0 +1,241 @@
+---
+layout: main
+title: Antique Singer ID
+section: Applications
+last_modified_at: 2026-10-28
+extra_css: extra_css/apps/antique_singer_id.css
+---
+
+<div id="antique-singer-id">
+<div class="layout">
+  <section>
+    <h1>Antique Singer ID</h1>
+    <p class="sub">Pick what you can see on the machine. The brightest glow marks the picker that narrows the list most right now.</p>
+    <button id="reset">Reset</button>
+    <div id="pickers"></div>
+  </section>
+  <section>
+    <h2>Possible models <span class="count" id="count"></span></h2>
+    <ul id="results"></ul>
+  </section>
+</div>
+</div>
+
+<script>
+// ---- Models ----
+const MODELS = {
+  '12': ['12 / 12K "New Family"'], '13': ['13 / 13K "Medium"'], '16': ['16 "Improved Manufacturing" (16-1 to 16-4)'],
+  '29K': ['29K'], 'IF': ['Improved Family (early class 15: 15-1 to 15-3)'],
+  'VS1': ['VS1'], 'VS2': ['VS2', 'Early ones have a fiddle bed, later a rectangular bed (= 27)'], 'VS3': ['VS3'],
+  '24': ['24 (chain stitch)'], '27': ['27 / 27K'], '28': ['28 / 28K', '3/4 size'], '48K': ['48K'],
+  '127': ['127'], '128': ['128 / 128K', '3/4 size'],
+  '15e': ['15 (early, treadle / crank)'], '15-30': ['15-30'], '15-88': ['15-88 (treadle)'], '15-89': ['15-89 (hand crank)'],
+  '15-90': ['15-90 (external motor)'], '15-91': ['15-91 (potted motor)'],
+  '25': ['25 / 15NL / 15CH "Nostalgia" reproduction', 'Mid-1970s on, Taiwan then China. Serial starts "NL", white/silver accents in the Sphinx decals'],
+  '66': ['66'], '99': ['99 / 99K', '3/4 size'], '101': ['101'], '115': ['115'],
+  '185': ['185 / 185K', '3/4 size'], '192': ['Spartan 192', '3/4 size'],
+  '201-2': ['201-2 (potted motor)'], '201-3': ['201-3 / 201K (belt motor)'],
+  '206': ['206'], '215': ['215'], '216': ['216G'], '221': ['221 / 221K Featherweight'], '222': ['222K Featherweight'],
+  '301': ['301'], '306': ['306K'], '319': ['319K'],
+};
+const ALL = Object.keys(MODELS);
+const S15 = ['15e', '15-30', '15-88', '15-89', '15-90', '15-91'];
+const S201 = ['201-2', '201-3'];
+
+// ---- Decision points ----
+// strict: models not in the list are ruled out.
+// open: only models the note puts under another option are ruled out; unlisted models stay ("not covered").
+// except: every model except these (strict).
+const ATTRS = [
+  { id: 'jump', label: 'Ski jump (top of the arm, behind the head)', options: [
+    { label: 'Gentle, under 45°', img: '/assets/apps/antique_singer_id/singer-jump-gentle.svg', strict: [...S15, '25', '115'] },
+    { label: 'Steep, over 45°', img: '/assets/apps/antique_singer_id/singer-jump-steep.svg', strict: ['66', '99', ...S201] },
+    // TODO: find which other models have a ski-jump arm (e.g. 206, 301, 221/222, 185, 192, 101) and add them
+    // to Gentle/Steep. Until then they land in "No ski jump" because that option is "everything not listed".
+    { label: 'No ski jump (flat arm)', img: '/assets/apps/antique_singer_id/singer-jump-none.svg', except: [...S15, '25', '115', '66', '99', ...S201] } ] },
+  { id: 'stitch', label: 'Stitch length control on the front of the pillar', options: [
+    { label: 'Round plate with lever (has reverse)', strict: ['15-88', '15-89', '15-90', '15-91', ...S201, '25'] },
+    { label: 'Silver knob next to the badge', open: ['66'] },
+    { label: 'Silver-rimmed slot', open: ['66'] },
+    { label: 'None of these', except: ['15-88', '15-89', '15-90', '15-91', ...S201, '25'] } ] },
+  { id: 'rear', label: 'Round cover on the back of the arm', hint: 'Model list is from parts sellers, so "Yes" rules little out', options: [
+    { label: 'Yes', open: [...S201, ...S15, '66', '27', '28', '128'] },
+    { label: 'No', except: [...S201, ...S15, '66', '27', '28', '128'] } ] },
+  // Not from the note: factory drive per model. Many treadle machines got aftermarket belt motors later.
+  { id: 'motor', label: 'Motor / drive', hint: 'A belt motor bolted onto an old treadle head may be aftermarket: pick Treadle', options: [
+    { label: 'Treadle / hand crank (no motor)', strict: ['12', '13', '16', '29K', 'IF', 'VS1', 'VS2', 'VS3', '24', '27', '28', '48K', '127', '128', '15e', '15-88', '15-89', '66', '99', '115'] },
+    { label: 'Belted external motor', strict: ['15-30', '15-90', '201-3', '66', '99', '127', '128', '185', '192', '206', '215', '216', '221', '222', '301', '306', '319', '25'] },
+    { label: 'Potted motor (round housing on the back, gear drive, no belt)', strict: ['15-91', '201-2'] },
+    { label: 'Internal motor (inside the body)', strict: ['101'] } ] },
+  { id: 'slides', label: 'Two slide plates across the whole bed', options: [
+    { label: 'Yes', img: '/assets/apps/antique_singer_id/singer-slides-yes.svg', strict: ['VS1', 'VS2', 'VS3', '27', '28', '127', '128'] },
+    { label: 'No', img: '/assets/apps/antique_singer_id/singer-slides-no.svg', except: ['VS1', 'VS2', 'VS3', '27', '28', '127', '128'] } ] },
+  { id: 'winder', label: 'Bobbin winder location', options: [
+    { label: 'Low, on the bed', open: ['VS1', 'VS2', 'VS3', '27', '28'] },
+    { label: 'High, on the arm near the handwheel', open: ['127', '128'] } ] },
+  { id: 'bed', label: 'Bed outline', options: [
+    { label: 'Fiddle-shaped (edges curve in)', img: '/assets/apps/antique_singer_id/singer-bed-fiddle.svg', strict: ['12', '13', 'VS1', 'VS2', 'IF', '16'] },
+    { label: 'Straight / rectangular', img: '/assets/apps/antique_singer_id/singer-bed-straight.svg', except: ['12', '13', 'VS1', 'IF', '16'] } ] },
+  { id: 'size', label: 'Bed size', hint: 'Full = 14-15" (35-38 cm), 3/4 = 12-13" (30-32 cm)', options: [
+    { label: '3/4 size', strict: ['28', '128', '99', '185', '192'] },
+    { label: 'Full size', except: ['28', '128', '99', '185', '192'] } ] },
+  // Decal images commented out until they're replaced with self-traced artwork (third-party photos can't be published).
+  { id: 'decal', label: 'Decal', /* collapse: true, */ hint: 'Weakest clue: shared across models, and refurbished machines got newer decals', options: [
+    { label: 'Acanthus Leaves', /* img: '/assets/apps/antique_singer_id/singer-decal-acanthus.jpg', */ strict: ['12', '13', '29K'] },
+    { label: 'Ottoman Carnations', /* img: '/assets/apps/antique_singer_id/singer-decal-ottoman-carnations.jpg', */ strict: ['12', 'IF', '28', '48K'] },
+    { label: 'Victorian', /* img: '/assets/apps/antique_singer_id/singer-decal-victorian.jpg', */ strict: ['VS2', '16', '28', '128'] },
+    { label: 'Painted Roses', /* img: '/assets/apps/antique_singer_id/singer-decal-painted-roses.jpg', */ strict: ['VS2', 'VS3', '28'] },
+    { label: 'Painted Daisies', /* img: '/assets/apps/antique_singer_id/singer-decal-painted-daisies.jpg', */ strict: ['IF'] },
+    { label: 'Dog Rose, Cornflowers & Rock Rose', /* img: '/assets/apps/antique_singer_id/singer-decal-painted-cornflowers.jpg', */ strict: ['VS2', 'VS3', '28'] },
+    { label: 'Pheasant', /* img: '/assets/apps/antique_singer_id/singer-decal-pheasant.jpg', */ strict: ['15e', '27', '28', '128'] },
+    { label: 'Sphinx / Memphis', /* img: '/assets/apps/antique_singer_id/singer-decal-sphinx.jpg', */ strict: ['IF', ...S15, '27', 'VS2', '127', '66', '25'] },
+    { label: 'Persian', /* img: '/assets/apps/antique_singer_id/singer-decal-persian.jpg', */ strict: ['27', '28'] },
+    { label: 'Tiffany / Gingerbread', /* img: '/assets/apps/antique_singer_id/singer-decal-tiffany.jpg', */ strict: ['15e', '27', '28', '66', '115'] },
+    { label: 'Red Eye', /* img: '/assets/apps/antique_singer_id/singer-decal-red-eye.jpg', */ strict: ['66'] },
+    { label: 'Lotus / Egyptian', /* img: '/assets/apps/antique_singer_id/singer-decal-lotus-green.jpg', */ strict: ['66'] },
+    { label: 'Filigree', /* img: '/assets/apps/antique_singer_id/singer-decal-filigree.jpg', */ strict: ['66', '99'] },
+    { label: 'Rococo', /* img: '/assets/apps/antique_singer_id/singer-decal-rococo.jpg', */ strict: ['28', '128'] },
+    { label: 'La Vencedora', /* img: '/assets/apps/antique_singer_id/singer-decal-la-vencedora.jpg', */ strict: ['128', '28'] },
+    { label: 'Wings', /* img: '/assets/apps/antique_singer_id/singer-decal-wings.jpg', */ strict: ['115'] },
+    { label: 'Cornflower (24)', /* img: '/assets/apps/antique_singer_id/singer-decal-cornflower-24.jpg', */ strict: ['24'] },
+    { label: 'Triplets', /* img: '/assets/apps/antique_singer_id/singer-decal-triplets.jpg', */ strict: [...S15, '24', '215'] },
+    { label: 'Celtic Chain', /* img: '/assets/apps/antique_singer_id/singer-decal-celtic-chain.jpg', */ strict: ['221'] },
+    { label: 'Celtic Swirl', /* img: '/assets/apps/antique_singer_id/singer-decal-celtic-swirl.jpg', */ strict: ['128'] },
+    { label: 'RAF', /* img: '/assets/apps/antique_singer_id/singer-decal-raf.jpg', */ strict: S15 },
+    { label: 'Paperclips', /* img: '/assets/apps/antique_singer_id/singer-decal-paperclips.jpg', */ strict: [...S201, '301', '28'] },
+    { label: 'Trefoil / Eye and Trefoils', /* img: '/assets/apps/antique_singer_id/singer-decal-trefoil.jpg', */ strict: ['15-88'] },
+    { label: 'Hearts', /* img: '/assets/apps/antique_singer_id/singer-decal-hearts.jpg', */ strict: ['127', '128'] },
+    { label: 'Eye', /* img: '/assets/apps/antique_singer_id/singer-decal-eye.jpg', */ strict: ['99', '306'] },
+    { label: 'Prism', /* img: '/assets/apps/antique_singer_id/singer-decal-prism.jpg', */ strict: ['221', '222', ...S201, '301'] },
+    { label: 'Triangles', /* img: '/assets/apps/antique_singer_id/singer-decal-triangles.jpg', */ strict: ['206', '306', '319', '216'] },
+    { label: 'Eagle', /* img: '/assets/apps/antique_singer_id/singer-decal-eagle.jpg', */ strict: ['27'] },
+    { label: 'Owl', /* img: '/assets/apps/antique_singer_id/singer-decal-owl.jpg', */ strict: ['15e'] },
+    { label: 'Feathers', /* img: '/assets/apps/antique_singer_id/singer-decal-feathers.jpg', */ strict: ['15e'] },
+    { label: 'Wrought Iron', /* img: '/assets/apps/antique_singer_id/singer-decal-wrought-iron.jpg', */ strict: ['28'] },
+    { label: 'Peacock', /* img: '/assets/apps/antique_singer_id/singer-decal-peacock.jpg', */ strict: ['VS3'] },
+    { label: 'Small Roses', /* img: '/assets/apps/antique_singer_id/singer-decal-small-roses.jpg', */ strict: ['28'] },
+    { label: 'Large Roses', /* img: '/assets/apps/antique_singer_id/singer-decal-large-roses.jpg', */ strict: ['12'] } ] },
+];
+
+ATTRS.find(a => a.id === 'decal').options.sort((x, y) => x.label.localeCompare(y.label));
+
+// Precompute: each option's set, and per attribute the models the note mentions in any list.
+for (const a of ATTRS) {
+  a.mentioned = new Set();
+  for (const o of a.options) {
+    if (o.except) o.set = new Set(ALL.filter(m => !o.except.includes(m)));
+    else { o.set = new Set(o.strict || o.open); o.set.forEach(m => a.mentioned.add(m)); }
+  }
+}
+
+// 'yes' | 'no' | 'unknown'
+function match(model, attr, opt) {
+  if (opt.set.has(model)) return 'yes';
+  if (!opt.open) return 'no';
+  return attr.mentioned.has(model) ? 'no' : 'unknown';
+}
+
+function candidates(sel, skipId) {
+  return ALL.filter(m => ATTRS.every(a =>
+    a.id === skipId || sel[a.id] == null || match(m, a, a.options[sel[a.id]]) !== 'no'));
+}
+
+// Expected fraction of candidates removed by answering this picker (0..1).
+function impact(attr, sel) {
+  const pool = candidates(sel, attr.id);
+  if (!pool.length) return 0;
+  const n = attr.options.map(o => pool.filter(m => match(m, attr, o) !== 'no').length);
+  const sum = n.reduce((s, x) => s + x, 0);
+  return sum ? 1 - n.reduce((s, x) => s + x * x, 0) / sum / pool.length : 0;
+}
+
+// ---- UI ----
+const sel = {};
+const pickers = document.getElementById('pickers');
+for (const a of ATTRS) {
+  const div = document.createElement('div');
+  div.className = 'picker';
+  const pics = a.options.every(o => o.img);
+  const imgs = a.options.some(o => o.img) ? `<div class="imgs">${a.options.map((o, i) => o.img ? `<button type="button" data-i="${i}"><img src="${o.img}" alt=""><div>${o.label}</div></button>` : '').join('')}</div>` : '';
+  const tag = pics ? 'div' : 'label';
+  const head = `<${tag} class="lbl"${pics ? '' : ` for="p-${a.id}"`}>${a.label}<span class="impact"></span></${tag}>
+    <div class="row"><select id="p-${a.id}"${pics ? ' hidden' : ''}><option value="">— not checked —</option>${a.options.map((o, i) => `<option value="${i}">${o.label}</option>`).join('')}</select>
+    ${a.collapse ? '<div class="imgs chosen-img"></div>' : pics ? imgs : ''}<div class="btns"><button class="clear" type="button">Clear</button></div></div>`;
+  const hint = a.hint ? `<div class="hint">${a.hint}</div>` : '';
+  // Collapsible: the whole card is the <summary>, the full grid is the details body.
+  div.innerHTML = a.collapse
+    ? `<details><summary>${head}<div class="more"></div></summary>${imgs}</details>${hint}`
+    : `${head}${pics ? '' : imgs}${hint}`;
+  const s = div.querySelector('select');
+  s.addEventListener('change', () => { sel[a.id] = s.value === '' ? null : +s.value; render(); });
+  div.querySelector('.clear').onclick = e => { e.preventDefault(); s.value = ''; sel[a.id] = null; render(); };
+  div.querySelectorAll('.imgs button').forEach(b => b.onclick = () => {
+    const again = sel[a.id] === +b.dataset.i;  // clicking the current pick clears it
+    sel[a.id] = again ? null : +b.dataset.i; s.value = again ? '' : b.dataset.i;
+    if (a.collapse) div.querySelector('details').open = false;  // picking closes the grid
+    render();
+  });
+  a.el = div;
+  pickers.append(div);
+}
+document.getElementById('reset').onclick = () => {
+  for (const a of ATTRS) { sel[a.id] = null; a.el.querySelector('select').value = ''; }
+  render();
+};
+
+function render() {
+  // Glow: HSV value scales with impact, relative to the strongest open picker.
+  const imp = ATTRS.map(a => sel[a.id] == null ? impact(a, sel) : 0);
+  const max = Math.max(...imp, 1e-9);
+  ATTRS.forEach((a, i) => {
+    const chosen = sel[a.id] != null, v = imp[i] / max;
+    a.el.classList.toggle('chosen', chosen);
+    a.el.querySelectorAll('.imgs button').forEach(b => b.classList.toggle('on', sel[a.id] === +b.dataset.i));
+    if (a.collapse) { const o = a.options[sel[a.id]];
+      a.el.querySelector('.chosen-img').innerHTML = o ? `<div><img src="${o.img}" alt=""><div>${o.label}</div></div>` : ''; }
+    a.el.style.setProperty('--impact', chosen ? 0 : v);  // glow strength, drawn in CSS
+    a.el.querySelector('.impact').textContent = chosen ? '' : `narrows ~${Math.round(imp[i] * 100)}%`;
+    const pool = candidates(sel, a.id);
+    a.el.querySelectorAll('option[value]:not([value=""])').forEach(op => {
+      const n = pool.filter(m => match(m, a, a.options[op.value]) !== 'no').length;
+      op.textContent = `${a.options[op.value].label} (${n})`;
+      op.hidden = n === 0 && sel[a.id] !== +op.value;  // keep the current pick visible even if it hits 0
+      const tile = a.el.querySelector(`.imgs button[data-i="${op.value}"]`);
+      if (tile) {
+        tile.querySelector('div').textContent = op.textContent;
+        // Grids that collapse drop empty tiles; fixed pickers keep the gap so the card doesn't resize.
+        if (a.collapse) tile.hidden = op.hidden;
+        else {  // invisible tiles move to the end, so visible ones fill from the top and the gap sits at the bottom
+          tile.style.visibility = op.hidden ? 'hidden' : '';
+          tile.style.order = op.hidden ? 1 : 0;
+        }
+      }
+    });
+  });
+
+  const list = candidates(sel).map(m => {
+    const unknown = ATTRS.filter(a => sel[a.id] != null && match(m, a, a.options[sel[a.id]]) === 'unknown');
+    return { m, unknown };
+  }).sort((x, y) => x.unknown.length - y.unknown.length);
+  document.getElementById('count').textContent = `(${list.length})`;
+  document.getElementById('results').innerHTML = list.map(({ m, unknown }) => `<li class="model"><b>${MODELS[m][0]}</b>
+    ${MODELS[m][1] ? `<div class="note">${MODELS[m][1]}</div>` : ''}
+    ${unknown.length ? `<div class="unk">No data yet for: ${unknown.map(a => a.label).join(', ')}</div>` : ''}</li>`).join('');
+}
+render();
+
+// Mobile: size the layout to exactly the screen space left after everything above and below it, so the page never scrolls.
+const layoutEl = document.querySelector('#antique-singer-id .layout') || document.querySelector('main');
+const mobile = matchMedia('(max-width: 760px)');
+function fitMobile() {
+  if (!mobile.matches) { layoutEl.style.height = ''; return; }
+  const top = layoutEl.getBoundingClientRect().top + scrollY;
+  const main = layoutEl.closest('main');
+  const padB = main && main !== layoutEl ? parseFloat(getComputedStyle(main).paddingBottom) : 0;
+  const foot = document.querySelector('footer');
+  layoutEl.style.height = Math.max(240, innerHeight - top - padB - (foot ? foot.offsetHeight : 0) - 1) + 'px';
+}
+addEventListener('resize', fitMobile);
+addEventListener('load', fitMobile);
+fitMobile();
+</script>

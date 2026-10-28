@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 226"><style>.o{fill:rgba(128,128,128,.16);stroke:#8a8f98;stroke-width:2.5;stroke-linejoin:round}.ctx{fill:none;stroke:#8a8f98;stroke-width:2;opacity:.55}.np{fill:rgba(128,128,128,.25);stroke:#8a8f98;stroke-width:2}.sp{fill:rgba(229,72,77,.22);stroke:#e5484d;stroke-width:3.5;stroke-linejoin:round}.hole{fill:#14161a;stroke:#e5484d;stroke-width:1.5}.lbl{font-family:system-ui,sans-serif;font-size:12px;font-weight:600;fill:#8a8f98}</style><rect class="o" x="30" y="40" width="340" height="146" rx="12"/><rect class="ctx" x="282" y="84" width="60" height="58" rx="10"/><text class="lbl" x="200" y="214" text-anchor="middle">front</text>
+<g transform="translate(30 0)"><path class="sp" d="M72 40H117V113H82.5A21 21 0 0 0 72 94.8Z"/><ellipse class="hole" cx="94.5" cy="54" rx="6" ry="4"/>
+<path class="sp" d="M72 186H117V113H82.5A21 21 0 0 1 72 131.2Z"/><ellipse class="hole" cx="94.5" cy="172" rx="6" ry="4"/>
+<circle class="np" cx="61.5" cy="113" r="21"/><rect x="59.5" y="104" width="4" height="18" fill="#8a8f98"/>
+</g>
+</svg>
