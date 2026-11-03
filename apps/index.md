@@ -17,6 +17,7 @@ tried to make something useful for each one so I figured I'd post them.
 - [Antique Singer ID](./antique_singer_id.html)
 - [Sashiko Pattern Tiling tool](./sashiko_tiler.html)
 - [Image cropping tool](./image_cropper.html)
+- [Thumbnail maker](./thumbnailer.html)
 - [Parametric OkLCH Color Theme Demo](./parametric_oklch_theme_demo.html)
 - [Full-Page Color Comparison Tool](./color_compare.html)
 * [Quadratic Formula Calculator w/ HTML5 display](./quadratic.html)
