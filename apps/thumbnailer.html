@@ -2,7 +2,7 @@
 layout: main
 title: Thumbnail Maker
 section: Applications
-last_modified_at: 2026-09-03
+last_modified_at: 2026-10-31
 extra_css: extra_css/apps/thumbnailer.css
 ---
 <!--From `image_ops_6.html`-->
@@ -13,13 +13,18 @@ extra_css: extra_css/apps/thumbnailer.css
       <div class="tt-row">
         <input type="file" id="file-input" accept="image/*">
         <label for="file-input" class="button">Open Image</label>
+        <button id="url-button">Open URL</button>
         <button id="add-text-button" disabled>Add Text</button>
         <button id="system-fonts-button" hidden>Use System Fonts</button>
+      </div>
+      <div class="tt-row">
+        <button id="remove-bg-button" disabled>Remove Background</button>
       </div>
       <div class="tt-row">
         <button id="export-project-button" disabled>Save Project</button>
         <label for="project-input" class="button">Load Project</label>
         <input type="file" id="project-input" accept="application/json,.json" hidden>
+        <button id="clear-button" disabled>Clear</button>
       </div>
       <datalist id="font-list"></datalist>
     </div>
@@ -57,6 +62,28 @@ extra_css: extra_css/apps/thumbnailer.css
       <h3>Text Boxes</h3>
       <div id="text-list"></div>
     </div>
+
+    <div class="tt-group">
+      <div class="tt-row tt-head">
+        <h3>Exact Size</h3>
+        <select id="size-unit" title="Units"><option value="in">in</option><option value="mm">mm</option></select>
+      </div>
+      <div class="tt-row">
+        <label><input type="radio" name="size-mode" value="none" checked> No scaling</label>
+      </div>
+      <div class="tt-row">
+        <label><input type="radio" name="size-mode" value="width"> Exact width</label>
+        <input type="number" id="size-width" min="0" step="any" disabled>
+      </div>
+      <div class="tt-row">
+        <label><input type="radio" name="size-mode" value="height"> Exact height</label>
+        <input type="number" id="size-height" min="0" step="any" disabled>
+      </div>
+      <div class="tt-row">
+        <button id="print-button" disabled>Print</button>
+        <label><input type="checkbox" id="print-border"> Cutting border</label>
+      </div>
+    </div>
   </div>
 
   <div class="tt-workspace">
@@ -76,7 +103,7 @@ extra_css: extra_css/apps/thumbnailer.css
   const textList = document.getElementById('text-list');
 
   // Project file schema. Bump the major when the shape stops being readable as-is.
-  const SCHEMA_VERSION = '1.1.0';
+  const SCHEMA_VERSION = '1.2.0';
 
   // Store original image data
   let originalImage = null;
@@ -155,14 +182,47 @@ extra_css: extra_css/apps/thumbnailer.css
     }
   });
 
+  // fetch rather than <img src>: a cross-origin image would taint the canvas and block
+  // downloads, and project files need the bytes as a data URL anyway.
+  document.getElementById('url-button').addEventListener('click', function () {
+    const url = prompt('Image URL');
+    if (!url) return;
+    fetch(url.trim()).then(function (res) {
+      if (!res.ok) throw new Error('server answered ' + res.status);
+      return res.blob();
+    }).then(function (blob) {
+      if (!blob.type.startsWith('image/')) throw new Error('that URL is not an image');
+      const name = decodeURIComponent(new URL(url.trim(), location.href).pathname.split('/').pop());
+      loadImageFromFile(new File([blob], name, { type: blob.type }));
+    }).catch(function (err) {
+      // fetch reports a CORS block as a bare TypeError
+      alert('Could not load that image: ' + (err instanceof TypeError
+        ? 'the site does not allow other pages to read its images. Download it and use Open Image instead.'
+        : err.message));
+    });
+  });
+
+  // Positions follow each axis so text keeps its place; size uses the smaller factor
+  // so text never outgrows the image when the aspect ratio changes.
+  function scaleTexts(list, kx, ky) {
+    const k = Math.min(kx, ky);
+    list.forEach(function (t) {
+      t.x *= kx;
+      t.y *= ky;
+      t.size = Math.max(4, Math.round(t.size * k));
+      t.shadow = Math.round(t.shadow * k);
+    });
+  }
+
   function loadImageFromFile(file) {
     if (!file.type.startsWith('image/')) return;
     const name = file.name.replace(/\.[^.]+$/, '') || 'thumbnail';
     const reader = new FileReader();
     reader.onload = function () {
+      const prev = originalImage;
+      // Text boxes and settings carry over, scaled to the new image; crop rects refit it
       setImage(reader.result, name, function () {
-        texts = [];
-        selected = -1;
+        if (prev) scaleTexts(texts, originalImage.width / prev.width, originalImage.height / prev.height);
         crops.forEach(function (c) {
           Object.assign(c, fitRect(originalImage.width, originalImage.height, c.ratio));
         });
@@ -303,6 +363,7 @@ extra_css: extra_css/apps/thumbnailer.css
       ctx.strokeRect(t.x * scale, t.y * scale, t.w * scale, t.h * scale);
       ctx.restore();
     }
+    updateSizeFields();
   }
 
   function corners(crop) {
@@ -514,8 +575,9 @@ extra_css: extra_css/apps/thumbnailer.css
   // Crop controls and export -------------------------------------------------
 
   crops.forEach(function (crop) {
-    document.getElementById('show-' + crop.key).addEventListener('change', function (e) {
-      crop.show = e.target.checked;
+    // Read both: once these are radios, only the newly picked one fires 'change'
+    document.getElementById('show-' + crop.key).addEventListener('change', function () {
+      crops.forEach(function (c) { c.show = document.getElementById('show-' + c.key).checked; });
       draw();
     });
     document.getElementById('ratio-' + crop.key).addEventListener('change', function (e) {
@@ -524,9 +586,239 @@ extra_css: extra_css/apps/thumbnailer.css
       draw();
     });
     document.getElementById('download-' + crop.key).addEventListener('click', function () {
-      exportRegion(crop, crop.key);
+      const scaled = sizeMode !== 'none' && crop === activeCrop();
+      exportRegion(crop, crop.key, scaled ? exportDpi(crop) : null);
     });
   });
+
+  // Exact size ---------------------------------------------------------------
+
+  // shortcut: "no scaling" assumes 96 DPI rather than reading the source file's DPI metadata;
+  // read EXIF/JFIF/pHYs if prints of unscaled exports come out the wrong size.
+  const DEFAULT_DPI = 96;
+  const MM_PER_IN = 25.4;
+  let sizeMode = 'none';
+  let exactInches = null; // what the user typed into the active field, in inches
+
+  function sizeField(dim) { return document.getElementById('size-' + dim); }
+  function sizeUnit() { return document.getElementById('size-unit').value; }
+  function toInches(v, unit) { return unit === 'mm' ? v / MM_PER_IN : v; }
+  function fromInches(v, unit) { return +(unit === 'mm' ? v * MM_PER_IN : v).toFixed(2); }
+
+  function orientationIsRadio() {
+    return document.getElementById('show-landscape').type === 'radio';
+  }
+
+  // Physical sizes only make sense for one orientation at a time
+  function activeCrop() {
+    return orientationIsRadio() ? crops.filter(function (c) { return c.show; })[0] || null : null;
+  }
+
+  // DPI the chosen crop exports at, or null when there is nothing to size yet
+  function exportDpi(crop) {
+    if (!crop) return null;
+    if (sizeMode === 'none') return DEFAULT_DPI;
+    if (!(exactInches > 0)) return null;
+    return Math.round(sizeMode === 'width' ? crop.w : crop.h) / exactInches || null;
+  }
+
+  // Fills every field except the one the user is typing in
+  function updateSizeFields() {
+    const crop = activeCrop();
+    const dpi = exportDpi(crop);
+    ['width', 'height'].forEach(function (dim) {
+      if (dim === sizeMode) return;
+      const px = crop && Math.round(dim === 'width' ? crop.w : crop.h);
+      sizeField(dim).value = dpi ? fromInches(px / dpi, sizeUnit()) : '';
+    });
+  }
+
+  function makeOrientationRadios() {
+    const picked = crops.filter(function (c) { return c.show; })[0] || crops[0];
+    crops.forEach(function (c) {
+      const el = document.getElementById('show-' + c.key);
+      el.type = 'radio';
+      el.name = 'orientation';
+      el.checked = c.show = c === picked;
+    });
+  }
+
+  function makeOrientationCheckboxes() {
+    crops.forEach(function (c) {
+      const el = document.getElementById('show-' + c.key);
+      el.type = 'checkbox';
+      el.removeAttribute('name');
+      el.checked = c.show;
+    });
+  }
+
+  document.querySelectorAll('input[name="size-mode"]').forEach(function (radio) {
+    radio.addEventListener('change', function () {
+      if (radio.value !== 'none' && !orientationIsRadio()) {
+        if (!confirm('Exact width and height only work with a single orientation, so ' +
+                     'Landscape and Portrait will become pick-one options. Continue?')) {
+          document.querySelector('input[name="size-mode"][value="' + sizeMode + '"]').checked = true;
+          return;
+        }
+        makeOrientationRadios();
+      }
+      sizeMode = radio.value;
+      ['width', 'height'].forEach(function (dim) { sizeField(dim).disabled = dim !== sizeMode; });
+      // Start from whatever the field showed, so switching modes keeps the current size
+      const v = sizeMode === 'none' ? NaN : parseFloat(sizeField(sizeMode).value);
+      exactInches = v > 0 ? toInches(v, sizeUnit()) : null;
+      draw();
+      updateSizeFields(); // draw() bails before an image is loaded
+    });
+  });
+
+  ['width', 'height'].forEach(function (dim) {
+    sizeField(dim).addEventListener('input', function () {
+      const v = parseFloat(sizeField(dim).value);
+      exactInches = v > 0 ? toInches(v, sizeUnit()) : null;
+      updateSizeFields();
+    });
+  });
+
+  document.getElementById('size-unit').addEventListener('change', function () {
+    if (sizeMode !== 'none') sizeField(sizeMode).value = exactInches ? fromInches(exactInches, sizeUnit()) : '';
+    updateSizeFields();
+  });
+
+  // Print resolution: text is drawn as sharp as typical printers resolve
+  const PRINT_PPI = 300;
+
+  // Prints the chosen crop at its physical size. CSS inches are true inches on paper,
+  // as long as the print dialog's scale stays at 100% / "actual size".
+  document.getElementById('print-button').addEventListener('click', function () {
+    const crop = activeCrop();
+    const dpi = exportDpi(crop);
+    if (!dpi) {
+      alert('Pick Exact width or Exact height and enter a size first.');
+      return;
+    }
+    // Physical size comes from the same rounded pixels the size fields use; the canvas
+    // resolution is independent of it, so it never changes the printed size.
+    const widthIn = Math.round(crop.w) / dpi;
+    const heightIn = Math.round(crop.h) / dpi;
+    const out = renderRegion(crop, PRINT_PPI / dpi);
+    const frame = document.createElement('iframe');
+    frame.style.cssText = 'position:fixed;width:0;height:0;border:0;';
+    document.body.appendChild(frame);
+    const doc = frame.contentDocument;
+    doc.open();
+    // An outline sits outside the box, so the image keeps its exact size; the padding keeps
+    // the outline clear of the page margin so it is not clipped.
+    const border = document.getElementById('print-border').checked ? 'outline:0.2mm solid #000;' : '';
+    doc.write('<!doctype html><title>' + escapeHTML(originalFilename) + '</title>' +
+      '<style>body{margin:0;padding:1mm}img{display:block;' + border + 'width:' + widthIn +
+      'in;height:' + heightIn + 'in}</style><img src="' + out.toDataURL() + '">');
+    doc.close();
+    doc.querySelector('img').decode().then(function () {
+      frame.contentWindow.onafterprint = function () { frame.remove(); };
+      frame.contentWindow.print();
+    });
+  });
+
+  // Background removal -------------------------------------------------------
+
+  // Loaded on first click only: library ~0.6 MB, model ~115 MB (WebGPU) or ~190 MB (CPU),
+  // then kept in the browser cache. Both models are BiRefNet_lite, MIT licensed.
+  // The 1024px model needs more than the 4 GB WebAssembly memory cap on CPU (std::bad_alloc),
+  // so the CPU path uses a 512px export: softer edges, but it fits.
+  const TRANSFORMERS_URL = 'https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.1/dist/transformers.min.js';
+  const BG_MODEL_GPU = 'onnx-community/BiRefNet_lite-ONNX';
+  const BG_MODEL_CPU = 'studioludens/birefnet-lite-512';
+  const removeBgButton = document.getElementById('remove-bg-button');
+  let bgRemover = null;
+
+  removeBgButton.addEventListener('click', async function () {
+    removeBgButton.disabled = true;
+    try {
+      if (!bgRemover) {
+        removeBgButton.textContent = 'Loading model…';
+        const { pipeline } = await import(TRANSFORMERS_URL);
+        // navigator.gpu can exist with no usable adapter, so ask for one
+        const gpu = navigator.gpu && await navigator.gpu.requestAdapter().catch(function () { return null; });
+        bgRemover = await pipeline('background-removal', gpu ? BG_MODEL_GPU : BG_MODEL_CPU, {
+          device: gpu ? 'webgpu' : 'wasm',
+          dtype: gpu ? 'fp16' : 'fp32',
+          progress_callback: function (p) {
+            if (p.status === 'progress' && /\.onnx$/.test(p.file)) {
+              removeBgButton.textContent = 'Downloading model ' + Math.round(p.progress) + '%';
+            }
+          }
+        });
+      }
+      removeBgButton.textContent = 'Removing…';
+      const blob = await (await bgRemover(imageDataURL)).toBlob();
+      const dataURL = await new Promise(function (resolve, reject) {
+        const reader = new FileReader();
+        reader.onload = function () { resolve(reader.result); };
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+      // Same pixel size, so text and crops stay exactly where they are
+      setImage(dataURL, originalFilename + '-nobg', function () {});
+    } catch (err) {
+      alert('Background removal failed: ' + (err && err.message || err));
+    } finally {
+      removeBgButton.textContent = 'Remove Background';
+      removeBgButton.disabled = false;
+    }
+  });
+
+  // Clears text boxes and puts every control back to its HTML default; keeps the image
+  document.getElementById('clear-button').addEventListener('click', function () {
+    if (!confirm('Clear all text boxes and settings? The image stays open.')) return;
+    texts = [];
+    selected = -1;
+    makeOrientationCheckboxes();
+    document.querySelectorAll('.tt-panel input:not([type="file"]), .tt-panel select').forEach(function (el) {
+      if (el.tagName === 'SELECT') {
+        const i = Array.prototype.findIndex.call(el.options, function (o) { return o.defaultSelected; });
+        el.selectedIndex = Math.max(i, 0);
+      } else if (el.type === 'checkbox' || el.type === 'radio') {
+        el.checked = el.defaultChecked;
+      } else {
+        el.value = el.defaultValue;
+      }
+    });
+    crops.forEach(function (c) {
+      c.ratio = parseRatio(document.getElementById('ratio-' + c.key).value);
+      c.show = document.getElementById('show-' + c.key).checked;
+      Object.assign(c, fitRect(originalImage.width, originalImage.height, c.ratio));
+    });
+    sizeMode = 'none';
+    exactInches = null;
+    ['width', 'height'].forEach(function (dim) { sizeField(dim).disabled = true; });
+    renderTextList();
+    draw();
+  });
+
+  // Standard CRC-32 as PNG chunks use it
+  function crc32(bytes) {
+    let crc = -1;
+    for (let i = 0; i < bytes.length; i++) {
+      crc ^= bytes[i];
+      for (let k = 0; k < 8; k++) crc = (crc >>> 1) ^ (0xEDB88320 & -(crc & 1));
+    }
+    return (crc ^ -1) >>> 0;
+  }
+
+  // pHYs chunk: tells viewers and printers the physical size of a pixel
+  function physChunk(dpi) {
+    const ppm = Math.round(dpi / 0.0254);
+    const chunk = new Uint8Array(21);
+    const view = new DataView(chunk.buffer);
+    view.setUint32(0, 9);
+    chunk.set([0x70, 0x48, 0x59, 0x73], 4); // "pHYs"
+    view.setUint32(8, ppm);
+    view.setUint32(12, ppm);
+    chunk[16] = 1; // unit: metre
+    view.setUint32(17, crc32(chunk.subarray(4, 17)));
+    return chunk;
+  }
 
   document.getElementById('download-full').addEventListener('click', function () {
     exportRegion({ x: 0, y: 0, w: originalImage.width, h: originalImage.height }, 'full');
@@ -545,15 +837,31 @@ extra_css: extra_css/apps/thumbnailer.css
   }
 
   // Re-renders the scene at full resolution, offset so the crop lands at the origin
-  function exportRegion(region, suffix) {
+  // A dpi stamps the PNG with a physical size; pixels are never resampled.
+  // s scales the output: text is redrawn at that resolution, the photo is resampled to it
+  function renderRegion(region, s) {
+    s = s || 1;
     const out = document.createElement('canvas');
-    out.width = Math.round(region.w);
-    out.height = Math.round(region.h);
+    out.width = Math.round(region.w * s);
+    out.height = Math.round(region.h * s);
     const octx = out.getContext('2d');
-    octx.translate(-region.x, -region.y);
-    drawScene(octx, 1);
+    octx.imageSmoothingQuality = 'high';
+    octx.translate(-region.x * s, -region.y * s);
+    drawScene(octx, s);
+    return out;
+  }
+
+  function exportRegion(region, suffix, dpi) {
+    const out = renderRegion(region);
+    const filename = originalFilename + '-' + suffix + '.png';
     out.toBlob(function (blob) {
-      downloadBlob(blob, originalFilename + '-' + suffix + '.png');
+      if (!dpi) return downloadBlob(blob, filename);
+      blob.arrayBuffer().then(function (buf) {
+        // Canvas PNGs carry no pHYs of their own. IHDR is always first: 8-byte signature + 25-byte chunk.
+        const src = new Uint8Array(buf);
+        downloadBlob(new Blob([src.subarray(0, 33), physChunk(dpi), src.subarray(33)],
+                              { type: 'image/png' }), filename);
+      });
     });
   }
 
@@ -581,7 +889,14 @@ extra_css: extra_css/apps/thumbnailer.css
           show: c.show,
           x: c.x, y: c.y, w: c.w, h: c.h
         };
-      })
+      }),
+      exactSize: {
+        mode: sizeMode,
+        inches: exactInches,
+        unit: sizeUnit(),
+        single: orientationIsRadio(),
+        border: document.getElementById('print-border').checked
+      }
     };
     const blob = new Blob([JSON.stringify(project, null, 2)], { type: 'application/json' });
     downloadBlob(blob, /\.json$/i.test(name) ? name : name + '.json');
@@ -643,6 +958,24 @@ extra_css: extra_css/apps/thumbnailer.css
           if (typeof saved[k] === 'number') crop[k] = saved[k];
         });
       });
+      const size = data.exactSize;
+      if (size && typeof size === 'object') {
+        if (size.unit === 'in' || size.unit === 'mm') document.getElementById('size-unit').value = size.unit;
+        document.getElementById('print-border').checked = !!size.border;
+        sizeMode = ['width', 'height'].indexOf(size.mode) >= 0 ? size.mode : 'none';
+        exactInches = sizeMode !== 'none' && +size.inches > 0 ? +size.inches : null;
+        document.querySelector('input[name="size-mode"][value="' + sizeMode + '"]').checked = true;
+        ['width', 'height'].forEach(function (dim) {
+          sizeField(dim).disabled = dim !== sizeMode;
+          if (dim === sizeMode) sizeField(dim).value = exactInches ? fromInches(exactInches, sizeUnit()) : '';
+        });
+        if (size.single || sizeMode !== 'none') makeOrientationRadios();
+        else makeOrientationCheckboxes();
+      } else if (orientationIsRadio()) {
+        // Files from before exact size: keep the current mode, but a project saved with both
+        // orientations shown must still leave one pick-one choice
+        makeOrientationRadios();
+      }
     });
   }
 
@@ -673,6 +1006,12 @@ extra_css: extra_css/apps/thumbnailer.css
     console.assert(cleanFamily('  Impact  ') === 'Impact', 'cleanFamily trims');
     console.assert(cleanFamily('Ev"il\\') === 'Evil', 'cleanFamily strips quotes and backslashes');
     console.assert(cleanFamily(undefined) === '', 'cleanFamily handles missing');
+    console.assert(crc32(new TextEncoder().encode('IEND')) === 0xAE426082, 'crc32 matches PNG IEND');
+    console.assert(new DataView(physChunk(96).buffer).getUint32(8) === 3780, 'pHYs 96 dpi = 3780 px/m');
+    const st = [{ x: 100, y: 50, size: 40, shadow: 10 }];
+    scaleTexts(st, 2, 0.5);
+    console.assert(st[0].x === 200 && st[0].y === 25 && st[0].size === 20 && st[0].shadow === 5, 'scaleTexts');
+    console.assert(fromInches(1, 'mm') === 25.4 && toInches(25.4, 'mm') === 1, 'mm conversion');
     console.log('thumbnailer selftest done');
   }
 </script>

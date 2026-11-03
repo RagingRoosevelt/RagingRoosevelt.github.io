@@ -169,3 +169,8 @@ input[type="number"] {
     border-radius: 3px;
     padding: 3px 6px;
 }
+
+/* Group title with a control pinned to the right */
+.tt-head {
+    justify-content: space-between;
+}
