@@ -22,6 +22,7 @@ tried to make something useful for each one so I figured I'd post them.
 ### Image editing tools
 - [Image cropping tool](./image_cropper.html)
 - [Thumbnail maker](./thumbnailer.html)
+- [Zine assembler](./zine_assembler.html)
 
 ### Toy tools (hand coded)
 - [Parametric OkLCH Color Theme Demo](./parametric_oklch_theme_demo.html)

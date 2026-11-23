@@ -1,0 +1,559 @@
+---
+layout: main
+title: Zine Assembler
+section: Applications
+last_modified_at: 2026-11-23
+extra_css: extra_css/apps/zine_assembler.css
+---
+
+<article class="zine-assembler">
+  <form id="za-form">
+    <fieldset>
+      <legend>Source</legend>
+      <p>
+        <input type="file" id="za-files" accept="application/pdf,.pdf,image/*" multiple>
+        <label for="za-files" class="button">Open PDF or Images</label>
+      </p>
+      <p>Files start in name order. You can also drop files onto this page.</p>
+      <ol id="za-order" aria-label="Source file order"></ol>
+      <label>Source layout
+        <select name="layout">
+          <option value="single">Single pages</option>
+          <option value="spreads">Two-page spreads</option>
+          <option value="covers">Spreads, front &amp; back covers as single first &amp; last pages</option>
+          <option value="wrap">Spreads, cover wrap on first page (back | front)</option>
+          <option value="auto">Auto: split landscape pages</option>
+        </select>
+      </label>
+      <label>Crop images to
+        <select name="ratio">
+          <option value="">Original shape</option>
+          <option value="page">Output page shape</option>
+          <option value="1:1">1:1</option>
+          <option value="2:3">2:3 portrait</option>
+          <option value="3:4">3:4 portrait</option>
+          <option value="4:5">4:5 portrait</option>
+          <option value="3:2">3:2 landscape</option>
+          <option value="4:3">4:3 landscape</option>
+        </select>
+      </label>
+      <p>Ratios are per page; images split as spreads are cropped to two pages wide. Click an image above to adjust its crop.</p>
+      <p><output id="za-status" for="za-files">Nothing loaded.</output></p>
+    </fieldset>
+
+    <fieldset>
+      <legend>Output</legend>
+      <label><input type="radio" name="format" value="booklet" checked> Folded booklet (fold landscape sheets down the middle)</label>
+      <label><input type="radio" name="format" value="zine"> 8-page mini zine (one sheet, cut and fold)</label>
+      <label>Paper
+        <select name="paper">
+          <option value="612,792">Letter</option>
+          <option value="595.28,841.89">A4</option>
+          <option value="612,1008">Legal</option>
+          <option value="792,1224">Tabloid</option>
+          <option value="841.89,1190.55">A3</option>
+        </select>
+      </label>
+      <label>Page fit
+        <select name="fit">
+          <option value="contain">Fit whole page</option>
+          <option value="cover">Fill cell (crop edges)</option>
+        </select>
+      </label>
+      <label><input type="checkbox" name="backCover" checked> Keep last page on back cover when adding blanks</label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Bleed</legend>
+      <label>Trimmed off each sheet edge
+        <input type="number" name="bleed" min="0" step="any" value="0.25">
+        <select name="unit" title="Units"><option value="72">in</option><option value="2.834645669">mm</option></select>
+      </label>
+      <label><input type="checkbox" name="srcBleed"> Source pages include this much bleed</label>
+    </fieldset>
+
+    <p><label><input type="checkbox" name="labels"> Show output and source page numbers in preview (not in download)</label></p>
+    <p><button type="button" id="za-download" disabled>Download PDF</button></p>
+  </form>
+
+  <figure>
+    <iframe id="za-preview" title="Imposed PDF preview" hidden></iframe>
+    <figcaption id="za-help"></figcaption>
+  </figure>
+
+  <dialog id="za-crop" aria-labelledby="za-crop-title">
+    <form method="dialog">
+      <h2 id="za-crop-title">Crop image</h2>
+      <p>Drag the box to move it and its corner to resize. With the box focused, arrow keys move it (Shift for bigger steps) and + / − resize it.</p>
+      <figure class="za-crop-stage">
+        <img id="za-crop-img" alt="Image being cropped">
+        <div id="za-crop-box" tabindex="0" aria-label="Crop area"><div class="za-crop-handle"></div></div>
+      </figure>
+      <p class="za-crop-actions">
+        <button type="button" id="za-crop-reset">Reset</button>
+        <button value="cancel">Cancel</button>
+        <button value="save">Save crop</button>
+      </p>
+    </form>
+  </dialog>
+</article>
+
+<script type="module">
+  import { PDFDocument, StandardFonts, rgb, pushGraphicsState, popGraphicsState, rectangle, clip, endPath, concatTransformationMatrix }
+    from 'https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.esm.min.js';
+
+  const form = document.getElementById('za-form');
+  const fileInput = document.getElementById('za-files');
+  const status = document.getElementById('za-status');
+  const orderList = document.getElementById('za-order');
+  const downloadButton = document.getElementById('za-download');
+  const preview = document.getElementById('za-preview');
+  const help = document.getElementById('za-help');
+  const cropDialog = document.getElementById('za-crop');
+  const cropImg = document.getElementById('za-crop-img');
+  const cropBox = document.getElementById('za-crop-box');
+
+  const CROP_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" fill-rule="evenodd" clip-rule="evenodd" d="M3.17157 3.17157C2 4.34315 2 6.22876 2 10V14C2 17.7712 2 19.6569 3.17157 20.8284C4.34315 22 6.22876 22 10 22H14C17.7712 22 19.6569 22 20.8284 20.8284C22 19.6569 22 17.7712 22 14V10C22 6.22876 22 4.34315 20.8284 3.17157C19.6569 2 17.7712 2 14 2H10C6.22876 2 4.34315 2 3.17157 3.17157ZM8.75 6C8.75 5.58579 8.41421 5.25 8 5.25C7.58579 5.25 7.25 5.58579 7.25 6V7.25H6C5.58579 7.25 5.25 7.58579 5.25 8C5.25 8.41421 5.58579 8.75 6 8.75H7.25L7.25 12.052C7.24997 12.9505 7.24995 13.6997 7.32991 14.2945C7.41432 14.9223 7.59999 15.4891 8.05546 15.9445C8.51093 16.4 9.07773 16.5857 9.70552 16.6701C10.3003 16.7501 11.0495 16.75 11.948 16.75L15.25 16.75V18C15.25 18.4142 15.5858 18.75 16 18.75C16.4142 18.75 16.75 18.4142 16.75 18V16.75H18C18.4142 16.75 18.75 16.4142 18.75 16C18.75 15.5858 18.4142 15.25 18 15.25H12C11.036 15.25 10.3884 15.2484 9.90539 15.1835C9.44393 15.1214 9.24643 15.0142 9.11612 14.8839C8.9858 14.7536 8.87858 14.5561 8.81653 14.0946C8.75159 13.6116 8.75 12.964 8.75 12V6ZM12 8.75C12.964 8.75 13.6116 8.75159 14.0946 8.81653C14.5561 8.87858 14.7536 8.9858 14.8839 9.11612C15.0142 9.24643 15.1214 9.44393 15.1835 9.90539C15.2484 10.3884 15.25 11.036 15.25 12V13.4706C15.25 13.8848 15.5858 14.2206 16 14.2206C16.4142 14.2206 16.75 13.8848 16.75 13.4706L16.75 11.948C16.75 11.0495 16.7501 10.3003 16.6701 9.70552C16.5857 9.07773 16.4 8.51093 15.9445 8.05546C15.4891 7.59999 14.9223 7.41432 14.2945 7.32991C13.6997 7.24995 12.9505 7.24997 12.052 7.25L10.5294 7.25C10.1152 7.25 9.77941 7.58579 9.77941 8C9.77941 8.41421 10.1152 8.75 10.5294 8.75H12Z"/></svg>';
+
+  const HELP = {
+    booklet: 'Print double-sided, flipping on the short edge. Trim the bleed, stack the sheets in order, fold down the middle and staple along the fold.',
+    zine: 'Print single-sided. Trim the bleed, fold in half both ways, cut the center fold between the middle two panels, then fold lengthwise and push the ends together to form the booklet.'
+  };
+
+  // Mini zine sheet, zero-based page numbers. Top row prints upside down.
+  const ZINE_TOP = [4, 3, 2, 1];
+  const ZINE_BOTTOM = [5, 6, 7, 0];
+
+  // Saddle-stitch order: per sheet, [front [left, right], back [left, right]]
+  function bookletSheets(n) {
+    const sheets = [];
+    for (let i = 0; i < n / 4; i++) {
+      sheets.push([[n - 1 - 2 * i, 2 * i], [2 * i + 1, n - 2 - 2 * i]]);
+    }
+    return sheets;
+  }
+  console.assert(JSON.stringify(bookletSheets(8)) === '[[[7,0],[1,6]],[[5,2],[3,4]]]', 'booklet imposition order');
+
+  let items = [];     // one entry per loaded file, in user-chosen order
+  let sources = [];   // one entry per source PDF page or image
+  let outputURL = null;
+  let baseName = 'zine';
+  let buildToken = 0;
+
+  async function loadFiles(files) {
+    const list = [...files].sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
+    const loaded = [];
+    const failed = [];
+    for (const file of list) {
+      const pages = [];
+      try {
+        if (file.type === 'application/pdf' || /\.pdf$/i.test(file.name)) {
+          const pdf = await PDFDocument.load(await file.arrayBuffer());
+          // shortcut: ignores the page /Rotate entry, upgrade if rotated source PDFs show up sideways
+          pdf.getPages().forEach((page, index) => {
+            const c = page.getCropBox();
+            pages.push({ pdf, index, w: c.width, h: c.height,
+              box: { left: c.x, bottom: c.y, right: c.x + c.width, top: c.y + c.height } });
+          });
+        } else if (file.type.startsWith('image/')) {
+          // Re-encode through a canvas so EXIF rotation is applied and any browser image type works
+          const bitmap = await createImageBitmap(file);
+          const canvas = new OffscreenCanvas(bitmap.width, bitmap.height);
+          canvas.getContext('2d').drawImage(bitmap, 0, 0);
+          const jpg = file.type === 'image/jpeg';
+          const blob = await canvas.convertToBlob({ type: jpg ? 'image/jpeg' : 'image/png', quality: 0.92 });
+          pages.push({ png: !jpg, bytes: await blob.arrayBuffer(), w: bitmap.width, h: bitmap.height, cx: 0.5, cy: 0.5, zoom: 1 });
+        } else {
+          failed.push(file.name);
+          continue;
+        }
+        loaded.push({ name: file.name, pages, thumb: pages[0].pdf ? null : URL.createObjectURL(file) });
+      } catch (err) {
+        console.error(file.name, err);
+        failed.push(file.name);
+      }
+    }
+    if (!loaded.length) {
+      status.value = 'Could not read: ' + (failed.join(', ') || 'no files');
+      return;
+    }
+    items.forEach(item => item.thumb && URL.revokeObjectURL(item.thumb));
+    items = loaded;
+    baseName = loaded[0].name.replace(/\.[^.]+$/, '');
+    applyOrder(failed.length ? 'Skipped unreadable: ' + failed.join(', ') + '. ' : '');
+  }
+
+  // Flatten files into source pages and redraw the order list; source numbers match the preview labels
+  function applyOrder(prefix = '') {
+    sources = items.flatMap(item => item.pages);
+    orderList.replaceChildren();
+    let next = 1;
+    items.forEach((item, i) => {
+      const li = document.createElement('li');
+      li.dataset.i = i;
+      const grip = document.createElement('button');
+      grip.type = 'button';
+      grip.className = 'za-grip';
+      grip.textContent = '⠿';
+      grip.setAttribute('aria-label', 'Reorder ' + item.name + ': drag, or use the up and down arrow keys');
+      li.append(grip);
+      if (item.thumb) {
+        const thumb = document.createElement('button');
+        thumb.type = 'button';
+        thumb.className = 'za-thumb';
+        thumb.setAttribute('aria-label', 'Crop ' + item.name);
+        const img = document.createElement('img');
+        img.src = item.thumb;
+        img.alt = '';
+        thumb.append(img);
+        thumb.insertAdjacentHTML('beforeend', CROP_ICON);
+        li.append(thumb);
+      }
+      const n = item.pages.length;
+      const name = document.createElement('span');
+      name.textContent = item.name + (n > 1 ? ' (sources ' + next + '–' + (next + n - 1) + ')' : ' (source ' + next + ')');
+      next += n;
+      li.append(name);
+      orderList.append(li);
+    });
+    rebuild(prefix);
+  }
+
+  // Width / height of one output page cell, including the source's bleed when it has some
+  function pageRatio(o) {
+    const [W, H] = o.paper, b = o.bleed, sb = o.srcBleed ? 2 * b : 0;
+    const [cols, rows] = o.format === 'zine' ? [4, 2] : [2, 1];
+    return ((W - 2 * b) / cols + sb) / ((H - 2 * b) / rows + sb);
+  }
+
+  function targetRatio(o) {
+    if (o.ratio === 'page') return pageRatio(o);
+    const [a, b] = o.ratio.split(':').map(Number);
+    return o.ratio ? a / b : null;
+  }
+
+  const clamp = (v, lo, hi) => Math.min(Math.max(v, lo), hi);
+
+  // Crop rect as fractions of the source (y measured from the bottom, as in PDF space).
+  // Images keep a center (cx, cy from the top-left) and zoom, so the framing survives ratio changes.
+  function imageCrop(sp, ratio) {
+    if (sp.pdf) return { x0: 0, x1: 1, y0: 0, y1: 1 };
+    const r = sp.w / sp.h, R = ratio || r;
+    const fw = (r > R ? R / r : 1) / sp.zoom, fh = (r > R ? 1 : r / R) / sp.zoom;
+    const x0 = clamp(sp.cx - fw / 2, 0, 1 - fw), top = clamp(sp.cy - fh / 2, 0, 1 - fh);
+    return { x0, x1: x0 + fw, y0: 1 - top - fh, y1: 1 - top };
+  }
+
+  // Turn source pages into logical zine pages, each with a crop rect and the source half it came from.
+  // Bleed flags mark which sides of that crop carry bleed when the source includes it.
+  function logicalPages(o) {
+    const layout = o.layout, ratio = targetRatio(o);
+    const split = (sp, i, n) => layout === 'spreads' || layout === 'wrap' ||
+      (layout === 'covers' && i > 0 && i < n - 1) ||
+      (layout === 'auto' && sp.w > sp.h);
+    const pages = sources.flatMap((sp, i, all) => {
+      const isSplit = split(sp, i, all.length);
+      sp.cropRatio = ratio && (isSplit ? 2 * ratio : ratio);
+      const c = sp.crop = imageCrop(sp, sp.cropRatio);
+      if (!isSplit) return [{ sp, c, f: { l: 1, r: 1, t: 1, b: 1 } }];
+      const mid = (c.x0 + c.x1) / 2;
+      return [{ sp, c: { ...c, x1: mid }, half: 'left', f: { l: 1, r: 0, t: 1, b: 1 } },
+              { sp, c: { ...c, x0: mid }, half: 'right', f: { l: 0, r: 1, t: 1, b: 1 } }];
+    });
+    // Cover wrap: left half of the first page is the back cover, so it moves to the end
+    if (layout === 'wrap' && pages.length) pages.push(pages.shift());
+    return pages;
+  }
+
+  // Show each image's crop in its list thumbnail by sizing the image past the button and offsetting it
+  function updateThumbs() {
+    items.forEach((item, i) => {
+      const thumb = orderList.children[i]?.querySelector('.za-thumb');
+      const sp = item.pages[0], c = sp.crop;
+      if (!thumb || !c) return;
+      const fw = c.x1 - c.x0, fh = c.y1 - c.y0;
+      thumb.style.aspectRatio = String((sp.w * fw) / (sp.h * fh));
+      Object.assign(thumb.querySelector('img').style, {
+        width: 100 / fw + '%', height: 100 / fh + '%',
+        left: -c.x0 / fw * 100 + '%', top: -(1 - c.y1) / fh * 100 + '%'
+      });
+    });
+  }
+
+  // Crop dialog: edits a copy of the image's center and zoom, applied only on Save
+  let cropping = null;
+  const viewCrop = () => imageCrop({ ...cropping.sp, ...cropping.view }, cropping.sp.cropRatio);
+
+  function openCrop(sp, src) {
+    cropping = { sp, view: { cx: sp.cx, cy: sp.cy, zoom: sp.zoom } };
+    cropImg.src = src;
+    cropDialog.returnValue = '';
+    setView(sp.cx, sp.cy, sp.zoom);
+    cropDialog.showModal();
+  }
+
+  function setView(cx, cy, zoom) {
+    cropping.view = { cx, cy, zoom: clamp(zoom, 1, 20) };
+    const c = viewCrop();
+    // Store the clamped center so dragging past an edge doesn't build up hidden offset
+    cropping.view.cx = (c.x0 + c.x1) / 2;
+    cropping.view.cy = 1 - (c.y0 + c.y1) / 2;
+    Object.assign(cropBox.style, {
+      left: c.x0 * 100 + '%', top: (1 - c.y1) * 100 + '%',
+      width: (c.x1 - c.x0) * 100 + '%', height: (c.y1 - c.y0) * 100 + '%'
+    });
+  }
+
+  cropBox.addEventListener('pointerdown', e => {
+    e.preventDefault();
+    cropBox.setPointerCapture(e.pointerId);
+    const stage = cropImg.getBoundingClientRect();
+    const at = ev => [(ev.clientX - stage.left) / stage.width, (ev.clientY - stage.top) / stage.height];
+    const [sx, sy] = at(e), start = { ...cropping.view }, c = viewCrop();
+    const resizing = e.target.classList.contains('za-crop-handle');
+    // Resizing keeps the top-left corner fixed; zoom 1 is the largest box the ratio allows
+    const full = imageCrop({ ...cropping.sp, zoom: 1 }, cropping.sp.cropRatio);
+    const fullW = full.x1 - full.x0, fullH = full.y1 - full.y0, left = c.x0, top = 1 - c.y1;
+    cropBox.onpointermove = ev => {
+      const [x, y] = at(ev);
+      if (!resizing) return setView(start.cx + x - sx, start.cy + y - sy, start.zoom);
+      const k = clamp(Math.max((x - left) / fullW, (y - top) / fullH), 0.05, 1);
+      setView(left + fullW * k / 2, top + fullH * k / 2, 1 / k);
+    };
+    cropBox.onpointerup = () => { cropBox.onpointermove = null; };
+  });
+
+  cropBox.addEventListener('keydown', e => {
+    const step = e.shiftKey ? 0.05 : 0.01;
+    const keys = { ArrowLeft: [-step, 0, 1], ArrowRight: [step, 0, 1], ArrowUp: [0, -step, 1], ArrowDown: [0, step, 1],
+      '+': [0, 0, 1.1], '=': [0, 0, 1.1], '-': [0, 0, 1 / 1.1] };
+    const k = keys[e.key];
+    if (!k) return;
+    e.preventDefault();
+    const v = cropping.view;
+    setView(v.cx + k[0], v.cy + k[1], v.zoom * k[2]);
+  });
+
+  document.getElementById('za-crop-reset').addEventListener('click', () => setView(0.5, 0.5, 1));
+
+  cropDialog.addEventListener('close', () => {
+    if (cropDialog.returnValue !== 'save') return;
+    Object.assign(cropping.sp, cropping.view);
+    rebuild();
+  });
+
+  // Moves the origin to the cell's bottom-left in the page's own reading orientation
+  const cellFrame = (cell, upsideDown) => upsideDown
+    ? concatTransformationMatrix(-1, 0, 0, -1, cell.x + cell.w, cell.y + cell.h)
+    : concatTransformationMatrix(1, 0, 0, 1, cell.x, cell.y);
+
+  // Draw one logical page into a sheet cell. Bleed extends past the cell only on the sheet's outer edges.
+  function drawCell(sheet, embedded, lp, cell, outer, upsideDown, o) {
+    const b = o.bleed;
+    sheet.pushOperators(
+      pushGraphicsState(),
+      rectangle(cell.x - b * outer.l, cell.y - b * outer.b, cell.w + b * (outer.l + outer.r), cell.h + b * (outer.t + outer.b)),
+      clip(), endPath(),
+      cellFrame(cell, upsideDown)
+    );
+    // Target is the cell plus the source's own bleed, so the source's trim lines up with the cell
+    const sb = o.srcBleed ? b : 0;
+    const tx = -sb * lp.f.l, ty = -sb * lp.f.b;
+    const tw = cell.w + sb * (lp.f.l + lp.f.r), th = cell.h + sb * (lp.f.t + lp.f.b);
+    const { x0, x1, y0, y1 } = lp.c;
+    const cropW = lp.sp.w * (x1 - x0), cropH = lp.sp.h * (y1 - y0);
+    const s = (o.fit === 'cover' ? Math.max : Math.min)(tw / cropW, th / cropH);
+    const dw = s * cropW, dh = s * cropH;
+    // Fit mode hugs the spine (cell.ax: 0 = sheet-left, 1 = sheet-right); flipped cells mirror it
+    const ax = o.fit === 'cover' ? 0.5 : upsideDown ? 1 - cell.ax : cell.ax;
+    const px = tx + (tw - dw) * ax, py = ty + (th - dh) / 2;
+    sheet.pushOperators(rectangle(px, py, dw, dh), clip(), endPath());
+    const opts = { x: px - s * lp.sp.w * x0, y: py - s * lp.sp.h * y0, width: s * lp.sp.w, height: s * lp.sp.h };
+    lp.sp.pdf ? sheet.drawPage(embedded, opts) : sheet.drawImage(embedded, opts);
+    sheet.pushOperators(popGraphicsState());
+  }
+
+  // Preview overlay: output page number and the source page (with half) that landed in this cell
+  function drawLabel(sheet, font, n, lp, cell, upsideDown) {
+    const source = !lp ? 'blank' : 'source ' + (sources.indexOf(lp.sp) + 1) +
+      (lp.half ? ' ' + lp.half : '');
+    const lines = ['page ' + (n + 1), source];
+    const size = cell.w / 12;
+    const red = rgb(0.8, 0, 0);
+    const boxW = Math.max(...lines.map(l => font.widthOfTextAtSize(l, size))) + size;
+    sheet.pushOperators(pushGraphicsState(), cellFrame(cell, upsideDown));
+    sheet.drawRectangle({ x: (cell.w - boxW) / 2, y: cell.h / 2 - 1.5 * size, width: boxW, height: 3 * size,
+      color: rgb(1, 1, 1), opacity: 0.85, borderColor: red, borderWidth: 1 });
+    lines.forEach((line, i) => sheet.drawText(line, {
+      x: (cell.w - font.widthOfTextAtSize(line, size)) / 2, y: cell.h / 2 + size * (0.2 - 1.2 * i),
+      size, font, color: red }));
+    sheet.pushOperators(popGraphicsState());
+  }
+
+  async function buildPdf(o) {
+    const pages = logicalPages(o);
+    const perSheet = o.format === 'zine' ? 8 : 4;
+    const blanks = (perSheet - pages.length % perSheet) % perSheet;
+    const at = o.backCover && pages.length > 1 ? pages.length - 1 : pages.length;
+    pages.splice(at, 0, ...Array(blanks).fill(null));
+
+    const out = await PDFDocument.create();
+    const cache = new Map();
+    const embed = async sp => {
+      if (!cache.has(sp)) {
+        cache.set(sp, sp.pdf ? await out.embedPage(sp.pdf.getPage(sp.index), sp.box)
+          : sp.png ? await out.embedPng(sp.bytes) : await out.embedJpg(sp.bytes));
+      }
+      return cache.get(sp);
+    };
+    const [W, H] = o.paper;
+    const b = o.bleed;
+    const font = o.labels ? await out.embedFont(StandardFonts.Helvetica) : null;
+    const place = async (sheet, n, cell, outer, upsideDown) => {
+      if (pages[n]) drawCell(sheet, await embed(pages[n].sp), pages[n], cell, outer, upsideDown, o);
+      if (font) drawLabel(sheet, font, n, pages[n], cell, upsideDown);
+    };
+
+    if (o.format === 'zine') {
+      const cw = (W - 2 * b) / 4, ch = (H - 2 * b) / 2;
+      for (let start = 0; start < pages.length; start += 8) {
+        const sheet = out.addPage([W, H]);
+        for (let c = 0; c < 4; c++) {
+          const x = b + c * cw;
+          const ax = c % 2 ? 0 : 1;   // spines sit between columns 0|1 and 2|3
+          await place(sheet, start + ZINE_BOTTOM[c], { x, y: b, w: cw, h: ch, ax }, { l: +(c === 0), r: +(c === 3), t: 0, b: 1 }, false);
+          await place(sheet, start + ZINE_TOP[c], { x, y: b + ch, w: cw, h: ch, ax }, { l: +(c === 0), r: +(c === 3), t: 1, b: 0 }, true);
+        }
+      }
+    } else {
+      const cw = (W - 2 * b) / 2, ch = H - 2 * b;
+      for (const sides of bookletSheets(pages.length)) {
+        for (const [left, right] of sides) {
+          const sheet = out.addPage([W, H]);
+          await place(sheet, left, { x: b, y: b, w: cw, h: ch, ax: 1 }, { l: 1, r: 0, t: 1, b: 1 }, false);
+          await place(sheet, right, { x: b + cw, y: b, w: cw, h: ch, ax: 0 }, { l: 0, r: 1, t: 1, b: 1 }, false);
+        }
+      }
+    }
+    return { bytes: await out.save(), pageCount: pages.length, blanks, sheets: pages.length / perSheet };
+  }
+
+  function options() {
+    const d = new FormData(form);
+    const paper = d.get('paper').split(',').map(Number);
+    return {
+      layout: d.get('layout'),
+      ratio: d.get('ratio'),
+      format: d.get('format'),
+      paper: [Math.max(...paper), Math.min(...paper)],   // always landscape
+      fit: d.get('fit'),
+      backCover: d.has('backCover'),
+      bleed: Math.max(0, Number(d.get('bleed')) || 0) * Number(d.get('unit')),
+      srcBleed: d.has('srcBleed'),
+      labels: d.has('labels')
+    };
+  }
+
+  async function rebuild(prefix = '') {
+    const o = options();
+    help.textContent = HELP[o.format];
+    if (!sources.length) return;
+    const token = ++buildToken;
+    status.value = 'Building…';
+    try {
+      const result = await buildPdf(o);
+      updateThumbs();
+      if (token !== buildToken) return;   // a newer build started while this one ran
+      if (outputURL) URL.revokeObjectURL(outputURL);
+      outputURL = URL.createObjectURL(new Blob([result.bytes], { type: 'application/pdf' }));
+      preview.src = outputURL;
+      preview.hidden = false;
+      downloadButton.disabled = false;
+      status.value = prefix + sources.length + ' source page(s) → ' + result.pageCount + ' zine pages' +
+        (result.blanks ? ' (' + result.blanks + ' blank added)' : '') + ', ' + result.sheets + ' sheet(s).';
+    } catch (err) {
+      console.error(err);
+      if (token === buildToken) status.value = 'Build failed: ' + err.message;
+    }
+  }
+
+  orderList.addEventListener('click', e => {
+    const thumb = e.target.closest('.za-thumb');
+    if (thumb) {
+      const item = items[Number(thumb.closest('li').dataset.i)];
+      return openCrop(item.pages[0], item.thumb);
+    }
+  });
+
+  // Drag handles: the row follows the pointer live, and the new order is applied on release
+  orderList.addEventListener('pointerdown', e => {
+    const grip = e.target.closest('.za-grip');
+    if (!grip) return;
+    e.preventDefault();
+    const li = grip.closest('li');
+    li.classList.add('dragging');
+    // Listen on window: moving the row in the DOM would drop pointer capture on the handle
+    const move = ev => {
+      // Insert before the first other row whose midpoint is below the pointer
+      const before = [...orderList.children].find(o => {
+        const r = o.getBoundingClientRect();
+        return o !== li && ev.clientY < r.top + r.height / 2;
+      });
+      if (li.nextElementSibling !== before) orderList.insertBefore(li, before || null);
+    };
+    const drop = () => {
+      removeEventListener('pointermove', move);
+      removeEventListener('pointerup', drop);
+      removeEventListener('pointercancel', drop);
+      li.classList.remove('dragging');
+      const order = [...orderList.children].map(o => items[Number(o.dataset.i)]);
+      if (order.some((item, k) => item !== items[k])) {
+        items = order;
+        applyOrder();
+      }
+    };
+    addEventListener('pointermove', move);
+    addEventListener('pointerup', drop);
+    addEventListener('pointercancel', drop);
+  });
+
+  orderList.addEventListener('keydown', e => {
+    const grip = e.target.closest('.za-grip');
+    const move = { ArrowUp: -1, ArrowDown: 1 }[e.key];
+    if (!grip || !move) return;
+    e.preventDefault();
+    const i = Number(grip.closest('li').dataset.i), j = i + move;
+    if (!items[j]) return;
+    [items[i], items[j]] = [items[j], items[i]];
+    applyOrder();
+    orderList.children[j].querySelector('.za-grip').focus();
+  });
+
+  fileInput.addEventListener('change', () => { if (fileInput.files.length) loadFiles(fileInput.files); });
+  form.addEventListener('change', e => { if (e.target !== fileInput) rebuild(); });
+  form.addEventListener('submit', e => e.preventDefault());
+
+  const app = document.querySelector('.zine-assembler');
+  app.addEventListener('dragover', e => { e.preventDefault(); app.classList.add('drag-over'); });
+  app.addEventListener('dragleave', () => app.classList.remove('drag-over'));
+  app.addEventListener('drop', e => {
+    e.preventDefault();
+    app.classList.remove('drag-over');
+    if (e.dataTransfer.files.length) loadFiles(e.dataTransfer.files);
+  });
+
+  downloadButton.addEventListener('click', async () => {
+    const o = options();
+    // The preview may carry page-number labels, so build a clean copy for printing
+    const url = o.labels
+      ? URL.createObjectURL(new Blob([(await buildPdf({ ...o, labels: false })).bytes], { type: 'application/pdf' }))
+      : outputURL;
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = baseName + '_' + o.format + '.pdf';
+    a.click();
+    if (url !== outputURL) setTimeout(() => URL.revokeObjectURL(url), 60000);
+  });
+
+  rebuild();
+</script>

@@ -1,0 +1,274 @@
+/* Two-column shell: settings form on the left, PDF preview on the right */
+.zine-assembler {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    font-family: Arial, sans-serif;
+}
+
+.zine-assembler.drag-over {
+    outline: 3px dashed #4285f4;
+    outline-offset: 4px;
+}
+
+.zine-assembler > form {
+    flex: 0 0 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.zine-assembler fieldset {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.zine-assembler legend {
+    font-weight: bold;
+}
+
+.zine-assembler fieldset p,
+.zine-assembler > form > p {
+    margin: 0;
+    font-size: 0.85em;
+}
+
+.zine-assembler label {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+    font-size: 0.85em;
+}
+
+/* Visually hidden but still keyboard focusable through its label */
+#za-files {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+}
+
+.zine-assembler button,
+.zine-assembler label.button {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #4285f4;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+.zine-assembler label.button:focus-within,
+.zine-assembler button:focus-visible {
+    outline: 2px solid #1a56c4;
+    outline-offset: 2px;
+}
+
+.zine-assembler button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.zine-assembler select,
+.zine-assembler input[type="number"] {
+    padding: 4px;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    font-family: inherit;
+}
+
+.zine-assembler input[type="number"] {
+    width: 5em;
+}
+
+.zine-assembler > figure {
+    flex: 1 1 420px;
+    min-width: 280px;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+#za-preview {
+    width: 100%;
+    height: 75vh;
+    border: 1px solid #ddd;
+    background-color: #f0f0f0;
+}
+
+#za-help {
+    color: #555;
+    font-size: 0.9em;
+}
+
+/* Reorderable source file list */
+#za-order {
+    counter-reset: za-item;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 0.85em;
+}
+
+#za-order li span {
+    flex: 1;
+    overflow-wrap: anywhere;
+}
+
+#za-order li {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+
+/* Flex items don't count as list items, so number them with our own counter */
+#za-order li::before {
+    counter-increment: za-item;
+    content: counter(za-item) ".";
+    min-width: 1.5em;
+}
+
+/* Thumbnail shows the current crop; the icon appears on hover or keyboard focus */
+.zine-assembler .za-thumb {
+    position: relative;
+    overflow: hidden;
+    flex: none;
+    height: 40px;
+    aspect-ratio: 1;
+    padding: 0;
+    background-color: #f0f0f0;
+}
+
+.za-thumb img {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+}
+
+.za-thumb svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+
+.za-thumb:hover svg,
+.za-thumb:focus-visible svg {
+    opacity: 1;
+}
+
+/* Crop dialog */
+#za-crop {
+    max-width: 90vw;
+    border: none;
+    border-radius: 6px;
+    font-family: Arial, sans-serif;
+}
+
+#za-crop::backdrop {
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+#za-crop h2 {
+    margin: 0 0 8px;
+    font-size: 1.1em;
+}
+
+#za-crop p {
+    margin: 0 0 8px;
+    font-size: 0.85em;
+}
+
+.za-crop-stage {
+    position: relative;
+    display: inline-block;
+    margin: 0 0 8px;
+    overflow: hidden;
+    line-height: 0;
+}
+
+#za-crop-img {
+    display: block;
+    max-width: min(80vw, 800px);
+    max-height: 65vh;
+    user-select: none;
+    pointer-events: none;
+}
+
+/* The huge shadow dims everything outside the crop */
+#za-crop-box {
+    position: absolute;
+    box-sizing: border-box;
+    border: 2px solid white;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+    cursor: move;
+    touch-action: none;
+}
+
+#za-crop-box:focus-visible {
+    border-color: #4285f4;
+    outline: none;
+}
+
+.za-crop-handle {
+    position: absolute;
+    right: -2px;
+    bottom: -2px;
+    width: 16px;
+    height: 16px;
+    background-color: white;
+    border: 2px solid #4285f4;
+    box-sizing: border-box;
+    cursor: nwse-resize;
+}
+
+.za-crop-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+}
+
+/* Drag handle for reordering */
+.zine-assembler .za-grip {
+    padding: 4px;
+    background: none;
+    color: #666;
+    font-size: 1.2em;
+    line-height: 1;
+    cursor: grab;
+    touch-action: none;
+}
+
+.zine-assembler .za-grip:focus-visible {
+    outline: 2px solid #4285f4;
+}
+
+#za-order li.dragging {
+    opacity: 0.6;
+    background-color: #f5f9ff;
+}
+
+#za-order li.dragging .za-grip {
+    cursor: grabbing;
+}
