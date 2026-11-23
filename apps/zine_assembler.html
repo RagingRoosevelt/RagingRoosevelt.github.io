@@ -12,10 +12,12 @@ extra_css: extra_css/apps/zine_assembler.css
       <legend>Source</legend>
       <p>
         <input type="file" id="za-files" accept="application/pdf,.pdf,image/*" multiple>
-        <label for="za-files" class="button">Open PDF or Images</label>
+        <label for="za-files" class="button">Add PDF or Images</label>
+        <button type="button" id="za-add-blank">Add blank page</button>
+        <button type="button" id="za-clear">Clear</button>
       </p>
-      <p>Files start in name order. You can also drop files onto this page.</p>
-      <ol id="za-order" aria-label="Source file order"></ol>
+      <p>Each batch is added in name order. You can also drop files onto this page. Drag ⠿ to reorder; the filler row marks where blanks that fill out the last sheet go.</p>
+      <ol id="za-order" aria-label="Page order"></ol>
       <label>Source layout
         <select name="layout">
           <option value="single">Single pages</option>
@@ -60,7 +62,7 @@ extra_css: extra_css/apps/zine_assembler.css
           <option value="cover">Fill cell (crop edges)</option>
         </select>
       </label>
-      <label><input type="checkbox" name="backCover" checked> Keep last page on back cover when adding blanks</label>
+      <label><input type="checkbox" name="backCover" checked> Keep last page on back cover when filler blanks are at the end</label>
     </fieldset>
 
     <fieldset>
@@ -135,13 +137,20 @@ extra_css: extra_css/apps/zine_assembler.css
   }
   console.assert(JSON.stringify(bookletSheets(8)) === '[[[7,0],[1,6]],[[5,2],[3,4]]]', 'booklet imposition order');
 
-  let items = [];     // one entry per loaded file, in user-chosen order
+  // One entry per list row, in user-chosen order: a file ({ name, pages, thumb }), an added blank
+  // ({ blank }), or the single filler marker ({ filler }) where sheet-padding blanks go
+  let items = [];
   let sources = [];   // one entry per source PDF page or image
   let outputURL = null;
   let baseName = 'zine';
   let buildToken = 0;
 
-  async function loadFiles(files) {
+  // Batches load one at a time so they land in the order they were added
+  let loadQueue = Promise.resolve();
+  const loadFiles = files => (loadQueue = loadQueue.then(() => readFiles([...files])));
+
+  async function readFiles(files) {
+    status.value = 'Loading…';
     const list = [...files].sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
     const loaded = [];
     const failed = [];
@@ -178,14 +187,21 @@ extra_css: extra_css/apps/zine_assembler.css
       status.value = 'Could not read: ' + (failed.join(', ') || 'no files');
       return;
     }
-    items.forEach(item => item.thumb && URL.revokeObjectURL(item.thumb));
-    items = loaded;
-    baseName = loaded[0].name.replace(/\.[^.]+$/, '');
-    applyOrder(failed.length ? 'Skipped unreadable: ' + failed.join(', ') + '. ' : '');
+    if (!sources.length) baseName = loaded[0].name.replace(/\.[^.]+$/, '');
+    addItems(loaded, failed.length ? 'Skipped unreadable: ' + failed.join(', ') + '. ' : '');
+  }
+
+  // New rows go before the filler marker while it sits at the end, so padding stays last
+  function addItems(added, prefix) {
+    const f = items.findIndex(item => item.filler);
+    items.splice(f >= 0 && f === items.length - 1 ? f : items.length, 0, ...added);
+    applyOrder(prefix);
   }
 
   // Flatten files into source pages and redraw the order list; source numbers match the preview labels
   function applyOrder(prefix = '') {
+    if (items.some(item => !item.filler) && !items.some(item => item.filler)) items.push({ filler: true, pages: [] });
+    if (items.every(item => item.filler)) items = [];
     sources = items.flatMap(item => item.pages);
     orderList.replaceChildren();
     let next = 1;
@@ -196,7 +212,8 @@ extra_css: extra_css/apps/zine_assembler.css
       grip.type = 'button';
       grip.className = 'za-grip';
       grip.textContent = '⠿';
-      grip.setAttribute('aria-label', 'Reorder ' + item.name + ': drag, or use the up and down arrow keys');
+      const label = item.filler ? 'filler blanks' : item.blank ? 'blank page' : item.name;
+      grip.setAttribute('aria-label', 'Reorder ' + label + ': drag, or use the up and down arrow keys');
       li.append(grip);
       if (item.thumb) {
         const thumb = document.createElement('button');
@@ -212,9 +229,25 @@ extra_css: extra_css/apps/zine_assembler.css
       }
       const n = item.pages.length;
       const name = document.createElement('span');
-      name.textContent = item.name + (n > 1 ? ' (sources ' + next + '–' + (next + n - 1) + ')' : ' (source ' + next + ')');
+      if (item.filler) {
+        li.className = 'za-filler';
+        name.textContent = 'Filler blanks';
+      } else if (item.blank) {
+        li.className = 'za-blank';
+        name.textContent = 'Blank page';
+      } else {
+        name.textContent = item.name + (n > 1 ? ' (sources ' + next + '–' + (next + n - 1) + ')' : ' (source ' + next + ')');
+      }
       next += n;
       li.append(name);
+      if (!item.filler) {
+        const remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'za-remove';
+        remove.textContent = '×';
+        remove.setAttribute('aria-label', 'Remove ' + label);
+        li.append(remove);
+      }
       orderList.append(li);
     });
     rebuild(prefix);
@@ -252,25 +285,39 @@ extra_css: extra_css/apps/zine_assembler.css
     const split = (sp, i, n) => layout === 'spreads' || layout === 'wrap' ||
       (layout === 'covers' && i > 0 && i < n - 1) ||
       (layout === 'auto' && sp.w > sp.h);
-    const pages = sources.flatMap((sp, i, all) => {
-      const isSplit = split(sp, i, all.length);
+    const toLogical = (sp, i) => {
+      const isSplit = split(sp, i, sources.length);
       sp.cropRatio = ratio && (isSplit ? 2 * ratio : ratio);
       const c = sp.crop = imageCrop(sp, sp.cropRatio);
       if (!isSplit) return [{ sp, c, f: { l: 1, r: 1, t: 1, b: 1 } }];
       const mid = (c.x0 + c.x1) / 2;
       return [{ sp, c: { ...c, x1: mid }, half: 'left', f: { l: 1, r: 0, t: 1, b: 1 } },
               { sp, c: { ...c, x0: mid }, half: 'right', f: { l: 0, r: 1, t: 1, b: 1 } }];
-    });
-    // Cover wrap: left half of the first page is the back cover, so it moves to the end
-    if (layout === 'wrap' && pages.length) pages.push(pages.shift());
-    return pages;
+    };
+    const pages = [];
+    let fillAt = null, i = 0;
+    for (const item of items) {
+      if (item.filler) fillAt = pages.length;
+      else if (item.blank) pages.push(null);
+      else for (const sp of item.pages) pages.push(...toLogical(sp, i++));
+    }
+    // Filler blanks pad out the last sheet. At the end of the list they can go ahead of the back cover.
+    const perSheet = o.format === 'zine' ? 8 : 4;
+    const blanks = (perSheet - pages.length % perSheet) % perSheet;
+    fillAt ??= pages.length;
+    if (fillAt === pages.length && o.backCover && layout !== 'wrap' && pages.length > 1) fillAt--;
+    pages.splice(fillAt, 0, ...Array(blanks).fill(null));
+    // Cover wrap: left half of the first source page is the back cover, so it moves to the end
+    const k = layout === 'wrap' ? pages.findIndex(p => p && p.sp === sources[0]) : -1;
+    if (k >= 0) pages.push(...pages.splice(k, 1));
+    return { pages, blanks };
   }
 
   // Show each image's crop in its list thumbnail by sizing the image past the button and offsetting it
   function updateThumbs() {
     items.forEach((item, i) => {
       const thumb = orderList.children[i]?.querySelector('.za-thumb');
-      const sp = item.pages[0], c = sp.crop;
+      const sp = item.pages[0], c = sp?.crop;
       if (!thumb || !c) return;
       const fw = c.x1 - c.x0, fh = c.y1 - c.y0;
       thumb.style.aspectRatio = String((sp.w * fw) / (sp.h * fh));
@@ -392,11 +439,8 @@ extra_css: extra_css/apps/zine_assembler.css
   }
 
   async function buildPdf(o) {
-    const pages = logicalPages(o);
+    const { pages, blanks } = logicalPages(o);
     const perSheet = o.format === 'zine' ? 8 : 4;
-    const blanks = (perSheet - pages.length % perSheet) % perSheet;
-    const at = o.backCover && pages.length > 1 ? pages.length - 1 : pages.length;
-    pages.splice(at, 0, ...Array(blanks).fill(null));
 
     const out = await PDFDocument.create();
     const cache = new Map();
@@ -458,7 +502,13 @@ extra_css: extra_css/apps/zine_assembler.css
   async function rebuild(prefix = '') {
     const o = options();
     help.textContent = HELP[o.format];
-    if (!sources.length) return;
+    if (!sources.length) {
+      buildToken++;
+      preview.hidden = true;
+      downloadButton.disabled = true;
+      status.value = prefix + 'Nothing loaded.';
+      return;
+    }
     const token = ++buildToken;
     status.value = 'Building…';
     try {
@@ -470,8 +520,9 @@ extra_css: extra_css/apps/zine_assembler.css
       preview.src = outputURL;
       preview.hidden = false;
       downloadButton.disabled = false;
-      status.value = prefix + sources.length + ' source page(s) → ' + result.pageCount + ' zine pages' +
-        (result.blanks ? ' (' + result.blanks + ' blank added)' : '') + ', ' + result.sheets + ' sheet(s).';
+      status.value = prefix + sources.length + ' source page(s) → ' + result.pageCount + ' zine pages, ' + result.sheets + ' sheet(s).';
+      const filler = orderList.querySelector('.za-filler span');
+      if (filler) filler.textContent = 'Filler blanks: ' + (result.blanks || 'none needed');
     } catch (err) {
       console.error(err);
       if (token === buildToken) status.value = 'Build failed: ' + err.message;
@@ -483,6 +534,12 @@ extra_css: extra_css/apps/zine_assembler.css
     if (thumb) {
       const item = items[Number(thumb.closest('li').dataset.i)];
       return openCrop(item.pages[0], item.thumb);
+    }
+    const remove = e.target.closest('.za-remove');
+    if (remove) {
+      const [gone] = items.splice(Number(remove.closest('li').dataset.i), 1);
+      if (gone.thumb) URL.revokeObjectURL(gone.thumb);
+      applyOrder();
     }
   });
 
@@ -530,7 +587,20 @@ extra_css: extra_css/apps/zine_assembler.css
     orderList.children[j].querySelector('.za-grip').focus();
   });
 
-  fileInput.addEventListener('change', () => { if (fileInput.files.length) loadFiles(fileInput.files); });
+  fileInput.addEventListener('change', async () => {
+    if (fileInput.files.length) await loadFiles(fileInput.files);
+    fileInput.value = '';   // allow adding the same file again
+  });
+
+  document.getElementById('za-add-blank').addEventListener('click', () => {
+    addItems([{ blank: true, pages: [] }]);
+  });
+
+  document.getElementById('za-clear').addEventListener('click', () => {
+    items.forEach(item => item.thumb && URL.revokeObjectURL(item.thumb));
+    items = [];
+    applyOrder();
+  });
   form.addEventListener('change', e => { if (e.target !== fileInput) rebuild(); });
   form.addEventListener('submit', e => e.preventDefault());
 

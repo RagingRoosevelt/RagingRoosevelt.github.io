@@ -264,6 +264,25 @@
     outline: 2px solid #4285f4;
 }
 
+.zine-assembler .za-remove {
+    padding: 2px 8px;
+    background: none;
+    color: #666;
+    font-size: 1.2em;
+    line-height: 1;
+}
+
+#za-order li.za-blank span,
+#za-order li.za-filler span {
+    font-style: italic;
+    color: #555;
+}
+
+#za-order li.za-filler {
+    border-top: 1px dashed #ccc;
+    border-bottom: 1px dashed #ccc;
+}
+
 #za-order li.dragging {
     opacity: 0.6;
     background-color: #f5f9ff;
